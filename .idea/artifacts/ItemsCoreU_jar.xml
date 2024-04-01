@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="ItemsCoreU:jar">
+    <output-path>$PROJECT_DIR$/../../../../Рабочий стол/TestServer/plugins</output-path>
+    <root id="archive" name="ItemsCoreU.jar">
+      <element id="module-output" name="ItemsCoreU" />
+    </root>
+  </artifact>
+</component>

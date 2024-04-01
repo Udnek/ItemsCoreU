@@ -1,0 +1,11 @@
+name: ItemsCoreU
+version: '${project.version}'
+main: me.udnek.itemscoreu.ItemsCoreU
+api-version: '1.20'
+commands:
+  giveu:
+    description: "giveu"
+    usage: "/giveu <item>"
+    aliases: [itemscoreugive]
+    permission: itemscoreu.admin
+    permission-message: "You do not have permission to use this command"
