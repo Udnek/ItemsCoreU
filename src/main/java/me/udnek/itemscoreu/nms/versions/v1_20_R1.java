@@ -2,6 +2,8 @@ package me.udnek.itemscoreu.nms.versions;
 
 import me.udnek.itemscoreu.nms.ItemConsumer;
 import me.udnek.itemscoreu.nms.NMSHandler;
+import net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.Item;
@@ -26,11 +28,13 @@ import org.bukkit.Server;
 import org.bukkit.craftbukkit.v1_20_R1.CraftLootTable;
 import org.bukkit.craftbukkit.v1_20_R1.inventory.CraftItemStack;
 import org.bukkit.craftbukkit.v1_20_R1.util.CraftMagicNumbers;
+import org.bukkit.entity.Entity;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.loot.LootTable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class v1_20_R1 implements NMSHandler {
 
@@ -159,6 +163,12 @@ public class v1_20_R1 implements NMSHandler {
         }
         return result;
     }
+
+    @Override
+    public void glowEntityFor(Entity entity, List<Entity> forEntities, boolean isGlow) {
+
+    }
+
 }
 
 

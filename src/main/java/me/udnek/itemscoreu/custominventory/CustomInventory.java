@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.jetbrains.annotations.NotNull;
@@ -33,6 +34,7 @@ public abstract class CustomInventory implements InventoryHolder {
     public void afterPlayerClicksItem(InventoryClickEvent event){}
     public void onPlayerDragsItem(InventoryDragEvent event){}
     public void onPlayerClosesInventory(InventoryCloseEvent event){}
+    public void onPlayerOpensInventory(InventoryOpenEvent event){}
 
 }
 

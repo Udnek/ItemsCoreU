@@ -8,6 +8,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -35,6 +36,13 @@ public class CustomInventoryListener extends SelfRegisteringListener {
     public void onPlayerClosesInventory(InventoryCloseEvent event){
         if (event.getInventory().getHolder() instanceof CustomInventory){
             ((CustomInventory) event.getInventory().getHolder()).onPlayerClosesInventory(event);
+        }
+    }
+
+    @EventHandler
+    public void onPlayerOpensInventory(InventoryOpenEvent event){
+        if (event.getInventory().getHolder() instanceof CustomInventory){
+            ((CustomInventory) event.getInventory().getHolder()).onPlayerOpensInventory(event);
         }
     }
 

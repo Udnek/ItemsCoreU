@@ -50,6 +50,9 @@ public abstract class CustomItem {
         return this.id;
     }
 
+    public final boolean isSameIds(CustomItem customItem){
+        return customItem.getId().equals(id);
+    }
 
     protected void setPersistentData(ItemMeta itemMeta){
         PersistentDataContainer dataContainer = itemMeta.getPersistentDataContainer();

@@ -8,7 +8,6 @@ public class LogUtils {
     public static void log(String message){
         Bukkit.getLogger().info(message);
     }
-
     public static void pluginLog(String message){
         ItemsCoreU.getInstance().getLogger().info(message);
     }
