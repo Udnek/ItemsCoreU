@@ -1,5 +1,6 @@
 package me.udnek.itemscoreu.custominventory;
 
+import me.udnek.itemscoreu.utils.LogUtils;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -12,9 +13,20 @@ import org.bukkit.inventory.InventoryHolder;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class CustomInventory implements InventoryHolder {
-    protected Inventory inventory = Bukkit.createInventory(this, this.getInventorySize(), this.getDisplayName());
+    protected Inventory inventory;
+
+    public CustomInventory(){
+        generateInventory(getInventorySize(), getDisplayName());
+    }
+    public CustomInventory(int size, Component title){
+        generateInventory(size, title);
+    }
     public String getRawDisplayName(){return "";}
     public abstract int getInventorySize();
+
+    public void generateInventory(int size, Component title){
+        inventory = Bukkit.createInventory(this, size, title);
+    }
 
     public Component getDisplayName(){
         return Component.translatable(this.getRawDisplayName());

@@ -5,6 +5,7 @@ import me.udnek.itemscoreu.nms.NMSHandler;
 import net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
@@ -166,7 +167,6 @@ public class v1_20_R1 implements NMSHandler {
 
     @Override
     public void glowEntityFor(Entity entity, List<Entity> forEntities, boolean isGlow) {
-
     }
 
 }
