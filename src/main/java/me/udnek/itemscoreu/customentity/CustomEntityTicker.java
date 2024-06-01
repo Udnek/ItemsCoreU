@@ -1,6 +1,5 @@
 package me.udnek.itemscoreu.customentity;
 
-import me.udnek.itemscoreu.utils.LogUtils;
 import me.udnek.itemscoreu.utils.TickingTask;
 import org.bukkit.entity.Entity;
 

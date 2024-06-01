@@ -1,7 +1,5 @@
 package me.udnek.itemscoreu.nms;
 
-import me.udnek.itemscoreu.nms.versions.NMSHandler;
-
 @Deprecated
 public class  NMSHelper {
 /*    private static NMSHandler nmsHandler;

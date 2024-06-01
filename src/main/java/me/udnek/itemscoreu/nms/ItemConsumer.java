@@ -1,6 +1,5 @@
 package me.udnek.itemscoreu.nms;
 
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 

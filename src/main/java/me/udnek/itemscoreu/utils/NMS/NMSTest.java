@@ -32,18 +32,11 @@ import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.Vec3;
-import org.bukkit.*;
 import org.bukkit.Registry;
-import org.bukkit.craftbukkit.v1_20_R1.CraftServer;
-import org.bukkit.craftbukkit.v1_20_R1.CraftWorld;
-import org.bukkit.craftbukkit.v1_20_R1.entity.CraftEntity;
-import org.bukkit.craftbukkit.v1_20_R1.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_20_R1.potion.CraftPotionEffectType;
-import org.bukkit.craftbukkit.v1_20_R1.util.CraftMagicNumbers;
+import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.generator.structure.Structure;
-import org.bukkit.potion.PotionEffectType;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -52,7 +45,7 @@ import java.util.*;
 
 public class NMSTest {
 
-    public static ServerPlayer getPlayer(Player player){
+/*    public static ServerPlayer getPlayer(Player player){
         return ((CraftPlayer) player).getHandle();
     }
 
@@ -170,11 +163,11 @@ public class NMSTest {
 
     public static Attribute TEST_ATTRIBUTES(){
 
-/*
+*//*
         for (Field field : BuiltInRegistries.ATTRIBUTE.getClass().getDeclaredFields()) {
             Bukkit.getLogger().info(field.toString());
         }
-*/
+*//*
 
         try {
             Field field = BuiltInRegistries.ATTRIBUTE.getClass().getDeclaredField("l");
@@ -259,10 +252,10 @@ public class NMSTest {
         unregisteredHolderMap.set(BuiltInRegistries.ENTITY_TYPE, null);
 
 
-/*        EntityType.Builder<net.minecraft.world.entity.Entity> entityBuilder = EntityType.Builder.of(Zoglin::new, MobCategory.AMBIENT)
+*//*        EntityType.Builder<net.minecraft.world.entity.Entity> entityBuilder = EntityType.Builder.of(Zoglin::new, MobCategory.AMBIENT)
                 .sized(1f, 1f).clientTrackingRange(8).updateInterval(10);
         net.minecraft.core.Registry.register(BuiltInRegistries.ENTITY_TYPE, "test", entityBuilder.build("test"));
-        return true;*/
+        return true;*//*
 
 
         return true;
@@ -298,9 +291,9 @@ public class NMSTest {
         }
 
 
-/*        for (Field field : PotionEffectType.class.getDeclaredFields()) {
+*//*        for (Field field : PotionEffectType.class.getDeclaredFields()) {
             Bukkit.getLogger().info(field.toString());
-        }*/
+        }*//*
 
 
 
@@ -312,7 +305,7 @@ public class NMSTest {
         return mobEffect;
     }
 
-/*    public VanillaAttribute registerAttribute(String attributeName, double defaultValue, double minValue, double maxValue)
+*//*    public VanillaAttribute registerAttribute(String attributeName, double defaultValue, double minValue, double maxValue)
     {
         Attribute attribute = (Attribute) net.minecraft.core.Registry.register(
                 BuiltInRegistries.ATTRIBUTE,

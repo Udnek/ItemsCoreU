@@ -1,10 +1,8 @@
 package me.udnek.itemscoreu.custominventory;
 
-import io.papermc.paper.event.player.PlayerInventorySlotChangeEvent;
 import me.udnek.itemscoreu.ItemsCoreU;
 import me.udnek.itemscoreu.utils.SelfRegisteringListener;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;

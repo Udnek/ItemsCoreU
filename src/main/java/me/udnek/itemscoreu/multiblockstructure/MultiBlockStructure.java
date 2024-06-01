@@ -6,8 +6,6 @@ import me.udnek.itemscoreu.multiblockstructure.blockchoice.BlockChoice;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.bukkit.inventory.Recipe;
-import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
 
 public class MultiBlockStructure {

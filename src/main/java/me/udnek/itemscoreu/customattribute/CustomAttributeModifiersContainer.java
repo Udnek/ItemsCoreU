@@ -1,6 +1,5 @@
 package me.udnek.itemscoreu.customattribute;
 
-import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.inventory.EquipmentSlot;
 
 import java.util.ArrayList;

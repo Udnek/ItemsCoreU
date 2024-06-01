@@ -2,15 +2,14 @@ package me.udnek.itemscoreu.utils;
 
 import me.udnek.itemscoreu.ItemsCoreU;
 import me.udnek.itemscoreu.customitem.CustomItem;
-import org.bukkit.*;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.*;
-import org.bukkit.loot.LootContext;
-import org.bukkit.loot.LootTable;
-import org.bukkit.loot.LootTables;
+import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Objects;
+import java.util.Set;
 
 public class CustomItemUtils {
     public static final NamespacedKey namespacedKey = new NamespacedKey(ItemsCoreU.getInstance(), "item");

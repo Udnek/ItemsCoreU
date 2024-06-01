@@ -3,8 +3,6 @@ package me.udnek.itemscoreu.utils;
 import me.udnek.itemscoreu.ItemsCoreU;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
-import org.bukkit.Server;
-import org.bukkit.command.CommandSender;
 
 public class LogUtils {
 

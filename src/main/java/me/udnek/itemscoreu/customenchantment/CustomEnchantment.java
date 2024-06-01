@@ -1,7 +1,6 @@
 package me.udnek.itemscoreu.customenchantment;
 
 import net.kyori.adventure.text.Component;
-import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -11,7 +10,7 @@ import java.lang.reflect.Field;
 
 public abstract class CustomEnchantment extends Enchantment {
 
-    protected void setNamespacedKey(JavaPlugin javaPlugin){
+/*    protected void setNamespacedKey(JavaPlugin javaPlugin){
         Class<?> clazz = this.getClass();
         while (true){
             if (clazz.getName().equals(Enchantment.class.getName())){
@@ -29,7 +28,7 @@ public abstract class CustomEnchantment extends Enchantment {
     }
 
     public CustomEnchantment() {
-        super(null);
+        super();
     }
 
     @Override
@@ -40,5 +39,5 @@ public abstract class CustomEnchantment extends Enchantment {
     @Override
     public @NotNull Component displayName(int i) {
         return  Component.translatable("enchantment."+getKey().getKey()+"."+getName()).append(Component.text(" ")).append(Component.translatable("enchantment.level." + i));
-    }
+    }*/
 }

@@ -1,6 +1,5 @@
 package me.udnek.itemscoreu.custominventory;
 
-import me.udnek.itemscoreu.utils.LogUtils;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;

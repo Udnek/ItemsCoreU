@@ -1,17 +1,15 @@
 package me.udnek.itemscoreu.utils;
 
 import me.udnek.itemscoreu.customitem.CustomItem;
+import me.udnek.itemscoreu.nms.NMS;
 import me.udnek.itemscoreu.nms.NMSHelper;
 import org.bukkit.*;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.*;
 import org.bukkit.inventory.meta.FireworkEffectMeta;
-import org.bukkit.loot.LootContext;
 import org.bukkit.loot.LootTable;
 import org.bukkit.loot.LootTables;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -45,7 +43,7 @@ public class ItemUtils {
         lootTablesIterator.next();
         while (lootTablesIterator.hasNext()){
             LootTable lootTable = lootTablesIterator.next().getLootTable();
-            ArrayList<ItemStack> itemStacks = NMSHelper.getNMS().getPossibleLoot(lootTable);
+            ArrayList<ItemStack> itemStacks = NMS.get().getPossibleLoot(lootTable);
 
             for (ItemStack loot : itemStacks) {
                 if (loot.getType() == itemStack.getType()){

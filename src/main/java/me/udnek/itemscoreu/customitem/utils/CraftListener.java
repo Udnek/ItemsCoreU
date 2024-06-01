@@ -1,12 +1,9 @@
 package me.udnek.itemscoreu.customitem.utils;
 
-import me.udnek.itemscoreu.ItemsCoreU;
 import me.udnek.itemscoreu.utils.CustomItemUtils;
 import me.udnek.itemscoreu.utils.SelfRegisteringListener;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.FurnaceSmeltEvent;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.inventory.*;

@@ -1,9 +1,7 @@
 package me.udnek.itemscoreu.customitem;
 
-import me.udnek.itemscoreu.ItemsCoreU;
 import me.udnek.itemscoreu.utils.CustomItemUtils;
 import me.udnek.itemscoreu.utils.LogUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.plugin.java.JavaPlugin;
 

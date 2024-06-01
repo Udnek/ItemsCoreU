@@ -1,8 +1,6 @@
 package me.udnek.itemscoreu.customenchantment;
 
-import me.udnek.itemscoreu.ItemsCoreU;
 import me.udnek.itemscoreu.utils.LogUtils;
-import net.minecraft.world.item.enchantment.Enchantments;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -10,7 +8,7 @@ import java.lang.reflect.Field;
 
 public class CustomEnchantmentManager {
 
-    public static Enchantment register(JavaPlugin javaPlugin, CustomEnchantment customEnchantment){
+/*    public static Enchantment register(JavaPlugin javaPlugin, CustomEnchantment customEnchantment){
 
         for (Enchantment enchantment : Enchantment.values()) {
             if (enchantment.getClass().getName().equals(customEnchantment.getClass().getName())){
@@ -29,6 +27,6 @@ public class CustomEnchantmentManager {
         Enchantment.registerEnchantment(customEnchantment);
         LogUtils.pluginLog(customEnchantment.getKey().asString() + " (Enchantment)");
         return customEnchantment;
-    }
+    }*/
 
 }

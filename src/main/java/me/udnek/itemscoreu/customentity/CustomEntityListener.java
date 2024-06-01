@@ -1,8 +1,6 @@
 package me.udnek.itemscoreu.customentity;
 
-import io.papermc.paper.event.server.ServerResourcesReloadedEvent;
 import me.udnek.itemscoreu.ItemsCoreU;
-import me.udnek.itemscoreu.utils.LogUtils;
 import me.udnek.itemscoreu.utils.SelfRegisteringListener;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
@@ -11,14 +9,11 @@ import org.bukkit.entity.Entity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.server.ServerLoadEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
-import org.bukkit.event.world.ChunkUnloadEvent;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
-import org.spigotmc.RestartCommand;
 
-import java.util.Arrays;
 import java.util.Iterator;
 
 public class CustomEntityListener extends SelfRegisteringListener {

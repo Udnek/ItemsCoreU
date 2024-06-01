@@ -1,12 +1,6 @@
 package me.udnek.itemscoreu.customplayerdata;
 
-import me.udnek.itemscoreu.customplayerdata.datatypes.CustomBooleanData;
-import me.udnek.itemscoreu.customplayerdata.datatypes.CustomData;
-import me.udnek.itemscoreu.customplayerdata.datatypes.CustomIntegerData;
-import me.udnek.itemscoreu.customplayerdata.datatypes.CustomStringData;
 import org.bukkit.NamespacedKey;
-import org.bukkit.persistence.PersistentDataType;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -1,10 +1,7 @@
 package me.udnek.itemscoreu.customattribute;
 
-import me.udnek.itemscoreu.ItemsCoreU;
 import me.udnek.itemscoreu.utils.LogUtils;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import java.util.HashMap;
 
 public class CustomAttributeManager {
 

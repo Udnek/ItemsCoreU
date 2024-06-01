@@ -1,6 +1,5 @@
 package me.udnek.itemscoreu.customattribute;
 
-import me.udnek.itemscoreu.ItemsCoreU;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Entity;

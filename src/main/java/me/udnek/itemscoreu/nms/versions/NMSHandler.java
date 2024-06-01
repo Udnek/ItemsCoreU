@@ -8,7 +8,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.loot.LootTable;
 
 import java.util.ArrayList;
-import java.util.List;
 
 @Deprecated
 public interface NMSHandler {

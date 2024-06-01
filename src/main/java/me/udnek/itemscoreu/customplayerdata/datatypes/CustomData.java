@@ -1,7 +1,5 @@
 package me.udnek.itemscoreu.customplayerdata.datatypes;
 
-import org.bukkit.inventory.meta.ItemMeta;
-
 public abstract class CustomData<T>{
 
     protected T value;
