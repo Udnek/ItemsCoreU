@@ -14,6 +14,7 @@ public interface NMSHandler {
 
     net.minecraft.world.item.ItemStack getNMSItemStack(ItemStack itemStack);
     net.minecraft.world.item.ItemStack getNMSItemStack(Material material);
+    net.minecraft.world.entity.Entity getNMSEntity(Entity entity);
     ItemStack getNormalItemStack(net.minecraft.world.item.ItemStack itemStack);
     Item getNMSItem(Material material);
 
@@ -30,5 +31,6 @@ public interface NMSHandler {
 
     ArrayList<ItemStack> getPossibleLoot(LootTable lootTable);
 
-    void glowEntityFor(Entity entity, List<Entity> forEntities, boolean isGlow);
+    void followEntity(Entity follower, Entity target);
+
 }

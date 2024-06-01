@@ -6,6 +6,9 @@ import net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.ai.navigation.PathNavigation;
+import net.minecraft.world.entity.animal.Cat;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
@@ -27,6 +30,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Server;
 import org.bukkit.craftbukkit.v1_20_R1.CraftLootTable;
+import org.bukkit.craftbukkit.v1_20_R1.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_20_R1.inventory.CraftItemStack;
 import org.bukkit.craftbukkit.v1_20_R1.util.CraftMagicNumbers;
 import org.bukkit.entity.Entity;
@@ -165,10 +169,23 @@ public class v1_20_R1 implements NMSHandler {
         return result;
     }
 
+    ///////////////////////////////////////////////////////////////////////////
+    // ENTITY
+    ///////////////////////////////////////////////////////////////////////////
+
+
     @Override
-    public void glowEntityFor(Entity entity, List<Entity> forEntities, boolean isGlow) {
+    public net.minecraft.world.entity.Entity getNMSEntity(Entity entity) {
+        return ((CraftEntity) entity).getHandle();
     }
 
+    @Override
+    public void followEntity(Entity bukkitFollower, Entity bukkitTarget) {
+/*        net.minecraft.world.entity.Entity follower = getNMSEntity(bukkitFollower);
+        if (!(follower instanceof Mob)) return;
+        PathNavigation navigation = ((Mob) follower).getNavigation();
+        navigation.createPath()*/
+    }
 }
 
 
