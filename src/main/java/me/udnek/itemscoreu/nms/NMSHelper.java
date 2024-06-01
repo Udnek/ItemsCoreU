@@ -1,16 +1,17 @@
 package me.udnek.itemscoreu.nms;
 
-import me.udnek.itemscoreu.nms.versions.v1_20_R1;
+import me.udnek.itemscoreu.nms.versions.NMSHandler;
 
-public class NMSHelper {
-    private static NMSHandler nmsHandler;
+@Deprecated
+public class  NMSHelper {
+/*    private static NMSHandler nmsHandler;
 
     public static NMSHandler getNMS(){
         return nmsHandler;
     }
 
     public static void updateNMS(){
-        nmsHandler = new v1_20_R1();
-    }
+        nmsHandler = new NMS();
+    }*/
 
 }

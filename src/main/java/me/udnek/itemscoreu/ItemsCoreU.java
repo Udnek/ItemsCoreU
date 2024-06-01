@@ -32,8 +32,6 @@ public final class ItemsCoreU extends JavaPlugin{
     public void onEnable() {
         instance = this;
 
-        NMSHelper.updateNMS();
-
         new CustomItemListener(this);
         new CraftListener(this);
         new CustomInventoryListener(this);

@@ -1,57 +1,48 @@
-package me.udnek.itemscoreu.nms.versions;
+package me.udnek.itemscoreu.nms;
 
-import me.udnek.itemscoreu.nms.ItemConsumer;
-import me.udnek.itemscoreu.nms.NMSHandler;
-import net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket;
-import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.ai.navigation.PathNavigation;
-import net.minecraft.world.entity.animal.Cat;
+import me.udnek.itemscoreu.nms.versions.NMSHandler;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionBrewing;
 import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.level.block.ComposterBlock;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
-import net.minecraft.world.level.storage.loot.LootContext;
-import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.entries.LootItem;
-import net.minecraft.world.level.storage.loot.entries.LootPoolEntry;
 import net.minecraft.world.level.storage.loot.entries.LootPoolEntryContainer;
-import net.minecraft.world.level.storage.loot.entries.LootPoolSingletonContainer;
-import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
 import org.apache.commons.lang3.reflect.FieldUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.Server;
-import org.bukkit.craftbukkit.v1_20_R1.CraftLootTable;
-import org.bukkit.craftbukkit.v1_20_R1.entity.CraftEntity;
-import org.bukkit.craftbukkit.v1_20_R1.inventory.CraftItemStack;
-import org.bukkit.craftbukkit.v1_20_R1.util.CraftMagicNumbers;
+import org.bukkit.craftbukkit.v1_20_R4.CraftLootTable;
+import org.bukkit.craftbukkit.v1_20_R4.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_20_R4.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_20_R4.util.CraftMagicNumbers;
 import org.bukkit.entity.Entity;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.ItemType;
 import org.bukkit.loot.LootTable;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
-public class v1_20_R1 implements NMSHandler {
+public class NMS{
+
+    private static NMS instance;
+
+    public static NMS get(){
+        if (instance == null){
+            instance = new NMS();
+        }
+        return instance;
+    }
+
 
     ///////////////////////////////////////////////////////////////////////////
     // ITEMS
     ///////////////////////////////////////////////////////////////////////////
 
-    @Override
     public net.minecraft.world.item.ItemStack getNMSItemStack(ItemStack itemStack){
         return CraftItemStack.asNMSCopy(itemStack);
     }
-    @Override
     public net.minecraft.world.item.ItemStack getNMSItemStack(Material material){
         return getNMSItemStack(new ItemStack(material));
     }
@@ -60,7 +51,6 @@ public class v1_20_R1 implements NMSHandler {
         return CraftItemStack.asBukkitCopy(itemStack);
     }
 
-    @Override
     public Item getNMSItem(Material material){
         return CraftMagicNumbers.getItem(material);
     }
@@ -69,35 +59,34 @@ public class v1_20_R1 implements NMSHandler {
     // FOOD
     ///////////////////////////////////////////////////////////////////////////
 
-    @Override
+/*
     public int getFoodNutrition(Material material) {
         FoodProperties foodProperties = this.getFoodProperties(material);
         if (foodProperties == null) return 0;
         return foodProperties.getNutrition();
     }
 
-    @Override
     public float getFoodSaturation(Material material) {
         FoodProperties foodProperties = this.getFoodProperties(material);
         if (foodProperties == null) return 0;
-        return foodProperties.getSaturationModifier();
+        return foodProperties.saturation();
     }
 
-    @Override
     public FoodProperties getFoodProperties(Material material) {
-        return getNMSItem(material).getFoodProperties();
+        new ItemStack(Material.GOLDEN_APPLE).getItemMeta().getAsComponentString()
+        return getNMSItem(material).components();
     }
+*/
 
     ///////////////////////////////////////////////////////////////////////////
     // USAGES
     ///////////////////////////////////////////////////////////////////////////
 
-    @Override
+
     public float getCompostableChance(Material material){
         return ComposterBlock.COMPOSTABLES.getOrDefault(getNMSItem(material), 0);
     }
 
-    @Override
     public int getFuelTime(Material material){
         return AbstractFurnaceBlockEntity.getFuel().get(getNMSItem(material));
     }
@@ -106,30 +95,34 @@ public class v1_20_R1 implements NMSHandler {
     // BREWING
     ///////////////////////////////////////////////////////////////////////////
 
-    @Override
-    public boolean isBrewableIngredient(Material material){
+    // TODO: 6/1/2024 FIX BREWING
+
+/*    public boolean isBrewableIngredient(Material material){
         return PotionBrewing.isIngredient(getNMSItemStack(material));
     }
 
-    @Override
+
     public boolean isBrewablePotion(ItemStack itemStack){
         net.minecraft.world.item.ItemStack nmsItemStack = getNMSItemStack(itemStack);
         Potion potion = PotionUtils.getPotion(nmsItemStack);
         return PotionBrewing.isBrewablePotion(potion);
     }
 
-    @Override
+
     public boolean hasBrewingMix(ItemStack potion, Material ingredient){
         return PotionBrewing.hasMix(getNMSItemStack(potion), getNMSItemStack(ingredient));
     }
 
-    @Override
+
     public ItemStack getBrewingMix(ItemStack potion, Material ingredient){
         net.minecraft.world.item.ItemStack mixed = PotionBrewing.mix(getNMSItemStack(potion), getNMSItemStack(ingredient));
         return getNormalItemStack(mixed);
-    }
+    }*/
 
-    @Override
+    ///////////////////////////////////////////////////////////////////////////
+    // LOOT
+    ///////////////////////////////////////////////////////////////////////////
+
     public ArrayList<ItemStack> getPossibleLoot(LootTable lootTable) {
 
         ArrayList<ItemStack> result = new ArrayList<>();
@@ -174,18 +167,18 @@ public class v1_20_R1 implements NMSHandler {
     ///////////////////////////////////////////////////////////////////////////
 
 
-    @Override
+
     public net.minecraft.world.entity.Entity getNMSEntity(Entity entity) {
         return ((CraftEntity) entity).getHandle();
     }
 
-    @Override
-    public void followEntity(Entity bukkitFollower, Entity bukkitTarget) {
-/*        net.minecraft.world.entity.Entity follower = getNMSEntity(bukkitFollower);
+
+/*    public void followEntity(Entity bukkitFollower, Entity bukkitTarget) {
+        net.minecraft.world.entity.Entity follower = getNMSEntity(bukkitFollower);
         if (!(follower instanceof Mob)) return;
         PathNavigation navigation = ((Mob) follower).getNavigation();
-        navigation.createPath()*/
-    }
+        navigation.createPath()
+    }*/
 }
 
 

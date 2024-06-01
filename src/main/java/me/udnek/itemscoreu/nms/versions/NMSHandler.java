@@ -1,4 +1,4 @@
-package me.udnek.itemscoreu.nms;
+package me.udnek.itemscoreu.nms.versions;
 
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.Item;
@@ -10,6 +10,7 @@ import org.bukkit.loot.LootTable;
 import java.util.ArrayList;
 import java.util.List;
 
+@Deprecated
 public interface NMSHandler {
 
     net.minecraft.world.item.ItemStack getNMSItemStack(ItemStack itemStack);
