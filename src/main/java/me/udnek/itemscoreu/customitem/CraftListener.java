@@ -1,6 +1,5 @@
-package me.udnek.itemscoreu.customitem.utils;
+package me.udnek.itemscoreu.customitem;
 
-import me.udnek.itemscoreu.utils.CustomItemUtils;
 import me.udnek.itemscoreu.utils.SelfRegisteringListener;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
@@ -44,7 +43,7 @@ public class CraftListener extends SelfRegisteringListener {
 
         int amountOfCustomItems = 0;
         for (ItemStack itemStack : matrix) {
-            if (itemStack != null && CustomItemUtils.isCustomItem(itemStack)) {
+            if (itemStack != null && CustomItem.isCustom(itemStack)) {
                 amountOfCustomItems++;
             }
         }
@@ -54,8 +53,8 @@ public class CraftListener extends SelfRegisteringListener {
             event.getInventory().setResult(new ItemStack(Material.AIR));
         }
 
-        if (CustomItemUtils.isCustomItem(event.getRecipe().getResult())){
-            event.getInventory().setResult(CustomItemUtils.getFromItemStack(event.getRecipe().getResult()).onPrepareCraft(event));
+        if (CustomItem.isCustom(event.getRecipe().getResult())){
+            event.getInventory().setResult(CustomItem.get(event.getRecipe().getResult()).onPrepareCraft(event));
         }
     }
 
@@ -63,7 +62,7 @@ public class CraftListener extends SelfRegisteringListener {
     public void onFurnaceStartSmelt(FurnaceSmeltEvent event){
         CookingRecipe<?> recipe = event.getRecipe();
         ItemStack itemStack = event.getSource();
-        if (!(CustomItemUtils.isCustomItem(itemStack))){
+        if (!CustomItem.isCustom(itemStack)){
             return;
         }
         if (recipe.getInputChoice() instanceof RecipeChoice.MaterialChoice){

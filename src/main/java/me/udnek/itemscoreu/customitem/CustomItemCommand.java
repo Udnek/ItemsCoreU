@@ -1,6 +1,5 @@
-package me.udnek.itemscoreu.customitem.utils;
+package me.udnek.itemscoreu.customitem;
 
-import me.udnek.itemscoreu.utils.CustomItemUtils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -12,8 +11,9 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
-public class CustomItemGive implements CommandExecutor, TabExecutor {
+public class CustomItemCommand implements CommandExecutor, TabExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         if (!(commandSender instanceof Player)){
@@ -24,11 +24,11 @@ public class CustomItemGive implements CommandExecutor, TabExecutor {
         }
         String id = args[0];
 
-        if (!CustomItemUtils.isIdExists(id)){
+        if (!CustomItem.isIdExists(id)){
             return false;
         }
 
-        ItemStack itemStack = CustomItemUtils.getFromId(id).getItem();
+        ItemStack itemStack = CustomItem.get(id).getItem();
 
         ((Player) commandSender).getInventory().addItem(itemStack);
         return true;
@@ -39,7 +39,7 @@ public class CustomItemGive implements CommandExecutor, TabExecutor {
 
         if (args.length > 1) return new ArrayList<>();
 
-        ArrayList<String> allIds = new ArrayList<>(CustomItemUtils.getAllIds());
+        Set<String> allIds = CustomItem.getAllIds();
         ArrayList<String> ids = new ArrayList<>();
 
         for (String id : allIds) {

@@ -5,16 +5,10 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class CustomAttributeManager {
 
-    //private static final HashMap<String, CustomAttributeType> attributeInstances = new HashMap<>();
-
-    public static CustomAttributeType register(JavaPlugin plugin, CustomAttributeType customAttributeType){
-        customAttributeType.register(plugin);
-        //attributeInstances.put(customAttributeType.getClass().getName(), customAttributeType);
-        LogUtils.pluginLog(customAttributeType.getId() + " (Attribute)");
-        return customAttributeType;
+    public static CustomAttribute register(JavaPlugin plugin, CustomAttribute customAttribute){
+        customAttribute.register(plugin);
+        LogUtils.pluginLog(customAttribute.getId() + " (Attribute)");
+        return customAttribute;
     }
 
-/*    protected static CustomAttributeType getInstance(CustomAttributeType customAttributeType){
-        return attributeInstances.get(customAttributeType.getClass().getName());
-    }*/
 }

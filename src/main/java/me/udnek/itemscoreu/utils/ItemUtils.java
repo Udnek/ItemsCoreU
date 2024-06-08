@@ -2,7 +2,6 @@ package me.udnek.itemscoreu.utils;
 
 import me.udnek.itemscoreu.customitem.CustomItem;
 import me.udnek.itemscoreu.nms.NMS;
-import me.udnek.itemscoreu.nms.NMSHelper;
 import org.bukkit.*;
 import org.bukkit.inventory.*;
 import org.bukkit.inventory.meta.FireworkEffectMeta;
@@ -13,19 +12,31 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import static me.udnek.itemscoreu.utils.CustomItemUtils.*;
 
 public class ItemUtils {
+
+    public static boolean isCustomItemOrMaterial(String name){
+        if (CustomItem.isIdExists(name)) return true;
+        return Material.getMaterial(name.toUpperCase()) != null;
+    }
+
+    public static ItemStack getFromCustomItemOrMaterial(String name){
+        if (CustomItem.isIdExists(name)) return CustomItem.get(name).getItem();
+        Material material = Material.getMaterial(name.toUpperCase());
+        if (material == null) return new ItemStack(Material.AIR);
+        return new ItemStack(material);
+    }
+
     public static List<Recipe> getRecipesOfItemStack(ItemStack itemStack){
-        if (isCustomItem(itemStack)){
-            CustomItem customItem = getFromId(getId(itemStack));
+        if (CustomItem.isCustom(itemStack)){
+            CustomItem customItem = CustomItem.get(itemStack);
             return customItem.getRecipes();
         }
         else {
             List<Recipe> rawRecipes = Bukkit.getRecipesFor(itemStack);
             List<Recipe> recipes = new ArrayList<>();
             for (Recipe recipe : rawRecipes) {
-                if (!(isCustomItem(recipe.getResult()))) {
+                if (!(CustomItem.isCustom(recipe.getResult()))) {
                     recipes.add(recipe);
                 }
             }
@@ -34,9 +45,9 @@ public class ItemUtils {
     }
 
     public static List<LootTable> getWhereItemStackInLootTable(ItemStack itemStack){
-        ArrayList<LootTable> result = new ArrayList<LootTable>();
+        ArrayList<LootTable> result = new ArrayList<>();
 
-        if (CustomItemUtils.isCustomItem(itemStack)) return result;
+        if (CustomItem.isCustom(itemStack)) return result;
 
         Iterator<LootTables> lootTablesIterator = Registry.LOOT_TABLES.iterator();
         //SKIPS EMPTY
@@ -57,13 +68,13 @@ public class ItemUtils {
 
 
     public static List<Recipe> getItemInRecipesUsages(ItemStack itemStack){
-        if (isCustomItem(itemStack)){
-            return new ArrayList<Recipe>();
+        if (CustomItem.isCustom(itemStack)){
+            return new ArrayList<>();
         }
         else {
             Material neededMaterial = itemStack.getType();
             Iterator<Recipe> recipeIterator = Bukkit.recipeIterator();
-            ArrayList<Recipe> recipes = new ArrayList<Recipe>();
+            ArrayList<Recipe> recipes = new ArrayList<>();
             Recipe recipe;
             while (recipeIterator.hasNext()){
                 recipe = recipeIterator.next();

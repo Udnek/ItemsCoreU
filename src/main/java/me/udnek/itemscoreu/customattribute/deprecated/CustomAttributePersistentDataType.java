@@ -1,5 +1,6 @@
-package me.udnek.itemscoreu.customattribute;
+package me.udnek.itemscoreu.customattribute.deprecated;
 
+import me.udnek.itemscoreu.customattribute.CustomAttributesContainer;
 import org.apache.commons.lang.SerializationUtils;
 import org.bukkit.persistence.PersistentDataAdapterContext;
 import org.bukkit.persistence.PersistentDataType;
@@ -10,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 
+@Deprecated
 public class CustomAttributePersistentDataType implements PersistentDataType<byte[], CustomAttributesContainer> {
     @Override
     public @NotNull Class<byte[]> getPrimitiveType() {
@@ -24,7 +26,7 @@ public class CustomAttributePersistentDataType implements PersistentDataType<byt
 
     @Override
     public byte @NotNull [] toPrimitive(@NotNull CustomAttributesContainer customAttributesContainer, @NotNull PersistentDataAdapterContext persistentDataAdapterContext) {
-        return SerializationUtils.serialize(customAttributesContainer);
+        return new byte[]{};
     }
 
     @NotNull

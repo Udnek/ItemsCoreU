@@ -1,18 +1,30 @@
 package me.udnek.itemscoreu.utils.NMS;
 
+import com.google.common.reflect.Reflection;
 import com.mojang.serialization.Lifecycle;
+import io.papermc.paper.registry.RegistryKey;
 import me.udnek.itemscoreu.ItemsCoreU;
+import me.udnek.itemscoreu.utils.LogUtils;
 import net.minecraft.core.*;
+import net.minecraft.core.Registry;
+import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.particles.ParticleType;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.data.worldgen.BootstrapContext;
+import net.minecraft.network.PacketDecoder;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.*;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.Bootstrap;
+import net.minecraft.server.commands.SpawnArmorTrimsCommand;
 import net.minecraft.server.dedicated.DedicatedServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
@@ -20,9 +32,14 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.attributes.RangedAttribute;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.armortrim.TrimMaterials;
+import net.minecraft.world.item.armortrim.TrimPatterns;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.BiomeGenerationSettings;
@@ -32,18 +49,81 @@ import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.Vec3;
-import org.bukkit.Registry;
 import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.generator.structure.Structure;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.trim.ArmorTrim;
+import org.bukkit.inventory.meta.trim.TrimPattern;
 
+import java.awt.Color;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 
 public class NMSTest {
+
+    public static void registerAttribute(String attributeName, double defaultValue, double minValue, double maxValue) {
+
+        Registry<Attribute> registry = BuiltInRegistries.ATTRIBUTE;
+        LogUtils.logDeclaredFields(registry);
+        for (Field field : registry.getClass().getDeclaredFields()) {
+            if (field.getType() == boolean.class){
+                field.setAccessible(true);
+                try { field.setBoolean(registry, false); } catch (IllegalAccessException e) {throw new RuntimeException(e);}
+            }
+        }
+
+        Attribute attribute = (Attribute) net.minecraft.core.Registry.register(
+                BuiltInRegistries.ATTRIBUTE,
+                "generic." + attributeName,
+                new RangedAttribute(
+                        "attribute.name.generic." + attributeName,
+                        defaultValue,
+                        minValue,
+                        maxValue
+                )
+        ).setSyncable(false);
+
+        BuiltInRegistries.ATTRIBUTE.freeze();
+
+
+    }
+
+    public static void registerTrimPattern(){
+        org.bukkit.Registry<TrimPattern> trimPattern = org.bukkit.Registry.TRIM_PATTERN;
+        RegistryKey<TrimPattern> trimPattern1 = RegistryKey.TRIM_PATTERN;
+        Registries.TRIM_PATTERN.registryKey();
+    }
+
+    public static MobEffect registerEffect(){
+
+        try {
+            Field field = BuiltInRegistries.MOB_EFFECT.getClass().getDeclaredField("frozen");
+            field.setAccessible(true);
+            field.set(BuiltInRegistries.MOB_EFFECT, false);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+
+        MobEffect mobEffect = null;
+        try {
+            Constructor<MobEffect> constructor = MobEffect.class.getDeclaredConstructor(MobEffectCategory.class, int.class, ParticleOptions.class);
+            constructor.setAccessible(true);
+            mobEffect = constructor.newInstance(MobEffectCategory.BENEFICIAL, new Color(1f, 0, 0).getRGB(), ParticleTypes.CHERRY_LEAVES)
+                    .addAttributeModifier(Attributes.SCALE, "91AEAA56-376B-4498-935B-2F7F68070636", 1, AttributeModifier.Operation.ADD_VALUE);
+        } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+
+        Registry.registerForHolder(BuiltInRegistries.MOB_EFFECT, new ResourceLocation("test"), mobEffect);
+        BuiltInRegistries.MOB_EFFECT.freeze();
+
+        return mobEffect;
+}
 
 /*    public static ServerPlayer getPlayer(Player player){
         return ((CraftPlayer) player).getHandle();
@@ -305,27 +385,6 @@ public class NMSTest {
         return mobEffect;
     }
 
-*//*    public VanillaAttribute registerAttribute(String attributeName, double defaultValue, double minValue, double maxValue)
-    {
-        Attribute attribute = (Attribute) net.minecraft.core.Registry.register(
-                BuiltInRegistries.ATTRIBUTE,
-                "generic." + attributeName,
-                new RangedAttribute(
-                        "attribute.name.generic." + attributeName,
-                        defaultValue,
-                        minValue,
-                        maxValue
-                )
-        ).setSyncable(true);
-
-        VanillaAttribute vanillaAttribute = new VanillaAttribute(attribute);
-
-        return vanillaAttribute;
-    }*/
-
-}
-
-
 
 
 
@@ -367,3 +426,4 @@ public class NMSTest {
         biome.get
         return grassColor;
     }*/
+}

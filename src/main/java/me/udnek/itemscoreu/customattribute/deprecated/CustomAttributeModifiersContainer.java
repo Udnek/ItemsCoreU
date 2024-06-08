@@ -1,10 +1,11 @@
-package me.udnek.itemscoreu.customattribute;
+package me.udnek.itemscoreu.customattribute.deprecated;
 
 import org.bukkit.inventory.EquipmentSlot;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Deprecated
 public class CustomAttributeModifiersContainer {
     private List<CustomAttributeModifier> attributeModifiers = new ArrayList<>();
 

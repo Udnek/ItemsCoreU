@@ -1,8 +1,5 @@
-package me.udnek.itemscoreu.customitem.utils;
+package me.udnek.itemscoreu.customitem;
 
-import me.udnek.itemscoreu.customitem.CustomItem;
-import me.udnek.itemscoreu.customitem.InteractableItem;
-import me.udnek.itemscoreu.utils.CustomItemUtils;
 import me.udnek.itemscoreu.utils.SelfRegisteringListener;
 import org.bukkit.entity.Projectile;
 import org.bukkit.entity.ThrowableProjectile;
@@ -30,8 +27,8 @@ public class CustomItemListener extends SelfRegisteringListener {
         //event.getPlayer().sendMessage(event.getItem().getType().toString());
 
         ItemStack itemStack = event.getItem();
-        if (!CustomItemUtils.isCustomItem(itemStack)) return;
-        CustomItem customItem = CustomItemUtils.getFromItemStack(itemStack);
+        if (!CustomItem.isCustom(itemStack)) return;
+        CustomItem customItem = CustomItem.get(itemStack);
         if (customItem instanceof InteractableItem){
             ((InteractableItem) customItem).onRightClicks(event);
         }
@@ -51,16 +48,16 @@ public class CustomItemListener extends SelfRegisteringListener {
 
         if (event.getItem() != null) {
             itemStack = event.getItem();
-            if (CustomItemUtils.isCustomItem(itemStack)){
-                CustomItem customItem = CustomItemUtils.getFromItemStack(itemStack);
+            if (CustomItem.isCustom(itemStack)){
+                CustomItem customItem = CustomItem.get(itemStack);
                 if (customItem instanceof InteractableItem){
                     return (InteractableItem) customItem;
                 }
             }
         }
         itemStack = event.getPlayer().getEquipment().getItemInOffHand();
-        if (CustomItemUtils.isCustomItem(itemStack)){
-            CustomItem customItem = CustomItemUtils.getFromItemStack(itemStack);
+        if (CustomItem.isCustom(itemStack)){
+            CustomItem customItem = CustomItem.get(itemStack);
             if (customItem instanceof InteractableItem){
                 return (InteractableItem) customItem;
             }
@@ -74,8 +71,8 @@ public class CustomItemListener extends SelfRegisteringListener {
     public void onPlayerConsumes(PlayerItemConsumeEvent event) {
         ItemStack itemStack = event.getItem();
 
-        if (CustomItemUtils.isCustomItem(itemStack)) {
-            CustomItem customItem = CustomItemUtils.getFromItemStack(itemStack);
+        if (CustomItem.isCustom(itemStack)) {
+            CustomItem customItem = CustomItem.get(itemStack);
             customItem.onConsumes(event, itemStack);
         }
     }
@@ -86,8 +83,8 @@ public class CustomItemListener extends SelfRegisteringListener {
         if (!(projectile instanceof ThrowableProjectile)) return;
 
         ItemStack itemStack = ((ThrowableProjectile) projectile).getItem();
-        if (CustomItemUtils.isCustomItem(itemStack)) {
-            CustomItem customItem = CustomItemUtils.getFromItemStack(itemStack);
+        if (CustomItem.isCustom(itemStack)) {
+            CustomItem customItem = CustomItem.get(itemStack);
             customItem.onThrowableProjectileHits(event, itemStack);
         }
     }
@@ -96,14 +93,14 @@ public class CustomItemListener extends SelfRegisteringListener {
     public void onEntityShootsBow(EntityShootBowEvent event){
         if (event.getBow() != null){
             ItemStack bow = event.getBow();
-            if (!CustomItemUtils.isCustomItem(bow)) return;
-            CustomItem customItemBow = CustomItemUtils.getFromItemStack(bow);
+            if (!CustomItem.isCustom(bow)) return;
+            CustomItem customItemBow = CustomItem.get(bow);
             customItemBow.onShoots(event, bow);
         }
         if (event.getConsumable() != null){
             ItemStack arrow = event.getConsumable();
-            if (!CustomItemUtils.isCustomItem(arrow)) return;
-            CustomItem customItemBow = CustomItemUtils.getFromItemStack(arrow);
+            if (!CustomItem.isCustom(arrow)) return;
+            CustomItem customItemBow = CustomItem.get(arrow);
             customItemBow.onShoots(event, arrow);
         }
     }

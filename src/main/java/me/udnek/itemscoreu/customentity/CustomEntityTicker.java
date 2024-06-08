@@ -28,13 +28,6 @@ public class CustomEntityTicker extends TickingTask {
             }
         }
     }
-
-/*    public void removeEntity(int index){
-        CustomDumbEntityHolder dumbEntityHolder = loadedEntities.get(index);
-        loadedEntities.remove(index);
-        dumbEntityHolder.customDumbTickingEntity.onUnload(dumbEntityHolder.entity);
-    }*/
-
     @Override
     public void run() {
 

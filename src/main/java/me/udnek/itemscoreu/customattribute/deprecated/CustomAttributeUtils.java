@@ -1,19 +1,21 @@
-package me.udnek.itemscoreu.customattribute;
+package me.udnek.itemscoreu.customattribute.deprecated;
 
 import me.udnek.itemscoreu.ItemsCoreU;
-import me.udnek.itemscoreu.customitem.CustomAttributableItem;
+import me.udnek.itemscoreu.customattribute.CustomAttribute;
+import me.udnek.itemscoreu.customattribute.CustomAttributesContainer;
+import me.udnek.itemscoreu.customattribute.DefaultCustomAttributeHolder;
 import me.udnek.itemscoreu.customitem.CustomItem;
-import me.udnek.itemscoreu.utils.CustomItemUtils;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 
+@Deprecated
 public class CustomAttributeUtils {
 
     // TODO: 2/25/2024 USAGE OF EQUIPMENT SLOT
 
-    public static final NamespacedKey namespacedKey = new NamespacedKey(ItemsCoreU.getInstance(), "attributes");
+   // public static final NamespacedKey namespacedKey = new NamespacedKey(ItemsCoreU.getInstance(), "attributes");
 
     ///////////////////////////////////////////////////////////////////////////
     // DATA CONTAINER
@@ -23,28 +25,28 @@ public class CustomAttributeUtils {
         persistentDataContainer.set(namespacedKey, new CustomAttributePersistentDataType(), customAttributeContainer);
     }*/
 
-    private static CustomAttributesContainer getContainer(PersistentDataContainer persistentDataContainer){
+/*    private static CustomAttributesContainer getContainer(PersistentDataContainer persistentDataContainer){
         if (persistentDataContainer.has(namespacedKey, new CustomAttributePersistentDataType())){
             return persistentDataContainer.get(namespacedKey, new CustomAttributePersistentDataType());
         }
         return new CustomAttributesContainer();
     }
 
-    public static void add(CustomAttributeType type, CustomAttributeModifier modifier, PersistentDataContainer persistentDataContainer){
+    public static void add(CustomAttribute type, CustomAttributeModifier modifier, PersistentDataContainer persistentDataContainer){
         CustomAttributesContainer customAttributesContainer = getContainer(persistentDataContainer);
-        customAttributesContainer.add(type, modifier);
+        //customAttributesContainer.add(type, modifier);
     }
 
-    public static CustomAttributeModifiersContainer get(CustomAttributeType customAttributeType, PersistentDataContainer persistentDataContainer){
+    public static CustomAttributeModifiersContainer get(CustomAttribute customAttribute, PersistentDataContainer persistentDataContainer){
         CustomAttributesContainer customAttributesContainer = getContainer(persistentDataContainer);
-        CustomAttributeModifiersContainer customAttributeModifiersContainer = customAttributesContainer.get(customAttributeType);
+        CustomAttributeModifiersContainer customAttributeModifiersContainer = customAttributesContainer.get(customAttribute);
         if (customAttributeModifiersContainer == null){
             return new CustomAttributeModifiersContainer();
         }
         return customAttributeModifiersContainer;
-    }
+    }*/
 
-    public static double calculateFinalValue(double input, CustomAttributeModifiersContainer container){
+/*    public static double calculateFinalValue(double input, CustomAttributeModifiersContainer container){
         double addScalar = 1;
         for (CustomAttributeModifier customAttributeModifier : container.getAll()) {
             double amount = customAttributeModifier.getAmount();
@@ -69,35 +71,35 @@ public class CustomAttributeUtils {
 
     // TODO: 3/9/2024 DO
 
-        public static void add(CustomAttributeType customAttribute, CustomAttributeModifier customAttributeModifier, ItemMeta itemMeta){
+        public static void add(CustomAttribute customAttribute, CustomAttributeModifier customAttributeModifier, ItemMeta itemMeta){
             PersistentDataContainer dataContainer = itemMeta.getPersistentDataContainer();
             add(customAttribute, customAttributeModifier, dataContainer);
         }
-        public static void add(CustomAttributeType customAttribute, CustomAttributeModifier customAttributeModifier, ItemStack itemStack){
+        public static void add(CustomAttribute customAttribute, CustomAttributeModifier customAttributeModifier, ItemStack itemStack){
             ItemMeta itemMeta = itemStack.getItemMeta();
             add(customAttribute, customAttributeModifier, itemMeta);
             itemStack.setItemMeta(itemMeta);
         }
 
-        public static CustomAttributeModifiersContainer get(CustomAttributeType customAttributeType, ItemMeta itemMeta){
+        public static CustomAttributeModifiersContainer get(CustomAttribute customAttribute, ItemMeta itemMeta){
             PersistentDataContainer dataContainer = itemMeta.getPersistentDataContainer();
-            return get(customAttributeType, dataContainer);
+            return get(customAttribute, dataContainer);
         }
 
-        public static CustomAttributeModifiersContainer get(CustomAttributeType customAttributeType, ItemStack itemStack){
+        public static CustomAttributeModifiersContainer get(CustomAttribute customAttribute, ItemStack itemStack){
             if (!itemStack.hasItemMeta()) return new CustomAttributeModifiersContainer();
 
             ItemMeta itemMeta = itemStack.getItemMeta();
 
-            CustomAttributeModifiersContainer customAttributeModifiersContainer = get(customAttributeType, itemMeta);
+            CustomAttributeModifiersContainer customAttributeModifiersContainer = get(customAttribute, itemMeta);
             if (!customAttributeModifiersContainer.isEmpty()) return customAttributeModifiersContainer;
-            CustomItem customItem = CustomItemUtils.getFromItemStack(itemStack);
-            if (customItem instanceof CustomAttributableItem){
-                return ((CustomAttributableItem) customItem).getDefaultCustomAttributes().get(customAttributeType);
+            CustomItem customItem = CustomItem.get(itemStack);
+            if (customItem instanceof DefaultCustomAttributeHolder){
+                return ((DefaultCustomAttributeHolder) customItem).getDefaultCustomAttributes().get(customAttribute);
             }
             return new CustomAttributeModifiersContainer();
 
-        }
+        }*/
 
         ///////////////////////////////////////////////////////////////////////////
         // ENTITY

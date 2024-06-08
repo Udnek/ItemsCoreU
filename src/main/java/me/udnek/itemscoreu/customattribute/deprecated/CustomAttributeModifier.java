@@ -1,10 +1,11 @@
-package me.udnek.itemscoreu.customattribute;
+package me.udnek.itemscoreu.customattribute.deprecated;
 
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.inventory.EquipmentSlot;
 
 import java.io.Serializable;
 
+@Deprecated
 public class CustomAttributeModifier implements Serializable{
 
     private double amount;
