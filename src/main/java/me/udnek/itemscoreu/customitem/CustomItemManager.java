@@ -1,5 +1,8 @@
 package me.udnek.itemscoreu.customitem;
 
+import me.udnek.itemscoreu.customevent.CustomEvent;
+import me.udnek.itemscoreu.customevent.CustomEventListener;
+import me.udnek.itemscoreu.customevent.CustomEventManager;
 import me.udnek.itemscoreu.utils.LogUtils;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -15,13 +18,12 @@ public class CustomItemManager {
     public static CustomItem registerItem(JavaPlugin plugin, CustomItem customItem){
         customItem.initialize(plugin);
         putItem(customItem);
+        if (customItem instanceof CustomEventListener customEventListener) CustomEventManager.addListener(customEventListener);
         return customItem;
     }
 
     public static void registerRecipes(){
-        for (CustomItem customItem : customItemMap.values()) {
-            customItem.registerRecipes();
-        }
+        customItemMap.values().forEach(CustomItem::registerRecipes);
     }
 
     private static void putItem(CustomItem customItem){

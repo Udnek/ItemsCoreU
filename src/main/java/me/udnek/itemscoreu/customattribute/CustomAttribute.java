@@ -11,17 +11,12 @@ import java.io.Serializable;
 
 public abstract class CustomAttribute implements Serializable {
 
-    protected NamespacedKey namespacedKey;
-
+    protected String id;
     protected CustomAttribute(){}
-
-    void register(JavaPlugin javaPlugin){
-        namespacedKey = new NamespacedKey(javaPlugin, getRawId());
+    final void register(JavaPlugin javaPlugin){
+        id = new NamespacedKey(javaPlugin, getRawId()).asString();
     }
-
-    protected String getId(){return getNamespacedKey().asString();}
-    protected NamespacedKey getNamespacedKey(){return namespacedKey;}
-
+    protected final String getId(){return id;}
     public double getDefaultValue() {return 0;}
     public abstract String getRawId();
 

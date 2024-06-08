@@ -58,6 +58,13 @@ public abstract class CustomItem {
         return CustomItemManager.getAllIds();
     }
 
+    public static boolean isSameIds(ItemStack itemStack1, ItemStack itemStack2){
+        CustomItem customItem1 = get(itemStack1);
+        CustomItem customItem2 = get(itemStack2);
+        if (customItem1 == null || customItem2 == null) return false;
+        return customItem1 == customItem2;
+    }
+
     ///////////////////////////////////////////////////////////////////////////
     // UTILS
     ///////////////////////////////////////////////////////////////////////////
@@ -83,7 +90,7 @@ public abstract class CustomItem {
     ///////////////////////////////////////////////////////////////////////////
     // PROPERTIES
     ///////////////////////////////////////////////////////////////////////////
-    protected abstract String getRawId();
+    public abstract String getRawId();
     public abstract Material getMaterial();
     public abstract String getRawItemName();
 
@@ -185,7 +192,7 @@ public abstract class CustomItem {
     }
 
     protected NamespacedKey getRecipeNamespace(int recipeNumber){
-        return new NamespacedKey(this.plugin, this.getItemName()+ "_" + recipeNumber);
+        return new NamespacedKey(this.plugin, this.getRawId()+ "_" + recipeNumber);
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -195,10 +202,5 @@ public abstract class CustomItem {
         return this.getItemFromCraftingMatrix(event.getRecipe().getResult(), event.getInventory().getMatrix(), event.getRecipe());
     }
     protected ItemStack getItemFromCraftingMatrix(ItemStack result, ItemStack[] matrix, Recipe recipe){return result;}
-
-    public void onConsumes(PlayerItemConsumeEvent event, ItemStack itemStack){}
-    public void onThrowableProjectileHits(ProjectileHitEvent event, ItemStack itemStack){}
-    public void onShoots(EntityShootBowEvent event, ItemStack itemStack){}
-    public void onBeingShot(EntityShootBowEvent event, ItemStack itemStack){}
 
 }
