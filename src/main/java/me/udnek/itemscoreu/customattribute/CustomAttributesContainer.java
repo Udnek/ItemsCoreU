@@ -1,47 +1,46 @@
 package me.udnek.itemscoreu.customattribute;
 
 import me.udnek.itemscoreu.customattribute.equipmentslot.CustomEquipmentSlot;
-import org.apache.maven.model.Build;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.AttributeModifier;
-import org.bukkit.inventory.EquipmentSlot;
-import org.bukkit.inventory.ItemStack;
 
-import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 public class CustomAttributesContainer{
 
-    private final HashMap<CustomAttribute, CustomAttributeModifier> attributes = new HashMap<>();
+    private final HashMap<CustomAttribute, List<CustomAttributeModifier>> attributes = new HashMap<>();
 
     private CustomAttributesContainer(){}
 
-    public static CustomAttributesContainer empty(){
-        return new CustomAttributesContainer();
-    }
-    public CustomAttributeModifier get(CustomAttribute customAttribute){
-        return attributes.get(customAttribute);
-    }
-    public HashMap<CustomAttribute, CustomAttributeModifier> getAll(){return new HashMap<>(attributes);}
-    public CustomAttributesContainer getBySlot(CustomEquipmentSlot slot){
+    public static CustomAttributesContainer empty(){return new CustomAttributesContainer();}
+    public List<CustomAttributeModifier> get(CustomAttribute customAttribute){return new ArrayList<>(attributes.get(customAttribute));}
+    public Map<CustomAttribute, List<CustomAttributeModifier>> getAll(){return new HashMap<>(attributes);}
+    public CustomAttributesContainer get(CustomEquipmentSlot slot){
         CustomAttributesContainer newContainer = new CustomAttributesContainer();
-        for (Map.Entry<CustomAttribute, CustomAttributeModifier> entry : attributes.entrySet()) {
+        for (Map.Entry<CustomAttribute, List<CustomAttributeModifier>> entry : attributes.entrySet()) {
             CustomAttribute attribute = entry.getKey();
-            CustomAttributeModifier modifier = entry.getValue();
-            if (modifier.getEquipmentSlot() != slot) continue;
-            newContainer.set(attribute, modifier);
+            for (CustomAttributeModifier modifier : entry.getValue()) {
+                if (modifier.getEquipmentSlot() != slot) continue;
+                newContainer.add(attribute, modifier);
+            }
+
         }
         return newContainer;
     }
     public boolean contains(CustomAttribute customAttribute){
         return attributes.containsKey(customAttribute);
     }
-    private void set(CustomAttribute customAttribute, CustomAttributeModifier attributeModifier){
-        attributes.put(customAttribute, attributeModifier);
+    private void add(CustomAttribute attribute, CustomAttributeModifier modifier){
+        List<CustomAttributeModifier> modifiers = attributes.get(attribute);
+        if (modifiers == null){
+            modifiers = new ArrayList<>();
+            modifiers.add(modifier);
+            attributes.put(attribute, modifiers);
+            return;
+        }
+        modifiers.add(modifier);
     }
 
     public static class Builder{
@@ -50,13 +49,13 @@ public class CustomAttributesContainer{
         public Builder(){
             container = new CustomAttributesContainer();
         }
-        public Builder set(CustomAttribute customAttribute, double amount, AttributeModifier.Operation operation, CustomEquipmentSlot slot){
+        public Builder add(CustomAttribute customAttribute, double amount, AttributeModifier.Operation operation, CustomEquipmentSlot slot){
             CustomAttributeModifier attributeModifier = new CustomAttributeModifier(amount, operation, slot);
-            return set(customAttribute, attributeModifier);
+            return add(customAttribute, attributeModifier);
         }
 
-        public Builder set(CustomAttribute customAttribute, CustomAttributeModifier attributeModifier){
-            container.set(customAttribute, attributeModifier);
+        public Builder add(CustomAttribute customAttribute, CustomAttributeModifier attributeModifier){
+            container.add(customAttribute, attributeModifier);
             return this;
         }
 

@@ -1,11 +1,5 @@
 package me.udnek.itemscoreu.customenchantment;
 
-import me.udnek.itemscoreu.utils.LogUtils;
-import org.bukkit.enchantments.Enchantment;
-import org.bukkit.plugin.java.JavaPlugin;
-
-import java.lang.reflect.Field;
-
 public class CustomEnchantmentManager {
 
 /*    public static Enchantment register(JavaPlugin javaPlugin, CustomEnchantment customEnchantment){

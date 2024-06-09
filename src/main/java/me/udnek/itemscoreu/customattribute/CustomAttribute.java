@@ -1,10 +1,7 @@
 package me.udnek.itemscoreu.customattribute;
 
-import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.Serializable;
@@ -19,6 +16,10 @@ public abstract class CustomAttribute implements Serializable {
     protected final String getId(){return id;}
     public double getDefaultValue() {return 0;}
     public abstract String getRawId();
+
+    public double calculate(Entity entity){
+        return CustomAttributeUtils.calculate(this, entity);
+    }
 
 /*    public double getDefaultValue(ItemStack itemStack){
         return getDefaultValue(itemStack.getType());

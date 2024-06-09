@@ -5,9 +5,9 @@ import org.bukkit.attribute.AttributeModifier;
 
 public class CustomAttributeModifier {
 
-    private final double amount;
-    private final AttributeModifier.Operation operation;
-    private final CustomEquipmentSlot equipmentSlot;
+    protected final double amount;
+    protected final AttributeModifier.Operation operation;
+    protected final CustomEquipmentSlot equipmentSlot;
 
     public CustomAttributeModifier(double amount, AttributeModifier.Operation operation, CustomEquipmentSlot equipmentSlot){
         this.amount = amount;

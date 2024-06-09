@@ -1,7 +1,6 @@
 package me.udnek.itemscoreu.customattribute.equipmentslot.instance;
 
 import me.udnek.itemscoreu.customattribute.equipmentslot.SoloSlot;
-import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.EquipmentSlotGroup;
 
 public class ChestSlot extends SoloSlot {

@@ -3,7 +3,6 @@ package me.udnek.itemscoreu.customattribute.equipmentslot.instance;
 import me.udnek.itemscoreu.customattribute.equipmentslot.CustomEquipmentSlot;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.EquipmentSlotGroup;
 
 public class MainHandSlot extends CustomEquipmentSlot {
@@ -15,4 +14,12 @@ public class MainHandSlot extends CustomEquipmentSlot {
     }
     @Override
     public EquipmentSlotGroup getVanillaAlternative() {return EquipmentSlotGroup.MAINHAND;}
+
+    @Override
+    public int[] getAllSlots(Entity entity) {
+        if (entity instanceof Player player){
+            return new int[]{player.getInventory().getHeldItemSlot()};
+        }
+        return new int[]{98};
+    }
 }

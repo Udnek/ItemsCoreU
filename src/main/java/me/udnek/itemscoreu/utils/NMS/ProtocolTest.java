@@ -2,13 +2,8 @@ package me.udnek.itemscoreu.utils.NMS;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.*;
-import com.comphenix.protocol.reflect.StructureModifier;
-import com.comphenix.protocol.wrappers.WrappedAttribute;
-import me.udnek.itemscoreu.utils.LogUtils;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.List;
 
 public class ProtocolTest extends PacketAdapter{
 

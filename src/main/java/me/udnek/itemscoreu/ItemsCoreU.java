@@ -1,18 +1,14 @@
 package me.udnek.itemscoreu;
 
-import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.events.ListenerPriority;
 import me.udnek.itemscoreu.customentity.CustomEntityListener;
 import me.udnek.itemscoreu.customentity.CustomEntityTicker;
 import me.udnek.itemscoreu.custominventory.CustomInventoryListener;
-import me.udnek.itemscoreu.customitem.CustomItemManager;
 import me.udnek.itemscoreu.customitem.CraftListener;
 import me.udnek.itemscoreu.customitem.CustomItemCommand;
 import me.udnek.itemscoreu.customitem.CustomItemListener;
+import me.udnek.itemscoreu.customitem.CustomItemManager;
 import me.udnek.itemscoreu.utils.LogUtils;
 import me.udnek.itemscoreu.utils.NMS.NMSTest;
-import me.udnek.itemscoreu.utils.NMS.ProtocolTest;
 import net.minecraft.world.effect.MobEffect;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -25,8 +21,6 @@ public final class ItemsCoreU extends JavaPlugin{
     }
 
     public static CustomEntityTicker getCustomEntityTicker() {return customEntityTicker;}
-
-    @Override
     public void onEnable() {
         instance = this;
 

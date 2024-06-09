@@ -1,6 +1,5 @@
 package me.udnek.itemscoreu.customevent;
 
-import me.udnek.itemscoreu.customitem.CustomItem;
 import org.bukkit.event.Event;
 
 import java.util.ArrayList;

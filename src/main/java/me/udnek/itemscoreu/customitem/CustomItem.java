@@ -1,31 +1,28 @@
 package me.udnek.itemscoreu.customitem;
 
-import com.google.common.collect.ImmutableMultimap;
-import com.google.common.collect.Multimap;
 import me.udnek.itemscoreu.ItemsCoreU;
 import net.kyori.adventure.text.Component;
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
+import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
-import org.bukkit.event.entity.EntityShootBowEvent;
-import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
-import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemRarity;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
+import org.bukkit.inventory.meta.ArmorMeta;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.MusicInstrumentMeta;
 import org.bukkit.inventory.meta.components.FoodComponent;
+import org.bukkit.inventory.meta.trim.ArmorTrim;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 
@@ -108,6 +105,9 @@ public abstract class CustomItem {
     public boolean getUnbreakable(){return false;}
     public Boolean getFireResistant(){return null;}
     public Boolean getEnchantmentGlintOverride(){return null;}
+    public ArmorTrim getArmorTrim(){return null;}
+    public MusicInstrument getMusicInstrument(){return null;}
+    public Map<Attribute, List<AttributeModifier>> getAttributes(){return null;}
 
     ///////////////////////////////////////////////////////////////////////////
     // CREATING
@@ -139,7 +139,17 @@ public abstract class CustomItem {
                 damageable.setMaxDamage(getMaxDamage());
             }
         }
-        if (getTooltipHides().length > 0) itemMeta.addItemFlags(getTooltipHides());
+        if (itemMeta instanceof ArmorMeta armorMeta) armorMeta.setTrim(getArmorTrim());
+        if (itemMeta instanceof MusicInstrumentMeta instrumentMeta) instrumentMeta.setInstrument(getMusicInstrument());
+        if (getAttributes() != null){
+            for (Map.Entry<Attribute, List<AttributeModifier>> entry : getAttributes().entrySet()) {
+                Attribute attribute = entry.getKey();
+                for (AttributeModifier modifier : entry.getValue()) {
+                    itemMeta.addAttributeModifier(attribute, modifier);
+                }
+            }
+        }
+        itemMeta.addItemFlags(getTooltipHides());
 
         return itemMeta;
     }

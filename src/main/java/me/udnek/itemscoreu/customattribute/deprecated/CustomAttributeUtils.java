@@ -1,15 +1,5 @@
 package me.udnek.itemscoreu.customattribute.deprecated;
 
-import me.udnek.itemscoreu.ItemsCoreU;
-import me.udnek.itemscoreu.customattribute.CustomAttribute;
-import me.udnek.itemscoreu.customattribute.CustomAttributesContainer;
-import me.udnek.itemscoreu.customattribute.DefaultCustomAttributeHolder;
-import me.udnek.itemscoreu.customitem.CustomItem;
-import org.bukkit.NamespacedKey;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.persistence.PersistentDataContainer;
-
 @Deprecated
 public class CustomAttributeUtils {
 

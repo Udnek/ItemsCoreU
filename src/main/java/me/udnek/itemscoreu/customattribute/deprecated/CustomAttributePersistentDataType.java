@@ -1,7 +1,6 @@
 package me.udnek.itemscoreu.customattribute.deprecated;
 
 import me.udnek.itemscoreu.customattribute.CustomAttributesContainer;
-import org.apache.commons.lang.SerializationUtils;
 import org.bukkit.persistence.PersistentDataAdapterContext;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;

@@ -7,7 +7,6 @@ import org.bukkit.Bukkit;
 
 import java.lang.reflect.AccessFlag;
 import java.lang.reflect.Field;
-import java.util.Arrays;
 
 public class LogUtils {
 

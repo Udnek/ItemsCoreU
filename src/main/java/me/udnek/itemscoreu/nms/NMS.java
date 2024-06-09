@@ -1,19 +1,13 @@
 package me.udnek.itemscoreu.nms;
 
 import me.udnek.itemscoreu.utils.LogUtils;
-import net.minecraft.core.component.DataComponentType;
-import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.item.alchemy.PotionBrewing;
-import net.minecraft.world.item.component.Tool;
 import net.minecraft.world.level.block.ComposterBlock;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.entries.LootItem;
 import net.minecraft.world.level.storage.loot.entries.LootPoolEntryContainer;
 import org.apache.commons.lang3.reflect.FieldUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_20_R4.CraftLootTable;
 import org.bukkit.craftbukkit.v1_20_R4.entity.CraftEntity;
@@ -21,10 +15,7 @@ import org.bukkit.craftbukkit.v1_20_R4.inventory.CraftItemStack;
 import org.bukkit.craftbukkit.v1_20_R4.util.CraftMagicNumbers;
 import org.bukkit.entity.Entity;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.components.ToolComponent;
 import org.bukkit.loot.LootTable;
-import org.bukkit.loot.LootTables;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -159,9 +150,7 @@ public class NMS{
 
             for (LootPoolEntryContainer entry : lootPoolEntryContainers) {
 
-                if (!(entry instanceof LootItem)) continue;
-
-                LootItem lootItem = (LootItem) entry;
+                if (!(entry instanceof LootItem lootItem)) continue;
 
                 ItemConsumer itemConsumer = new ItemConsumer();
                 lootItem.createItemStack(itemConsumer, null);

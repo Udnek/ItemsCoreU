@@ -1,6 +1,5 @@
 package me.udnek.itemscoreu.customitem;
 
-import me.udnek.itemscoreu.customevent.CustomEvent;
 import me.udnek.itemscoreu.customevent.CustomEventListener;
 import me.udnek.itemscoreu.customevent.CustomEventManager;
 import me.udnek.itemscoreu.utils.LogUtils;
