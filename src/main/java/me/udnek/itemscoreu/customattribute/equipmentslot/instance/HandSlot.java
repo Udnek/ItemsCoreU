@@ -6,27 +6,27 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.EquipmentSlotGroup;
 import org.jetbrains.annotations.NotNull;
 
-public class MainHandSlot extends CustomEquipmentSlot {
-    // TODO: 6/8/2024 TEST IF IT IS EVENT WORKING
+public class HandSlot extends CustomEquipmentSlot {
+
     @Override
     public boolean isAppropriateSlot(Entity entity, int slot) {
-        if (entity instanceof Player player) return player.getInventory().getHeldItemSlot() == slot;
-        return slot == 98;
+        if (entity instanceof Player player) return slot == 40 || slot == player.getInventory().getHeldItemSlot();
+        return slot == 98 || slot == 99;
     }
+    @Override
+    public EquipmentSlotGroup getVanillaAlternative() {return EquipmentSlotGroup.HAND;}
 
     @Override
     public @NotNull String translationKey() {
-        return "item.modifiers.mainhand";
+        return "item.modifiers.hand";
     }
-
-    @Override
-    public EquipmentSlotGroup getVanillaAlternative() {return EquipmentSlotGroup.MAINHAND;}
 
     @Override
     public int[] getAllSlots(Entity entity) {
         if (entity instanceof Player player){
-            return new int[]{player.getInventory().getHeldItemSlot()};
+            return new int[]{player.getInventory().getHeldItemSlot(), 40};
         }
-        return new int[]{98};
+        return new int[]{98, 99};
     }
+
 }

@@ -18,4 +18,14 @@ public class ComponentU {
         }
         return components;
     }
+
+    public static Component space(int n){
+        if (n == 0) return Component.empty();
+        return Component.translatable("space."+n);
+    }
+
+    public static Component textWithNoSpace(int offset, Component text, int size){
+        size += 1; // SHADOW COUNTS
+        return ComponentU.space(offset).append(text).append(ComponentU.space(-size-offset));
+    }
 }

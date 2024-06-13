@@ -1,19 +1,18 @@
 package me.udnek.itemscoreu.customitem;
 
 import me.udnek.itemscoreu.ItemsCoreU;
+import me.udnek.itemscoreu.customattribute.AttributeUtils;
 import net.kyori.adventure.text.Component;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemRarity;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
-import org.bukkit.inventory.meta.ArmorMeta;
-import org.bukkit.inventory.meta.Damageable;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.MusicInstrumentMeta;
+import org.bukkit.inventory.meta.*;
 import org.bukkit.inventory.meta.components.FoodComponent;
 import org.bukkit.inventory.meta.trim.ArmorTrim;
 import org.bukkit.persistence.PersistentDataContainer;
@@ -62,6 +61,10 @@ public abstract class CustomItem {
         return customItem1 == customItem2;
     }
 
+    public boolean isThisItem(ItemStack itemStack){
+        return CustomItem.get(itemStack) == this;
+    }
+
     ///////////////////////////////////////////////////////////////////////////
     // UTILS
     ///////////////////////////////////////////////////////////////////////////
@@ -107,7 +110,9 @@ public abstract class CustomItem {
     public Boolean getEnchantmentGlintOverride(){return null;}
     public ArmorTrim getArmorTrim(){return null;}
     public MusicInstrument getMusicInstrument(){return null;}
+    public boolean getAddDefaultAttributes(){return false;}
     public Map<Attribute, List<AttributeModifier>> getAttributes(){return null;}
+    public BlockData getBlockData(){return null;}
 
     ///////////////////////////////////////////////////////////////////////////
     // CREATING
@@ -141,6 +146,7 @@ public abstract class CustomItem {
         }
         if (itemMeta instanceof ArmorMeta armorMeta) armorMeta.setTrim(getArmorTrim());
         if (itemMeta instanceof MusicInstrumentMeta instrumentMeta) instrumentMeta.setInstrument(getMusicInstrument());
+        if (getAddDefaultAttributes()) AttributeUtils.addDefaultAttributes(itemMeta, getMaterial());
         if (getAttributes() != null){
             for (Map.Entry<Attribute, List<AttributeModifier>> entry : getAttributes().entrySet()) {
                 Attribute attribute = entry.getKey();
@@ -148,6 +154,9 @@ public abstract class CustomItem {
                     itemMeta.addAttributeModifier(attribute, modifier);
                 }
             }
+        }
+        if (getBlockData() != null && itemMeta instanceof BlockDataMeta blockDataMeta){
+            blockDataMeta.setBlockData(getBlockData());
         }
         itemMeta.addItemFlags(getTooltipHides());
 

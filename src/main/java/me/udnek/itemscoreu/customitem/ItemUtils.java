@@ -1,4 +1,4 @@
-package me.udnek.itemscoreu.utils;
+package me.udnek.itemscoreu.customitem;
 
 import me.udnek.itemscoreu.customitem.CustomItem;
 import me.udnek.itemscoreu.nms.NMS;

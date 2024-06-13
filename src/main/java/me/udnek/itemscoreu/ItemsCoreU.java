@@ -1,7 +1,10 @@
 package me.udnek.itemscoreu;
 
+import me.udnek.itemscoreu.customblock.CustomBlockListener;
 import me.udnek.itemscoreu.customentity.CustomEntityListener;
 import me.udnek.itemscoreu.customentity.CustomEntityTicker;
+import me.udnek.itemscoreu.customevent.AllBukkitEventListener;
+import me.udnek.itemscoreu.customhud.CustomHudTicker;
 import me.udnek.itemscoreu.custominventory.CustomInventoryListener;
 import me.udnek.itemscoreu.customitem.CraftListener;
 import me.udnek.itemscoreu.customitem.CustomItemCommand;
@@ -15,6 +18,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 public final class ItemsCoreU extends JavaPlugin{
     private static JavaPlugin instance;
     private static CustomEntityTicker customEntityTicker;
+    private static CustomHudTicker customHudTicker;
 
     public static JavaPlugin getInstance(){
         return instance;
@@ -28,11 +32,16 @@ public final class ItemsCoreU extends JavaPlugin{
         new CraftListener(this);
         new CustomInventoryListener(this);
         new CustomEntityListener(this);
+        new AllBukkitEventListener(this);
+        new CustomBlockListener(this);
 
         this.getCommand("giveu").setExecutor(new CustomItemCommand());
 
         customEntityTicker = new CustomEntityTicker();
         customEntityTicker.start(this);
+        customHudTicker = new CustomHudTicker();
+        customHudTicker.start(this);
+
 
         NMSTest.registerAttribute("test", 0, 0, 8);
         MobEffect mobEffect = NMSTest.registerEffect();
@@ -47,20 +56,10 @@ public final class ItemsCoreU extends JavaPlugin{
         });
     }
 
-/*    @Override
-    public void onLoad() {
-        ProtocolLibrary.getProtocolManager().addPacketListener(
-                new ProtocolTest(
-                        this,
-                        ListenerPriority.NORMAL,
-                        PacketType.Play.Server.UPDATE_ATTRIBUTES,
-                        PacketType.Play.Server.ENTITY_METADATA
-                        )
-        );
-    }*/
 
     @Override
     public void onDisable() {
         customEntityTicker.stop();
+        customHudTicker.stop();
     }
 }

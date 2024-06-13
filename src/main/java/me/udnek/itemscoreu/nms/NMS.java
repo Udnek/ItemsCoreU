@@ -1,6 +1,9 @@
 package me.udnek.itemscoreu.nms;
 
 import me.udnek.itemscoreu.utils.LogUtils;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.Arrow;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.ComposterBlock;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
@@ -11,10 +14,13 @@ import org.apache.commons.lang3.reflect.FieldUtils;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_20_R4.CraftLootTable;
 import org.bukkit.craftbukkit.v1_20_R4.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_20_R4.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.v1_20_R4.inventory.CraftItemStack;
 import org.bukkit.craftbukkit.v1_20_R4.util.CraftMagicNumbers;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Mob;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.loot.LootTable;
 
 import java.util.ArrayList;
@@ -166,18 +172,6 @@ public class NMS{
     ///////////////////////////////////////////////////////////////////////////
 
 
-
-    public net.minecraft.world.entity.Entity getNMSEntity(Entity entity) {
-        return ((CraftEntity) entity).getHandle();
-    }
-
-
-/*    public void followEntity(Entity bukkitFollower, Entity bukkitTarget) {
-        net.minecraft.world.entity.Entity follower = getNMSEntity(bukkitFollower);
-        if (!(follower instanceof Mob)) return;
-        PathNavigation navigation = ((Mob) follower).getNavigation();
-        navigation.createPath()
-    }*/
 }
 
 

@@ -1,12 +1,13 @@
 package me.udnek.itemscoreu.customattribute;
 
+import net.kyori.adventure.translation.Translatable;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Entity;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.Serializable;
 
-public abstract class CustomAttribute implements Serializable {
+public abstract class CustomAttribute implements Serializable, Translatable {
 
     protected String id;
     protected CustomAttribute(){}

@@ -4,15 +4,16 @@ import me.udnek.itemscoreu.customattribute.CustomAttribute;
 import me.udnek.itemscoreu.customattribute.equipmentslot.CustomEquipmentSlot;
 import me.udnek.itemscoreu.customattribute.equipmentslot.CustomEquipmentSlots;
 import me.udnek.itemscoreu.customitem.CustomItem;
+import me.udnek.itemscoreu.utils.LogUtils;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Husk;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class CustomAttributeUtils {
 
@@ -34,8 +35,13 @@ public class CustomAttributeUtils {
         double multiplyBase = 1;
         double multiply = 1;
 
+        Set<Integer> checkedSlots = new HashSet<>();
+
         for (CustomEquipmentSlot equipmentSlot : slots) {
             for (int slot : equipmentSlot.getAllSlots(entity)) {
+                if (checkedSlots.contains(slot)) continue;
+                checkedSlots.add(slot);
+
                 CustomItem customItem = CustomItem.get(inventory.getItem(slot));
                 if (!(customItem instanceof DefaultCustomAttributeHolder attributeHolder)) continue;
                 if (attributeHolder.getDefaultCustomAttributes() == null) continue;
@@ -48,9 +54,11 @@ public class CustomAttributeUtils {
                     for (CustomAttributeModifier modifier : entry.getValue()) {
                         if (!modifier.getEquipmentSlot().isAppropriateSlot(entity, slot)) continue;
 
-                        if (modifier.getOperation() == AttributeModifier.Operation.ADD_NUMBER) amount += modifier.getAmount();
-                        else if (modifier.getOperation() == AttributeModifier.Operation.ADD_SCALAR) multiplyBase += modifier.getAmount();
-                        else multiply *= (1 + modifier.getAmount());
+                        switch (modifier.getOperation()){
+                            case ADD_NUMBER: amount += modifier.getAmount(); break;
+                            case ADD_SCALAR: multiplyBase += modifier.getAmount(); break;
+                            default: multiply *= (1 + modifier.getAmount()); break;
+                        }
                     }
                 }
             }

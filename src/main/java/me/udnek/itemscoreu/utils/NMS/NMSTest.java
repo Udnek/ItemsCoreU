@@ -26,7 +26,6 @@ public class NMSTest {
     public static void registerAttribute(String attributeName, double defaultValue, double minValue, double maxValue) {
 
         Registry<Attribute> registry = BuiltInRegistries.ATTRIBUTE;
-        LogUtils.logDeclaredFields(registry);
         for (Field field : registry.getClass().getDeclaredFields()) {
             if (field.getType() == boolean.class){
                 field.setAccessible(true);
@@ -105,7 +104,6 @@ public class NMSTest {
         return new BlockPos(location.getBlockX(), location.getBlockY(), location.getBlockZ());
     }
 
-    // TODO: 2/11/2024 USAGE
 
     public static MapColor getMapColorOfMaterial(Material material){
         Block block = CraftMagicNumbers.getBlock(material);
