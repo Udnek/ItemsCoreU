@@ -2,7 +2,7 @@ package me.udnek.itemscoreu.customitem;
 
 import org.bukkit.event.player.PlayerInteractEvent;
 
-public interface InteractableItem {
+public interface RightClickable {
 
     void onRightClicks(PlayerInteractEvent event);
 

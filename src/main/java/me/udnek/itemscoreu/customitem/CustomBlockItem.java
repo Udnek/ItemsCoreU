@@ -10,7 +10,7 @@ public abstract class CustomBlockItem extends CustomItem {
     public Material getMaterial() {return Material.SPAWNER;}
 
     @Override
-    protected ItemFlag[] getTooltipHides() {
+    public ItemFlag[] getTooltipHides() {
         return new ItemFlag[]{ItemFlag.HIDE_ADDITIONAL_TOOLTIP};
     }
 

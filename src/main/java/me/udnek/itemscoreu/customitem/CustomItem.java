@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.Set;
 
 
-public abstract class CustomItem {
+public abstract class CustomItem implements CustomItemInterface{
     private JavaPlugin plugin;
     private List<Recipe> recipes;
     private String id;
@@ -90,19 +90,21 @@ public abstract class CustomItem {
     ///////////////////////////////////////////////////////////////////////////
     // PROPERTIES
     ///////////////////////////////////////////////////////////////////////////
+/*
     public abstract String getRawId();
     public abstract Material getMaterial();
     public abstract String getRawItemName();
+*/
 
     // OPTIONAL
-    public Component getItemName(){return Component.translatable(this.getRawItemName());}
+/*    public Component getItemName(){return Component.translatable(this.getRawItemName());}
     public Component getCustomDisplayName(){return null;}
     public List<Component> getLore(){return null;}
     public ItemRarity getItemRarity(){return null;}
     public Integer getCustomModelData(){return null;}
     public boolean getHideTooltip(){return false;}
     public FoodComponent getFoodComponent(){return null;}
-    protected ItemFlag[] getTooltipHides(){return new ItemFlag[0];}
+    public ItemFlag[] getTooltipHides(){return new ItemFlag[0];}
     public Integer getMaxStackSize(){return null;}
     public Integer getMaxDamage(){return null;}
     public boolean getUnbreakable(){return false;}
@@ -112,7 +114,7 @@ public abstract class CustomItem {
     public MusicInstrument getMusicInstrument(){return null;}
     public boolean getAddDefaultAttributes(){return false;}
     public Map<Attribute, List<AttributeModifier>> getAttributes(){return null;}
-    public BlockData getBlockData(){return null;}
+    public BlockData getBlockData(){return null;}*/
 
     ///////////////////////////////////////////////////////////////////////////
     // CREATING
@@ -220,6 +222,6 @@ public abstract class CustomItem {
     public ItemStack onPrepareCraft(PrepareItemCraftEvent event){
         return this.getItemFromCraftingMatrix(event.getRecipe().getResult(), event.getInventory().getMatrix(), event.getRecipe());
     }
-    protected ItemStack getItemFromCraftingMatrix(ItemStack result, ItemStack[] matrix, Recipe recipe){return result;}
+    public ItemStack getItemFromCraftingMatrix(ItemStack result, ItemStack[] matrix, Recipe recipe){return result;}
 
 }

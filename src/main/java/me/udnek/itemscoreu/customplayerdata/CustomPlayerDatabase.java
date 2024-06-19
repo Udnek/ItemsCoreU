@@ -38,7 +38,6 @@ public class CustomPlayerDatabase {
 
 
     public static void printToConsole(){
-        //Bukkit.getLogger().info(CustomPlayerDatabase.toDebugString());
         Bukkit.getLogger().info("");
         Bukkit.getLogger().info("CustomPlayerDatabase:");
         String[] lines = CustomPlayerDatabase.toDebugString().split("\n");

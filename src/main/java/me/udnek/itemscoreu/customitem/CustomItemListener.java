@@ -21,8 +21,8 @@ public class CustomItemListener extends SelfRegisteringListener {
 
         CustomItem customItem = CustomItem.get(event.getItem());
         if (customItem == null) return;
-        if (customItem instanceof InteractableItem interactableItem){
-            interactableItem.onRightClicks(event);
+        if (customItem instanceof RightClickable rightClickable){
+            rightClickable.onRightClicks(event);
         }
     }
 
