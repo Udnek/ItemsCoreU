@@ -1,0 +1,137 @@
+package me.udnek.itemscoreu.customitem;
+
+import me.udnek.itemscoreu.customattribute.AttributeUtils;
+import me.udnek.itemscoreu.customblock.CustomBlock;
+import net.kyori.adventure.text.Component;
+import org.bukkit.*;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeModifier;
+import org.bukkit.block.data.BlockData;
+import org.bukkit.inventory.ItemFlag;
+import org.bukkit.inventory.ItemRarity;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.Recipe;
+import org.bukkit.inventory.meta.*;
+import org.bukkit.inventory.meta.components.FoodComponent;
+import org.bukkit.inventory.meta.trim.ArmorTrim;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.plugin.java.JavaPlugin;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+
+public abstract class ConstructableCustomItem implements CustomItem, CustomItemProperties {
+    private JavaPlugin plugin;
+    private List<Recipe> recipes;
+    private String id;
+    protected ItemStack itemStack;
+    protected ConstructableCustomItem(){}
+
+    ///////////////////////////////////////////////////////////////////////////
+    // INITIAL
+    ///////////////////////////////////////////////////////////////////////////
+    public final String getId(){return this.id;}
+    public void initialize(JavaPlugin javaPlugin){
+        this.plugin = javaPlugin;
+        this.id = new NamespacedKey(javaPlugin, getRawId()).asString();
+        this.recipes = new ArrayList<>();
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    // CREATING
+    ///////////////////////////////////////////////////////////////////////////
+
+    protected void setPersistentData(ItemMeta itemMeta){
+        PersistentDataContainer dataContainer = itemMeta.getPersistentDataContainer();
+        dataContainer.set(PERSISTENT_DATA_CONTAINER_NAMESPACE, PersistentDataType.STRING, id);
+    }
+
+    protected ItemMeta getMainItemMeta(){
+        ItemMeta itemMeta = new ItemStack(this.getMaterial()).getItemMeta();
+        this.setPersistentData(itemMeta);
+
+        itemMeta.itemName(this.getItemName());
+        itemMeta.lore(this.getLore());
+        itemMeta.setRarity(getItemRarity());
+        itemMeta.setHideTooltip(getHideTooltip());
+        itemMeta.setFood(getFoodComponent());
+        itemMeta.displayName(getCustomDisplayName());
+        itemMeta.setUnbreakable(getUnbreakable());
+        itemMeta.setEnchantmentGlintOverride(getEnchantmentGlintOverride());
+        itemMeta.setCustomModelData(getCustomModelData());
+        if (getFireResistant() != null) itemMeta.setFireResistant(getFireResistant());
+        itemMeta.setMaxStackSize(getMaxStackSize());
+        if (itemMeta instanceof Damageable damageable){
+            if (getMaxDamage() != null){
+                damageable.setMaxStackSize(1);
+                damageable.setMaxDamage(getMaxDamage());
+            }
+        }
+        if (itemMeta instanceof ArmorMeta armorMeta) armorMeta.setTrim(getArmorTrim());
+        if (itemMeta instanceof MusicInstrumentMeta instrumentMeta) instrumentMeta.setInstrument(getMusicInstrument());
+        if (getAddDefaultAttributes()) AttributeUtils.addDefaultAttributes(itemMeta, getMaterial());
+        if (getAttributes() != null){
+            for (Map.Entry<Attribute, List<AttributeModifier>> entry : getAttributes().entrySet()) {
+                Attribute attribute = entry.getKey();
+                for (AttributeModifier modifier : entry.getValue()) {
+                    itemMeta.addAttributeModifier(attribute, modifier);
+                }
+            }
+        }
+        if (getBlockData() != null && itemMeta instanceof BlockDataMeta blockDataMeta){
+            blockDataMeta.setBlockData(getBlockData());
+        }
+        itemMeta.addItemFlags(getTooltipHides());
+
+        return itemMeta;
+    }
+
+    protected void modifyFinalItemMeta(ItemMeta itemMeta){}
+
+    protected ItemStack getMainItemStack(){
+        ItemMeta itemMeta = this.getMainItemMeta();
+        this.modifyFinalItemMeta(itemMeta);
+        ItemStack itemStack = new ItemStack(this.getMaterial());
+        itemStack.setItemMeta(itemMeta);
+        return itemStack;
+    }
+
+    protected void modifyFinalItemStack(ItemStack itemStack){
+    }
+
+
+    public ItemStack getItem(){
+        if (this.itemStack == null){
+            ItemStack itemStack = this.getMainItemStack();
+            this.modifyFinalItemStack(itemStack);
+            this.itemStack = itemStack;
+        }
+        return this.itemStack.clone();
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    // RECIPES
+    ///////////////////////////////////////////////////////////////////////////
+
+    protected List<Recipe> generateRecipes(){return new ArrayList<>();}
+    public final void registerRecipes(){
+        List<Recipe> recipes = generateRecipes();
+        for (Recipe recipe : recipes) {
+            Bukkit.addRecipe(recipe);
+        }
+        this.recipes = recipes;
+    }
+
+    public final List<Recipe> getRecipes(){
+        return this.recipes;
+    }
+
+    protected NamespacedKey getRecipeNamespace(int recipeNumber){
+        return new NamespacedKey(this.plugin, this.getRawId()+ "_" + recipeNumber);
+    }
+
+
+}

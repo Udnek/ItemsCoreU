@@ -1,6 +1,5 @@
 package me.udnek.itemscoreu.customitem;
 
-import me.udnek.itemscoreu.customitem.CustomItem;
 import me.udnek.itemscoreu.nms.NMS;
 import org.bukkit.*;
 import org.bukkit.inventory.*;
@@ -16,12 +15,12 @@ import java.util.List;
 public class ItemUtils {
 
     public static boolean isCustomItemOrMaterial(String name){
-        if (CustomItem.isIdExists(name)) return true;
+        if (CustomItem.IdExists(name)) return true;
         return Material.getMaterial(name.toUpperCase()) != null;
     }
 
     public static ItemStack getFromCustomItemOrMaterial(String name){
-        if (CustomItem.isIdExists(name)) return CustomItem.get(name).getItem();
+        if (CustomItem.IdExists(name)) return CustomItem.get(name).getItem();
         Material material = Material.getMaterial(name.toUpperCase());
         if (material == null) return new ItemStack(Material.AIR);
         return new ItemStack(material);

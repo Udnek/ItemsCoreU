@@ -12,7 +12,6 @@ public class CustomBlockManager {
 
     private static final HashMap<String, CustomBlock> customBlocks = new HashMap<>();
 
-
     public static CustomBlock register(JavaPlugin plugin, CustomBlock customBlock){
         customBlock.initialize(plugin);
         put(customBlock);

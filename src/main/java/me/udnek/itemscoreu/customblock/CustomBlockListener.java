@@ -1,11 +1,7 @@
 package me.udnek.itemscoreu.customblock;
 
 import com.destroystokyo.paper.event.block.BlockDestroyEvent;
-import io.papermc.paper.event.player.PlayerPickItemEvent;
-import me.udnek.itemscoreu.customitem.CustomItem;
-import me.udnek.itemscoreu.utils.LogUtils;
 import me.udnek.itemscoreu.utils.SelfRegisteringListener;
-import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.plugin.java.JavaPlugin;

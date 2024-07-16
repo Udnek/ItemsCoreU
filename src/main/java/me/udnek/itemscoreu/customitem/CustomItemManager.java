@@ -11,8 +11,7 @@ import java.util.Set;
 
 public class CustomItemManager {
 
-    private static final HashMap<String, CustomItem> customItemMap = new HashMap<String, CustomItem>();
-
+    private static final HashMap<String, CustomItem> customItemMap = new HashMap<>();
 
     public static CustomItem register(JavaPlugin plugin, CustomItem customItem){
         customItem.initialize(plugin);
@@ -20,27 +19,20 @@ public class CustomItemManager {
         if (customItem instanceof AllEventListener allEventListener) CustomEventManager.addListener(allEventListener);
         return customItem;
     }
-
     public static void registerRecipes(){
         customItemMap.values().forEach(CustomItem::registerRecipes);
     }
-
     private static void put(CustomItem customItem){
         if (!customItemMap.containsKey(customItem.getId())){
             customItemMap.put(customItem.getId(), customItem);
             LogUtils.pluginLog(customItem.getId() + " (Item)");
         }
     }
-
     protected static CustomItem get(String id){
         return customItemMap.get(id);
     }
-
     protected static Set<String> getAllIds(){
         return customItemMap.keySet();
     }
-
-    //TODO REALISE
-    public static void registerAdditionalRecipe(String id, Recipe...recipes){}
 
 }

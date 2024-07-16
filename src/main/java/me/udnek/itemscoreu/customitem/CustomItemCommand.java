@@ -24,7 +24,7 @@ public class CustomItemCommand implements CommandExecutor, TabExecutor {
         }
         String id = args[0];
 
-        if (!CustomItem.isIdExists(id)){
+        if (!CustomItem.IdExists(id)){
             return false;
         }
 
