@@ -1,96 +1,87 @@
 package me.udnek.itemscoreu.nms;
 
+import com.mojang.datafixers.util.Pair;
+import it.unimi.dsi.fastutil.longs.LongSet;
 import me.udnek.itemscoreu.utils.LogUtils;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.Arrow;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderSet;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.MapItem;
 import net.minecraft.world.level.block.ComposterBlock;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
+import net.minecraft.world.level.chunk.ChunkAccess;
+import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.level.chunk.status.ChunkStatus;
+import net.minecraft.world.level.levelgen.structure.StructurePiece;
+import net.minecraft.world.level.levelgen.structure.StructureStart;
+import net.minecraft.world.level.saveddata.maps.MapDecorationType;
+import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.entries.LootItem;
 import net.minecraft.world.level.storage.loot.entries.LootPoolEntryContainer;
 import org.apache.commons.lang3.reflect.FieldUtils;
-import org.bukkit.Material;
+import org.bukkit.*;
+import org.bukkit.block.Block;
+import org.bukkit.craftbukkit.v1_20_R4.CraftChunk;
 import org.bukkit.craftbukkit.v1_20_R4.CraftLootTable;
-import org.bukkit.craftbukkit.v1_20_R4.entity.CraftEntity;
-import org.bukkit.craftbukkit.v1_20_R4.entity.CraftLivingEntity;
+import org.bukkit.craftbukkit.v1_20_R4.CraftWorld;
+import org.bukkit.craftbukkit.v1_20_R4.generator.structure.CraftStructure;
 import org.bukkit.craftbukkit.v1_20_R4.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_20_R4.map.CraftMapCursor;
 import org.bukkit.craftbukkit.v1_20_R4.util.CraftMagicNumbers;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Mob;
+import org.bukkit.generator.structure.Structure;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.loot.LootTable;
+import org.bukkit.map.MapCursor;
+import org.bukkit.util.StructureSearchResult;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class NMS{
-
     private static NMS instance;
-
     public static NMS get(){
         if (instance == null){
             instance = new NMS();
         }
         return instance;
     }
-
-
     ///////////////////////////////////////////////////////////////////////////
     // ITEMS
     ///////////////////////////////////////////////////////////////////////////
 
-    public net.minecraft.world.item.ItemStack getNMSItemStack(ItemStack itemStack){
+    public net.minecraft.world.item.ItemStack toNMSItemStack(ItemStack itemStack){
         return CraftItemStack.asNMSCopy(itemStack);
     }
-    public net.minecraft.world.item.ItemStack getNMSItemStack(Material material){
-        return getNMSItemStack(new ItemStack(material));
-    }
-
-    public ItemStack getNormalItemStack(net.minecraft.world.item.ItemStack itemStack){
+    public ItemStack toBukkitItemStack(net.minecraft.world.item.ItemStack itemStack){
         return CraftItemStack.asBukkitCopy(itemStack);
     }
 
-    public Item getNMSItem(Material material){
+    public Item toNMSItem(Material material){
         return CraftMagicNumbers.getItem(material);
     }
 
-    ///////////////////////////////////////////////////////////////////////////
-    // FOOD
-    ///////////////////////////////////////////////////////////////////////////
-
-/*
-    public int getFoodNutrition(Material material) {
-        FoodProperties foodProperties = this.getFoodProperties(material);
-        if (foodProperties == null) return 0;
-        return foodProperties.getNutrition();
+    public BlockPos toNMSBlockPosition(Location location){
+        return new BlockPos(location.getBlockX(), location.getBlockY(), location.getBlockZ());
     }
 
-    public float getFoodSaturation(Material material) {
-        FoodProperties foodProperties = this.getFoodProperties(material);
-        if (foodProperties == null) return 0;
-        return foodProperties.saturation();
+    public ServerLevel toNMSWorld(World world){
+        return ((CraftWorld) world).getHandle();
     }
-
-    public FoodProperties getFoodProperties(Material material) {
-        new ItemStack(Material.GOLDEN_APPLE).getItemMeta().getAsComponentString()
-        return getNMSItem(material).components();
-    }
-*/
 
     ///////////////////////////////////////////////////////////////////////////
     // USAGES
     ///////////////////////////////////////////////////////////////////////////
 
-
     public float getCompostableChance(Material material){
-        return ComposterBlock.COMPOSTABLES.getOrDefault(getNMSItem(material), 0);
+        return ComposterBlock.COMPOSTABLES.getOrDefault(toNMSItem(material), 0);
     }
 
     public int getFuelTime(Material material){
-        return AbstractFurnaceBlockEntity.getFuel().getOrDefault(getNMSItem(material), 0);
+        return AbstractFurnaceBlockEntity.getFuel().getOrDefault(toNMSItem(material), 0);
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -161,10 +152,124 @@ public class NMS{
                 ItemConsumer itemConsumer = new ItemConsumer();
                 lootItem.createItemStack(itemConsumer, null);
 
-                result.add(getNormalItemStack(itemConsumer.itemStack));
+                result.add(toBukkitItemStack(itemConsumer.itemStack));
             }
         }
         return result;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    // STRUCTURE
+    ///////////////////////////////////////////////////////////////////////////
+
+    public ItemStack generateExplorerMap(Location location, Structure bukkitStructure, int radius, boolean skipKnownStructures){
+        return generateExplorerMap(location, bukkitStructure, radius, skipKnownStructures, MapCursor.Type.RED_X);
+    }
+    public ItemStack generateExplorerMap(Location location, Structure bukkitStructure, int radius, boolean skipKnownStructures, MapCursor.Type type){
+        ServerLevel serverLevel = toNMSWorld(location.getWorld());
+
+        CraftStructure craftStructure = (CraftStructure) bukkitStructure;
+        if (craftStructure == null){
+            LogUtils.log("structure not found in registry!");
+            return null;
+        }
+        net.minecraft.world.level.levelgen.structure.Structure structure = craftStructure.getHandle();
+        HolderSet.Direct<net.minecraft.world.level.levelgen.structure.Structure> holders = HolderSet.direct(Holder.direct(structure));
+
+        Pair<BlockPos, Holder<net.minecraft.world.level.levelgen.structure.Structure>> pair = serverLevel.getChunkSource().getGenerator().findNearestMapStructure(serverLevel, holders, toNMSBlockPosition(location), radius, skipKnownStructures);
+        if (pair == null){
+            LogUtils.log("structure not found in world!");
+            return null;
+        }
+
+        Holder<MapDecorationType> mapDecorationTypeHolder = CraftMapCursor.CraftType.bukkitToMinecraftHolder(type);
+
+        BlockPos structureLocation = pair.getFirst();
+        net.minecraft.world.item.ItemStack mapItem = MapItem.create(serverLevel, structureLocation.getX(), structureLocation.getZ(), (byte) 2, true, true);
+        MapItem.renderBiomePreviewMap(serverLevel, mapItem);
+        MapItemSavedData.addTargetDecoration(mapItem, structureLocation, "+", mapDecorationTypeHolder);
+/*
+        try {
+            Method privateMethod = MapItemSavedData.class.getDeclaredMethod("addDecoration");
+            privateMethod.setAccessible(true);
+            privateMethod.invoke(null, mapDecorationTypeHolder, null, "++", (double) structureLocation.getX(), (double) structureLocation.getZ(), (double) 0, Component.translatable("test.test"));
+
+
+        } catch (NoSuchMethodException e) {
+            LogUtils.log(Arrays.toString(MapItemSavedData.class.getDeclaredMethods()));
+            //throw new RuntimeException(e);
+        } catch (InvocationTargetException e) {
+            throw new RuntimeException(e);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+*/
+
+        return toBukkitItemStack(mapItem);
+    }
+
+    public void generateBiomePreviewMap(World world, ItemStack itemStack){
+        ServerLevel serverLevel = ((CraftWorld) world).getHandle();
+        MapItem.renderBiomePreviewMap(serverLevel, toNMSItemStack(itemStack));
+    }
+
+    public boolean containStructure(Chunk bukitChunk, Structure bukkitStructure){
+        net.minecraft.world.level.levelgen.structure.Structure targerStructure = ((CraftStructure) bukkitStructure).getHandle();
+        ChunkAccess chunk = ((CraftChunk) bukitChunk).getHandle(ChunkStatus.FEATURES);
+        return chunk.getReferencesForStructure(targerStructure) != null;
+    }
+
+    // TODO: 6/21/2024 REMOVE DEBUG 
+    public boolean isInStructure(Location location, Structure bukkitStructure, StructureStartSearchMethod method, int radius){
+
+        long startTime = System.nanoTime();
+
+        StructureStart startForStructure;
+
+        if (method == StructureStartSearchMethod.LOCATE_STRUCTURE){
+            StructureSearchResult searchResult = location.getWorld().locateNearestStructure(location, bukkitStructure, radius, false);
+            if (searchResult == null){
+                LogUtils.log("search result is null");
+                return false;
+            }
+            Location searchLocation = searchResult.getLocation();
+
+            net.minecraft.world.level.levelgen.structure.Structure structure = ((CraftStructure) bukkitStructure).getHandle();
+
+            ChunkAccess chunk = ((CraftChunk) searchLocation.getChunk()).getHandle(ChunkStatus.FULL);
+            startForStructure = chunk.getStartForStructure(structure);
+        }
+        else {
+            net.minecraft.world.level.levelgen.structure.Structure structure = ((CraftStructure) bukkitStructure).getHandle();
+            startForStructure = findStructureStartIn(toNMSWorld(location.getWorld()), structure, location.getChunk().getX(), location.getChunk().getZ(), radius);
+        }
+        
+        LogUtils.log("time taken:" + (System.nanoTime() - startTime));
+
+
+        if (startForStructure == null){
+            LogUtils.log("start is null");
+            return false;
+        }
+
+        BlockPos position = toNMSBlockPosition(location);
+
+        for (StructurePiece piece : startForStructure.getPieces()) {
+            if (piece.getBoundingBox().isInside(position)) return true;
+        }
+        LogUtils.log("not in bounds");
+        return false;
+    }
+
+    private StructureStart findStructureStartIn(ServerLevel world, net.minecraft.world.level.levelgen.structure.Structure structure, int xCenter, int zCenter, int quadRadius){
+        for (int x = xCenter-quadRadius; x <= xCenter+quadRadius; x++) {
+            for (int z = zCenter-quadRadius; z <= zCenter+quadRadius; z++) {
+                LevelChunk chunk = world.getChunk(x, z);
+                StructureStart startForStructure = chunk.getStartForStructure(structure);
+                if (startForStructure != null) return startForStructure;
+            }
+        }
+        return null;
     }
 
     ///////////////////////////////////////////////////////////////////////////

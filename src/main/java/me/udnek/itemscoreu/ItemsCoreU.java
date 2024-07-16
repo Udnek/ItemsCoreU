@@ -10,6 +10,7 @@ import me.udnek.itemscoreu.customitem.CraftListener;
 import me.udnek.itemscoreu.customitem.CustomItemCommand;
 import me.udnek.itemscoreu.customitem.CustomItemListener;
 import me.udnek.itemscoreu.customitem.CustomItemManager;
+import me.udnek.itemscoreu.serializabledata.SerializableDataManager;
 import me.udnek.itemscoreu.utils.LogUtils;
 import me.udnek.itemscoreu.utils.NMS.NMSTest;
 import net.minecraft.world.effect.MobEffect;
@@ -46,7 +47,7 @@ public final class ItemsCoreU extends JavaPlugin{
         NMSTest.registerAttribute("test", 0, 0, 8);
         MobEffect mobEffect = NMSTest.registerEffect();
 
-
+        SerializableDataManager.loadConfig();
 
         this.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable(){
             public void run(){
@@ -61,5 +62,6 @@ public final class ItemsCoreU extends JavaPlugin{
     public void onDisable() {
         customEntityTicker.stop();
         customHudTicker.stop();
+        SerializableDataManager.saveConfig();
     }
 }

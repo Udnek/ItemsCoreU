@@ -7,12 +7,14 @@ import org.bukkit.Bukkit;
 
 import java.lang.reflect.AccessFlag;
 import java.lang.reflect.Field;
+import java.util.List;
 
 public class LogUtils {
 
     public static void log(String message){ Bukkit.getLogger().info(message);}
     public static void log(String message, TextColor color){ log(Component.text(message).color(color));}
     public static void log(Component message){ Bukkit.getConsoleSender().sendMessage(message);}
+    public static void log(List<Component> components){components.forEach(LogUtils::log);}
     public static void pluginLog(String message){
         ItemsCoreU.getInstance().getLogger().info(message);
     }

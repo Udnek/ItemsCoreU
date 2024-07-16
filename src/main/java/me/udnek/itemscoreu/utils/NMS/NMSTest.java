@@ -7,6 +7,7 @@ import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.data.worldgen.Structures;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
@@ -14,6 +15,11 @@ import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.attributes.RangedAttribute;
+import net.minecraft.world.level.levelgen.structure.structures.JigsawStructure;
+import net.minecraft.world.level.storage.loot.functions.ExplorationMapFunction;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.craftbukkit.v1_20_R4.CraftWorld;
 import org.bukkit.inventory.meta.trim.TrimPattern;
 
 import java.awt.*;
@@ -45,8 +51,6 @@ public class NMSTest {
         ).setSyncable(false);
 
         BuiltInRegistries.ATTRIBUTE.freeze();
-
-
     }
 
     public static void registerTrimPattern(){
@@ -79,8 +83,7 @@ public class NMSTest {
         BuiltInRegistries.MOB_EFFECT.freeze();
 
         return mobEffect;
-}
-
+    }
 /*    public static ServerPlayer getPlayer(Player player){
         return ((CraftPlayer) player).getHandle();
     }
