@@ -2,6 +2,7 @@ package me.udnek.itemscoreu.customenchantment;
 
 import org.bukkit.enchantments.Enchantment;
 
+// TODO: 7/17/2024 BACK WHEN 1.21
 public abstract class CustomEnchantment extends Enchantment {
 
 /*    protected void setNamespacedKey(JavaPlugin javaPlugin){
