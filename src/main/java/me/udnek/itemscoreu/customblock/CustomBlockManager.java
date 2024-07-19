@@ -1,29 +1,40 @@
 package me.udnek.itemscoreu.customblock;
 
+import me.udnek.itemscoreu.customattribute.equipmentslot.CustomEquipmentSlots;
 import me.udnek.itemscoreu.customevent.AllEventListener;
 import me.udnek.itemscoreu.customevent.CustomEventManager;
+import me.udnek.itemscoreu.utils.CustomThingManager;
 import me.udnek.itemscoreu.utils.LogUtils;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.HashMap;
 import java.util.Set;
 
-public class CustomBlockManager {
+public class CustomBlockManager extends CustomThingManager<CustomBlock> {
 
     private static final HashMap<String, CustomBlock> customBlocks = new HashMap<>();
 
-    public static CustomBlock register(JavaPlugin plugin, CustomBlock customBlock){
-        customBlock.initialize(plugin);
-        put(customBlock);
-        if (customBlock instanceof AllEventListener allEventListener) CustomEventManager.addListener(allEventListener);
-        return customBlock;
+    private static CustomBlockManager instance;
+    private CustomBlockManager(){}
+    public static CustomBlockManager getInstance() {
+        if (instance == null) instance = new CustomBlockManager();
+        return instance;
+
     }
 
-    private static void put(CustomBlock customBlock){
-        if (!customBlocks.containsKey(customBlock.getId())){
-            customBlocks.put(customBlock.getId(), customBlock);
-            LogUtils.pluginLog(customBlock.getId() + " (Block)");
-        }
+
+    @Override
+    public String getCategory() {
+        return "Block";
+    }
+
+    @Override
+    protected String getIdToLog(CustomBlock custom) {
+        return custom.getId();
+    }
+
+    protected void put(CustomBlock customBlock){
+        customBlocks.put(customBlock.getId(), customBlock);
     }
 
     protected static CustomBlock get(String id){

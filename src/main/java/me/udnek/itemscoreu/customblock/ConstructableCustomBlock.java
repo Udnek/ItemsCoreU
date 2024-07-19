@@ -6,6 +6,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
 import org.bukkit.block.CreatureSpawner;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.EntitySnapshot;
@@ -15,6 +16,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.EulerAngle;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
 
@@ -35,11 +37,18 @@ public abstract class ConstructableCustomBlock implements CustomBlock{
         blockState.setSpawnedEntity(getVisualRepresentation());
         blockState.getPersistentDataContainer().set(PERSISTENT_DATA_CONTAINER_NAMESPACE, PersistentDataType.STRING, id);
         blockState.update(true, false);
+
     }
+
+    @Override
+    public void onLoad(BlockState blockState) {}
+    @Override
+    public void onUnload(BlockState blockState) {}
 
     @Override
     public void destroy(Location location) {
         location.getWorld().getBlockAt(location).setType(Material.AIR);
+        onDestroy(location.getBlock());
     }
 
     @Override
@@ -54,13 +63,12 @@ public abstract class ConstructableCustomBlock implements CustomBlock{
     }
     public void onDestroy(Block block){}
     @Override
-    public final String getId() {return id;}
+    public final @NotNull String getId() {return id;}
 
 
     ///////////////////////////////////////////////////////////////////////////
     // PROPERTIES
     ///////////////////////////////////////////////////////////////////////////
-    public abstract String getRawId();
     public abstract ItemStack getVisualItem();
 
     ///////////////////////////////////////////////////////////////////////////

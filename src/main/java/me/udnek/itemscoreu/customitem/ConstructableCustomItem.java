@@ -17,6 +17,7 @@ import org.bukkit.inventory.meta.trim.ArmorTrim;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,8 +34,10 @@ public abstract class ConstructableCustomItem implements CustomItem, CustomItemP
     ///////////////////////////////////////////////////////////////////////////
     // INITIAL
     ///////////////////////////////////////////////////////////////////////////
-    public final String getId(){return this.id;}
-    public void initialize(JavaPlugin javaPlugin){
+    @Override
+    public final @NotNull String getId(){return this.id;}
+    @Override
+    public void initialize(@NotNull JavaPlugin javaPlugin){
         this.plugin = javaPlugin;
         this.id = new NamespacedKey(javaPlugin, getRawId()).asString();
         this.recipes = new ArrayList<>();
@@ -102,7 +105,7 @@ public abstract class ConstructableCustomItem implements CustomItem, CustomItemP
     protected void modifyFinalItemStack(ItemStack itemStack){
     }
 
-
+    @Override
     public ItemStack getItem(){
         if (this.itemStack == null){
             ItemStack itemStack = this.getMainItemStack();
@@ -117,6 +120,7 @@ public abstract class ConstructableCustomItem implements CustomItem, CustomItemP
     ///////////////////////////////////////////////////////////////////////////
 
     protected List<Recipe> generateRecipes(){return new ArrayList<>();}
+    @Override
     public final void registerRecipes(){
         List<Recipe> recipes = generateRecipes();
         for (Recipe recipe : recipes) {
@@ -125,7 +129,8 @@ public abstract class ConstructableCustomItem implements CustomItem, CustomItemP
         this.recipes = recipes;
     }
 
-    public final List<Recipe> getRecipes(){
+    @Override
+    public final @NotNull List<Recipe> getRecipes(){
         return this.recipes;
     }
 

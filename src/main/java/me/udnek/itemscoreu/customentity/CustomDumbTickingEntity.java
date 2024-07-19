@@ -1,6 +1,7 @@
 package me.udnek.itemscoreu.customentity;
 
 import me.udnek.itemscoreu.ItemsCoreU;
+import me.udnek.itemscoreu.utils.PluginInitializable;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
@@ -9,13 +10,18 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 
-public abstract class CustomDumbTickingEntity {
+
+// TODO: 7/18/2024 MAKE IMPLEMENTS CUSTOM ENTITY
+// TODO: 7/18/2024 GET RAW ID
+public abstract class CustomDumbTickingEntity implements PluginInitializable {
 
     public static final NamespacedKey namespacedKey = new NamespacedKey(ItemsCoreU.getInstance(), "custom_dumb_entity");
     protected String id;
 
-    void register(JavaPlugin javaPlugin){
+    @Override
+    public void initialize(@NotNull JavaPlugin javaPlugin){
         id = new NamespacedKey(javaPlugin, getName()).asString();
     }
 

@@ -1,9 +1,19 @@
 package me.udnek.itemscoreu.customblock;
 
 import com.destroystokyo.paper.event.block.BlockDestroyEvent;
+import me.udnek.itemscoreu.utils.RightClickable;
 import me.udnek.itemscoreu.utils.SelfRegisteringListener;
+import org.bukkit.Bukkit;
+import org.bukkit.Chunk;
+import org.bukkit.Server;
+import org.bukkit.World;
+import org.bukkit.block.BlockState;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.server.ServerLoadEvent;
+import org.bukkit.event.world.ChunkLoadEvent;
+import org.bukkit.event.world.ChunkUnloadEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class CustomBlockListener extends SelfRegisteringListener {
@@ -21,20 +31,40 @@ public class CustomBlockListener extends SelfRegisteringListener {
         if (customBlock != null) customBlock.onDestroy(event);
     }
 
-/*    @EventHandler
-    public void onPick(PlayerPickItemEvent event){
-        Block block = event.getPlayer().getTargetBlockExact(6);
+    public void loadChunk(Chunk chunk){
+        for (BlockState blockState : chunk.getTileEntities()) {
+            CustomBlock customBlock = CustomBlock.get(blockState);
+            if (customBlock != null) customBlock.onLoad(blockState);
+        }
+    }
+    public void unloadChunk(Chunk chunk){
+        for (BlockState blockState : chunk.getTileEntities()) {
+            CustomBlock customBlock = CustomBlock.get(blockState);
+            if (customBlock != null) customBlock.onUnload(blockState);
+        }
+    }
+    @EventHandler
+    public void onLoad(ChunkLoadEvent event){loadChunk(event.getChunk());}
+    @EventHandler
+    public void onUnload(ChunkUnloadEvent event){unloadChunk(event.getChunk());}
+    @EventHandler
+    public void onReload(ServerLoadEvent event){
+        if (event.getType() != ServerLoadEvent.LoadType.RELOAD) return;
+        for (World world : Bukkit.getWorlds()) {
+            for (Chunk loadedChunk : world.getLoadedChunks()) {
+                loadChunk(loadedChunk);
+            }
+        }
+    }
 
-        LogUtils.log(String.valueOf(block));
-        if (block != null) LogUtils.log(String.valueOf(block.getType()));
-
-        CustomBlock customBlock = CustomBlock.get(block);
-
-        LogUtils.log(String.valueOf(customBlock));
-
-        if (customBlock == null) return;
-        int targetSlot = event.getTargetSlot();
-        CustomItem customItem = customBlock.getItem();
-        event.getPlayer().getInventory().setItem(targetSlot, customItem.getItem());
-    }*/
+    // TODO: 2/15/2024 FIX SO TWO ITEMS WONT FIRE AT ONE TICK
+    @EventHandler
+    public void onPlayerInteract(PlayerInteractEvent event) {
+        if (!event.getAction().isRightClick()) return;
+        if (event.getClickedBlock() == null) return;
+        CustomBlock customBlock = CustomBlock.get(event.getClickedBlock());
+        if (customBlock instanceof RightClickable rightClickable){
+            rightClickable.onRightClicks(event);
+        }
+    }
 }

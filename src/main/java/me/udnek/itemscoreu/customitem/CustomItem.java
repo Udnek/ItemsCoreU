@@ -1,6 +1,7 @@
 package me.udnek.itemscoreu.customitem;
 
 import me.udnek.itemscoreu.ItemsCoreU;
+import me.udnek.itemscoreu.utils.PluginInitializable;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -18,12 +19,13 @@ import org.bukkit.inventory.meta.components.FoodComponent;
 import org.bukkit.inventory.meta.trim.ArmorTrim;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public interface CustomItem {
+public interface CustomItem extends PluginInitializable {
 
     static final NamespacedKey PERSISTENT_DATA_CONTAINER_NAMESPACE = new NamespacedKey(ItemsCoreU.getInstance(), "item");
 
@@ -60,11 +62,10 @@ public interface CustomItem {
     ///////////////////////////////////////////////////////////////////////////
     // PROPERTIES
     ///////////////////////////////////////////////////////////////////////////
-    void initialize(JavaPlugin javaPlugin);
-    String getRawId();
-    String getId();
+    @NotNull String getRawId();
+    @NotNull String getId();
     ItemStack getItem();
-    List<Recipe> getRecipes();
+    @NotNull List<Recipe> getRecipes();
     void registerRecipes();
 
     ///////////////////////////////////////////////////////////////////////////

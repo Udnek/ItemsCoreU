@@ -1,4 +1,4 @@
-package me.udnek.itemscoreu.customitem;
+package me.udnek.itemscoreu.utils;
 
 import org.bukkit.event.player.PlayerInteractEvent;
 

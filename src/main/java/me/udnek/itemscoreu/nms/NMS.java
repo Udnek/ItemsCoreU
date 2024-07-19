@@ -6,6 +6,8 @@ import me.udnek.itemscoreu.utils.LogUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
+import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
+import net.minecraft.network.protocol.common.custom.GameTestAddMarkerDebugPayload;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.MapItem;
@@ -27,10 +29,12 @@ import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_20_R4.CraftChunk;
 import org.bukkit.craftbukkit.v1_20_R4.CraftLootTable;
 import org.bukkit.craftbukkit.v1_20_R4.CraftWorld;
+import org.bukkit.craftbukkit.v1_20_R4.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_20_R4.generator.structure.CraftStructure;
 import org.bukkit.craftbukkit.v1_20_R4.inventory.CraftItemStack;
 import org.bukkit.craftbukkit.v1_20_R4.map.CraftMapCursor;
 import org.bukkit.craftbukkit.v1_20_R4.util.CraftMagicNumbers;
+import org.bukkit.entity.Player;
 import org.bukkit.generator.structure.Structure;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.loot.LootTable;
@@ -273,9 +277,19 @@ public class NMS{
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    // ENTITY
+    // MISC
     ///////////////////////////////////////////////////////////////////////////
 
+    public void showDebugBlock(Player player, Location location, int color, String name, int time){
+        Color rgb = Color.fromRGB(color);
+        color = rgb.getBlue() | (rgb.getGreen() << 8) | (rgb.getRed() << 16) | (rgb.getAlpha() << 24);
+        GameTestAddMarkerDebugPayload payload = new GameTestAddMarkerDebugPayload(toNMSBlockPosition(location), color, name, time * 1000/20);
+        ((CraftPlayer) player).getHandle().connection.send(new ClientboundCustomPayloadPacket(payload));
+    }
+
+    public void showDebugBlock(Player player, Location location, int color, int time){
+        showDebugBlock(player, location, color, "", time);
+    }
 
 }
 
