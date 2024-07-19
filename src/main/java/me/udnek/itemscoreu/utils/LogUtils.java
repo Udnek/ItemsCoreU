@@ -10,13 +10,12 @@ import java.lang.reflect.Field;
 import java.util.List;
 
 public class LogUtils {
-
-    public static void log(String message){ Bukkit.getLogger().info(message);}
-    public static void log(String message, TextColor color){ log(Component.text(message).color(color));}
+    public static void log(Object message) {log(Component.text(String.valueOf(message)));}
+    public static void log(Object message, TextColor color){ log(Component.text(String.valueOf(message)).color(color));}
     public static void log(Component message){ Bukkit.getConsoleSender().sendMessage(message);}
     public static void log(List<Component> components){components.forEach(LogUtils::log);}
-    public static void pluginLog(String message){
-        ItemsCoreU.getInstance().getLogger().info(message);
+    public static void pluginLog(Object message){
+        ItemsCoreU.getInstance().getLogger().info(String.valueOf(message));
     }
 
     public static void logDeclaredFields(Object object){

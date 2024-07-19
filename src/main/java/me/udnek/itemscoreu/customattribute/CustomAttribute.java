@@ -1,17 +1,20 @@
 package me.udnek.itemscoreu.customattribute;
 
+import me.udnek.itemscoreu.utils.PluginInitializable;
 import net.kyori.adventure.translation.Translatable;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Entity;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
 
-public abstract class CustomAttribute implements Serializable, Translatable {
+public abstract class CustomAttribute implements Serializable, Translatable, PluginInitializable {
 
     protected String id;
     protected CustomAttribute(){}
-    final void register(JavaPlugin javaPlugin){
+    @Override
+    public final void initialize(@NotNull JavaPlugin javaPlugin){
         id = new NamespacedKey(javaPlugin, getRawId()).asString();
     }
     protected final String getId(){return id;}

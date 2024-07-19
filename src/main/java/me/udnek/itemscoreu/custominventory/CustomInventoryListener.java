@@ -18,36 +18,35 @@ public class CustomInventoryListener extends SelfRegisteringListener {
 
     @EventHandler
     public void onPlayerClicksInInventory(InventoryClickEvent event){
-        if (event.getInventory().getHolder() instanceof CustomInventory){
-            CustomInventory holder = (CustomInventory) event.getInventory().getHolder();
-            holder.onPlayerClicksItem(event);
+        if (event.getInventory().getHolder() instanceof CustomInventory customInventory){
+            customInventory.onPlayerClicksItem(event);
 
             new BukkitRunnable() {
                 @Override
                 public void run() {
-                    holder.afterPlayerClicksItem(event);
+                    customInventory.afterPlayerClicksItem(event);
                 }
             }.runTaskLater(ItemsCoreU.getInstance(), 1);
         }
     }
     @EventHandler
     public void onPlayerClosesInventory(InventoryCloseEvent event){
-        if (event.getInventory().getHolder() instanceof CustomInventory){
-            ((CustomInventory) event.getInventory().getHolder()).onPlayerClosesInventory(event);
+        if (event.getInventory().getHolder() instanceof CustomInventory customInventory){
+            customInventory.onPlayerClosesInventory(event);
         }
     }
 
     @EventHandler
     public void onPlayerOpensInventory(InventoryOpenEvent event){
-        if (event.getInventory().getHolder() instanceof CustomInventory){
-            ((CustomInventory) event.getInventory().getHolder()).onPlayerOpensInventory(event);
+        if (event.getInventory().getHolder() instanceof CustomInventory customInventory){
+            customInventory.onPlayerOpensInventory(event);
         }
     }
 
     @EventHandler
     public void onPlayerDragsItem(InventoryDragEvent event){
-        if (event.getInventory().getHolder() instanceof CustomInventory){
-            ((CustomInventory) event.getInventory().getHolder()).onPlayerDragsItem(event);
+        if (event.getInventory().getHolder() instanceof CustomInventory customInventory){
+            customInventory.onPlayerDragsItem(event);
         }
     }
 }

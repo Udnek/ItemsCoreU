@@ -1,11 +1,10 @@
 package me.udnek.itemscoreu.customblock;
 
+import com.destroystokyo.paper.ParticleBuilder;
 import com.destroystokyo.paper.event.block.BlockDestroyEvent;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
+import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
 import org.bukkit.block.CreatureSpawner;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.EntitySnapshot;
@@ -15,8 +14,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.EulerAngle;
-
-import java.util.Set;
+import org.jetbrains.annotations.NotNull;
 
 public abstract class ConstructableCustomBlock implements CustomBlock{
 
@@ -24,7 +22,7 @@ public abstract class ConstructableCustomBlock implements CustomBlock{
     protected EntitySnapshot visualRepresentation;
     protected ConstructableCustomBlock(){}
     @Override
-    public void initialize(JavaPlugin javaPlugin){
+    public void initialize(@NotNull JavaPlugin javaPlugin){
         this.id = new NamespacedKey(javaPlugin, getRawId()).asString();
     }
     @Override
@@ -35,11 +33,18 @@ public abstract class ConstructableCustomBlock implements CustomBlock{
         blockState.setSpawnedEntity(getVisualRepresentation());
         blockState.getPersistentDataContainer().set(PERSISTENT_DATA_CONTAINER_NAMESPACE, PersistentDataType.STRING, id);
         blockState.update(true, false);
+
     }
+
+    @Override
+    public void onLoad(BlockState blockState) {}
+    @Override
+    public void onUnload(BlockState blockState) {}
 
     @Override
     public void destroy(Location location) {
         location.getWorld().getBlockAt(location).setType(Material.AIR);
+        onDestroy(location.getBlock());
     }
 
     @Override
@@ -52,15 +57,31 @@ public abstract class ConstructableCustomBlock implements CustomBlock{
         event.setExpToDrop(0);
         onDestroy(event.getBlock());
     }
-    public void onDestroy(Block block){}
+    public void onDestroy(Block block){
+        Location centerLocation = block.getLocation().toCenterLocation();
+/*        centerLocation.getWorld().spawnParticle(
+                Particle.ITEM,
+                centerLocation,
+                10,
+                0.2, 0.2, 0.2,
+                0,
+                getVisualItem());*/
+        // TODO: 7/22/2024 FIX PARTICLES
+        ParticleBuilder builder = new ParticleBuilder(Particle.ITEM);
+        builder.location(centerLocation);
+        builder.data(getVisualItem());
+        builder.count(10);
+        builder.offset(0.5, 0.5, 0.5);
+        builder.extra(0);
+        builder.spawn();
+    }
     @Override
-    public final String getId() {return id;}
+    public final @NotNull String getId() {return id;}
 
 
     ///////////////////////////////////////////////////////////////////////////
     // PROPERTIES
     ///////////////////////////////////////////////////////////////////////////
-    public abstract String getRawId();
     public abstract ItemStack getVisualItem();
 
     ///////////////////////////////////////////////////////////////////////////

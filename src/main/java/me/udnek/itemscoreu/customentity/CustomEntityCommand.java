@@ -1,5 +1,6 @@
-package me.udnek.itemscoreu.customitem;
+package me.udnek.itemscoreu.customentity;
 
+import me.udnek.itemscoreu.customitem.CustomItem;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -10,44 +11,32 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
-public class CustomItemCommand implements CommandExecutor, TabExecutor {
+public class CustomEntityCommand implements CommandExecutor, TabExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        if (!(commandSender instanceof Player)){
+        if (!(commandSender instanceof Player player)) {
             return false;
         }
-        if (args.length != 1){
+        if (args.length != 1) {
             return false;
         }
         String id = args[0];
 
-        if (!CustomItem.idExists(id)){
+        if (!CustomEntity.idExists(id)) {
             return false;
         }
-
-        ItemStack itemStack = CustomItem.get(id).getItem();
-
-        ((Player) commandSender).getInventory().addItem(itemStack);
+        CustomEntityType entityType = CustomEntity.getType(id);
+        entityType.spawn(player.getLocation());
         return true;
     }
 
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-
         if (args.length > 1) return new ArrayList<>();
-
-        Set<String> allIds = CustomItem.getAllIds();
-        ArrayList<String> ids = new ArrayList<>();
-
-        for (String id : allIds) {
-            if (id.contains(args[0])){
-                ids.add(id);
-            }
-        }
-
-        return ids;
+        return CustomEntity.getAllIds();
     }
 }

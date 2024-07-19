@@ -1,11 +1,12 @@
-package me.udnek.itemscoreu.customitem;
+package me.udnek.itemscoreu.utils;
 
-import me.udnek.itemscoreu.nms.NMS;
-import org.bukkit.*;
+import me.udnek.itemscoreu.customitem.CustomItem;
+import org.bukkit.Bukkit;
+import org.bukkit.Color;
+import org.bukkit.FireworkEffect;
+import org.bukkit.Material;
 import org.bukkit.inventory.*;
 import org.bukkit.inventory.meta.FireworkEffectMeta;
-import org.bukkit.loot.LootTable;
-import org.bukkit.loot.LootTables;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -14,18 +15,26 @@ import java.util.List;
 
 public class ItemUtils {
 
+    public static boolean isSameIds(ItemStack itemA, ItemStack itemB){
+        CustomItem customA = CustomItem.get(itemA);
+        CustomItem customB = CustomItem.get(itemB);
+        if (customA == customB) return true;
+        return itemA.getType() == itemB.getType();
+    }
+
     public static boolean isCustomItemOrMaterial(String name){
-        if (CustomItem.IdExists(name)) return true;
+        if (CustomItem.idExists(name)) return true;
         return Material.getMaterial(name.toUpperCase()) != null;
     }
 
     public static ItemStack getFromCustomItemOrMaterial(String name){
-        if (CustomItem.IdExists(name)) return CustomItem.get(name).getItem();
+        if (CustomItem.idExists(name)) return CustomItem.get(name).getItem();
         Material material = Material.getMaterial(name.toUpperCase());
         if (material == null) return new ItemStack(Material.AIR);
         return new ItemStack(material);
     }
 
+    @Deprecated
     public static List<Recipe> getRecipesOfItemStack(ItemStack itemStack){
         if (CustomItem.isCustom(itemStack)){
             CustomItem customItem = CustomItem.get(itemStack);
@@ -43,30 +52,9 @@ public class ItemUtils {
         }
     }
 
-    public static List<LootTable> getWhereItemStackInLootTable(ItemStack itemStack){
-        ArrayList<LootTable> result = new ArrayList<>();
-
-        if (CustomItem.isCustom(itemStack)) return result;
-
-        Iterator<LootTables> lootTablesIterator = Registry.LOOT_TABLES.iterator();
-        //SKIPS EMPTY
-        lootTablesIterator.next();
-        while (lootTablesIterator.hasNext()){
-            LootTable lootTable = lootTablesIterator.next().getLootTable();
-            ArrayList<ItemStack> itemStacks = NMS.get().getPossibleLoot(lootTable);
-
-            for (ItemStack loot : itemStacks) {
-                if (loot.getType() == itemStack.getType()){
-                    result.add(lootTable);
-                    break;
-                }
-            }
-        }
-        return result;
-    }
-
-
+    @Deprecated
     public static List<Recipe> getItemInRecipesUsages(ItemStack itemStack){
+        // TODO: 7/26/2024 CUSTOM ITEM
         if (CustomItem.isCustom(itemStack)){
             return new ArrayList<>();
         }
@@ -130,13 +118,14 @@ public class ItemUtils {
         return choices.contains(material);
     }
 
-    public static FireworkEffectMeta setFireworkColor(FireworkEffectMeta itemMeta, Color color){
+    public static void setFireworkColor(FireworkEffectMeta itemMeta, Color color){
         FireworkEffect.Builder builder = FireworkEffect.builder();
         builder.withColor(color);
         itemMeta.setEffect(builder.build());
-        return itemMeta;
     }
-
+    public static void setFireworkColor(FireworkEffectMeta itemMeta, int color){
+        setFireworkColor(itemMeta, Color.fromRGB(color));
+    }
 
 }
 

@@ -1,10 +1,13 @@
 package me.udnek.itemscoreu.customattribute.equipmentslot;
 
+import me.udnek.itemscoreu.utils.PluginInitializable;
 import net.kyori.adventure.translation.Translatable;
 import org.bukkit.entity.Entity;
 import org.bukkit.inventory.EquipmentSlotGroup;
+import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 
-public abstract class CustomEquipmentSlot implements Translatable {
+public abstract class CustomEquipmentSlot implements Translatable, PluginInitializable {
     protected CustomEquipmentSlot(){}
     public abstract boolean isAppropriateSlot(Entity entity, int slot);
     public EquipmentSlotGroup getVanillaAlternative(){return null;}
@@ -27,4 +30,7 @@ public abstract class CustomEquipmentSlot implements Translatable {
         }
         return null;
     }
+
+    @Override
+    public void initialize(@NotNull JavaPlugin plugin) {}
 }

@@ -7,7 +7,7 @@ import org.bukkit.event.Event;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CustomEventManager {
+public class AllEventManager {
 
     private static final List<AllEventListener> eventListeners = new ArrayList<>();
     public static void addListener(AllEventListener allEventListener){
@@ -15,11 +15,8 @@ public class CustomEventManager {
         LogUtils.pluginLog(allEventListener.getClass().getName() + " (EventListener)");
         eventListeners.add(allEventListener);
     }
-    public static void fire(CustomEvent event){
-        eventListeners.forEach(eventListener -> eventListener.onCustomEvent(event));
-    }
     public static void fire(Event event){
-        eventListeners.forEach(eventListener -> eventListener.onBukkitEvent(event));
+        eventListeners.forEach(eventListener -> eventListener.onEvent(event));
     }
 
 }

@@ -1,9 +1,7 @@
 package me.udnek.itemscoreu.customattribute.equipmentslot.instance;
 
 import me.udnek.itemscoreu.customattribute.equipmentslot.CustomEquipmentSlot;
-import me.udnek.itemscoreu.customattribute.equipmentslot.CustomEquipmentSlots;
 import org.bukkit.entity.Entity;
-import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.EquipmentSlotGroup;
 import org.jetbrains.annotations.NotNull;
 

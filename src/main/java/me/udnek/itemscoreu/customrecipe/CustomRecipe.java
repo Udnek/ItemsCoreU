@@ -1,15 +1,18 @@
 package me.udnek.itemscoreu.customrecipe;
 
-import org.bukkit.Keyed;
+import net.kyori.adventure.key.Keyed;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
-import org.bukkit.inventory.RecipeChoice;
+import org.jetbrains.annotations.NotNull;
 
-public interface CustomRecipe extends Keyed, Recipe {
+import java.util.Collection;
 
-    // TODO: 3/9/2024 COMPLETE IT
-
-    RecipeChoice[] getAllInputChoices();
-    ItemStack getCraftingStation();
-
+public interface CustomRecipe extends Recipe, Keyed {
+    @NotNull Collection<ItemStack> getResults();
+    boolean isResult(ItemStack itemStack);
+    boolean isIngredient(ItemStack itemStack);
+    @NotNull CustomRecipeType getType();
+    @Override
+    @Deprecated
+    @NotNull ItemStack getResult();
 }

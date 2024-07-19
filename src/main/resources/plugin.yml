@@ -10,3 +10,9 @@ commands:
     aliases: [itemscoreugive]
     permission: itemscoreu.admin
     permission-message: "You do not have permission to use this command"
+  summonu:
+    description: "summonu"
+    usage: "/summonu <entity>"
+    aliases: [itemscoreusummon]
+    permission: itemscoreu.admin
+    permission-message: "You do not have permission to use this command"

@@ -17,8 +17,6 @@
         <remapped.version>1.20.6-R0.1-SNAPSHOT</remapped.version>
     </properties>
 
-
-
     <build>
         <plugins>
             <plugin>

@@ -1,5 +1,6 @@
 package me.udnek.itemscoreu.customitem;
 
+import me.udnek.itemscoreu.utils.RightClickable;
 import me.udnek.itemscoreu.utils.SelfRegisteringListener;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.BlockPlaceEvent;
@@ -16,11 +17,8 @@ public class CustomItemListener extends SelfRegisteringListener {
     // TODO: 2/15/2024 FIX SO TWO ITEMS WONT FIRE AT ONE TICK
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
-
         if (!event.getAction().isRightClick()) return;
-
         CustomItem customItem = CustomItem.get(event.getItem());
-        if (customItem == null) return;
         if (customItem instanceof RightClickable rightClickable){
             rightClickable.onRightClicks(event);
         }

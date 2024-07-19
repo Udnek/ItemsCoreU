@@ -9,7 +9,7 @@ import java.util.UUID;
 
 public class CustomPlayerDatabase {
 
-    private static final HashMap<String, CustomPlayerData> database = new HashMap<String, CustomPlayerData>();
+    private static final HashMap<String, CustomPlayerData> database = new HashMap<>();
 
     public static CustomPlayerData getData(Player player){
         String uuid = player.getUniqueId().toString();
