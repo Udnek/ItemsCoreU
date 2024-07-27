@@ -13,6 +13,7 @@ import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.attributes.RangedAttribute;
+import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.meta.trim.TrimPattern;
 
 import java.awt.*;
@@ -50,6 +51,7 @@ public class NMSTest {
         org.bukkit.Registry<TrimPattern> trimPattern = org.bukkit.Registry.TRIM_PATTERN;
         RegistryKey<TrimPattern> trimPattern1 = RegistryKey.TRIM_PATTERN;
         Registries.TRIM_PATTERN.registryKey();
+
     }
 
     public static MobEffect registerEffect(){
@@ -62,11 +64,11 @@ public class NMSTest {
             throw new RuntimeException(e);
         }
 
-        MobEffect mobEffect = null;
+        MobEffect mobEffect;
         try {
             Constructor<MobEffect> constructor = MobEffect.class.getDeclaredConstructor(MobEffectCategory.class, int.class, ParticleOptions.class);
             constructor.setAccessible(true);
-            mobEffect = constructor.newInstance(MobEffectCategory.BENEFICIAL, new Color(1f, 0, 0).getRGB(), ParticleTypes.CHERRY_LEAVES)
+            mobEffect = constructor.newInstance(MobEffectCategory.BENEFICIAL, new Color(1f, 0, 0).getRGB(), ParticleTypes.CAMPFIRE_SIGNAL_SMOKE)
                     .addAttributeModifier(Attributes.SCALE, "91AEAA56-376B-4498-935B-2F7F68070636", 1, AttributeModifier.Operation.ADD_VALUE);
         } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
             throw new RuntimeException(e);

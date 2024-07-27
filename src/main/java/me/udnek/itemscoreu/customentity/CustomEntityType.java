@@ -13,9 +13,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-
-// TODO: 7/18/2024 MAKE IMPLEMENTS CUSTOM ENTITY
-// TODO: 7/18/2024 GET RAW ID
 public abstract class CustomEntityType implements PluginInitializable {
     public static final NamespacedKey NAMESPACED_KEY = new NamespacedKey(ItemsCoreU.getInstance(), "custom_entity_type");
     protected final String rawId;

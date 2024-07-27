@@ -16,3 +16,9 @@ commands:
     aliases: [itemscoreusummon]
     permission: itemscoreu.admin
     permission-message: "You do not have permission to use this command"
+  resourcepacku:
+    description: "resourcepacku"
+    usage: "/resourcepacku <directory>"
+    aliases: [ itemscoreuresourcepack ]
+    permission: itemscoreu.admin
+    permission-message: "You do not have permission to use this command"

@@ -4,6 +4,7 @@ import me.udnek.itemscoreu.ItemsCoreU;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
+import org.bukkit.Color;
 
 import java.lang.reflect.AccessFlag;
 import java.lang.reflect.Field;
@@ -16,6 +17,9 @@ public class LogUtils {
     public static void log(List<Component> components){components.forEach(LogUtils::log);}
     public static void pluginLog(Object message){
         ItemsCoreU.getInstance().getLogger().info(String.valueOf(message));
+    }
+    public static void pluginWarning(Object message){
+        ItemsCoreU.getInstance().getLogger().warning(String.valueOf(message));
     }
 
     public static void logDeclaredFields(Object object){
