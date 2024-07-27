@@ -1,48 +1,26 @@
 package me.udnek.itemscoreu.utils.NMS;
 
 import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.*;
+import me.udnek.itemscoreu.ItemsCoreU;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
-public class ProtocolTest extends PacketAdapter{
-
-    public ProtocolTest(@NotNull PacketAdapter.AdapterParameteters params) {
-        super(params);
-    }
-
-    public ProtocolTest(Plugin plugin, PacketType... types) {
-        super(plugin, types);
-    }
-
-    public ProtocolTest(Plugin plugin, Iterable<? extends PacketType> types) {
-        super(plugin, types);
-    }
-
-    public ProtocolTest(Plugin plugin, ListenerPriority listenerPriority, Iterable<? extends PacketType> types) {
-        super(plugin, listenerPriority, types);
-    }
-
-    public ProtocolTest(Plugin plugin, ListenerPriority listenerPriority, Iterable<? extends PacketType> types, ListenerOptions... options) {
-        super(plugin, listenerPriority, types, options);
-    }
-
-    public ProtocolTest(Plugin plugin, ListenerPriority listenerPriority, PacketType... types) {
-        super(plugin, listenerPriority, types);
-    }
-
-    @Override
-    public void onPacketSending(PacketEvent packetEvent) {
-        //LogUtils.log(String.valueOf(packetEvent.getPacketType()));
-        if(packetEvent.getPacketType() != PacketType.Play.Server.UPDATE_ATTRIBUTES) return;
-        //LogUtils.log("ATTR PACKET");
-        PacketContainer packet = packetEvent.getPacket();
-/*        StructureModifier<List<WrappedAttribute>> modifier = packet.getAttributeCollectionModifier();
-        for (List<WrappedAttribute> value : modifier.getValues()) {
-            for (WrappedAttribute wrappedAttribute : value) {
-                LogUtils.log(wrappedAttribute.getAttributeKey());
+public class ProtocolTest{
+    public static void kek(){
+        ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(
+                ItemsCoreU.getInstance(),
+                ListenerPriority.NORMAL,
+                PacketType.Play.Server.ENTITY_EFFECT
+        ) {
+            @Override
+            public void onPacketSending(PacketEvent event) {
+                Player player = event.getPlayer();
+                player.sendMessage(event.getPacket().getIntegers().getField(1).toString());
             }
-        }*/
-        //LogUtils.log(String.valueOf(modifier));
+        });
     }
 }

@@ -10,10 +10,4 @@ public class CustomEvent extends Event {
     public final @NotNull HandlerList getHandlers() {
         return HANDLER_LIST;
     }
-
-    @Override
-    public boolean callEvent() {
-        AllEventManager.fire(this);
-        return super.callEvent();
-    }
 }

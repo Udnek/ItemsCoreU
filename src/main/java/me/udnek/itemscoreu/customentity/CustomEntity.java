@@ -35,7 +35,6 @@ public interface CustomEntity {
         return getType(id) != null;
     }
 
-
     @NotNull Entity getNewEntity(Location location);
     void onSpawn();
     void load(Entity entity);

@@ -1,7 +1,7 @@
 package me.udnek.itemscoreu.utils;
 
-import me.udnek.itemscoreu.customevent.AllEventListener;
-import me.udnek.itemscoreu.customevent.AllEventManager;
+import org.bukkit.Bukkit;
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public abstract class CustomRegistry<T extends PluginInitializable> {
@@ -11,7 +11,10 @@ public abstract class CustomRegistry<T extends PluginInitializable> {
         custom.initialize(plugin);
         put(custom);
         logRegistered(custom);
-        if (custom instanceof AllEventListener allEventListener) AllEventManager.addListener(allEventListener);
+        if (custom instanceof Listener listener){
+            Bukkit.getPluginManager().registerEvents(listener, plugin);
+            LogUtils.pluginLog("(EventListener) " + listener.getClass().getName());
+        }
         return custom;
     }
     protected void logRegistered(T custom){

@@ -17,6 +17,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.ReloadableServerRegistries;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.npc.VillagerTrades;
 import net.minecraft.world.item.Item;
@@ -32,11 +33,11 @@ import net.minecraft.world.level.levelgen.structure.StructurePiece;
 import net.minecraft.world.level.levelgen.structure.StructureStart;
 import net.minecraft.world.level.saveddata.maps.MapDecorationType;
 import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
+import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.LootPool;
-import net.minecraft.world.level.storage.loot.entries.DynamicLoot;
-import net.minecraft.world.level.storage.loot.entries.LootItem;
-import net.minecraft.world.level.storage.loot.entries.LootPoolEntryContainer;
-import net.minecraft.world.level.storage.loot.entries.TagEntry;
+import net.minecraft.world.level.storage.loot.entries.*;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_20_R4.CraftChunk;
@@ -44,6 +45,7 @@ import org.bukkit.craftbukkit.v1_20_R4.CraftLootTable;
 import org.bukkit.craftbukkit.v1_20_R4.CraftServer;
 import org.bukkit.craftbukkit.v1_20_R4.CraftWorld;
 import org.bukkit.craftbukkit.v1_20_R4.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_20_R4.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.v1_20_R4.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_20_R4.generator.structure.CraftStructure;
 import org.bukkit.craftbukkit.v1_20_R4.inventory.CraftItemStack;
@@ -59,12 +61,22 @@ import org.bukkit.map.MapCursor;
 import org.bukkit.util.StructureSearchResult;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Nms {
+
+    private static final LootContext GENERIC_LOOT_CONTEXT;
+
+    static {
+        ServerLevel serverLevel = ((CraftWorld) Bukkit.getWorld("world")).getHandle();
+        LootParams.Builder paramsBuilder = new LootParams.Builder(serverLevel);
+        LootContextParamSet contextParamSet = new LootContextParamSet.Builder().build();
+        paramsBuilder.withLuck(1);
+        LootContext.Builder contextBuilder = new LootContext.Builder(paramsBuilder.create(contextParamSet));
+        GENERIC_LOOT_CONTEXT = contextBuilder.create(Optional.empty());
+    }
+
+
     private static Nms instance;
     public static Nms get(){
         if (instance == null){
@@ -168,24 +180,14 @@ public class Nms {
         return lootTables;
     }
     public @NotNull LootTable getLootTable(String id){
-        ReloadableServerRegistries.Holder registries = ((CraftServer) Bukkit.getServer()).getServer().reloadableRegistries();
         ResourceLocation resourceLocation = new ResourceLocation(id);
         ResourceKey<net.minecraft.world.level.storage.loot.LootTable> key = ResourceKey.create(Registries.LOOT_TABLE, resourceLocation);
-        net.minecraft.world.level.storage.loot.LootTable lootTable = registries.getLootTable(key);
-        // returns EMPTY if not found
-        return lootTable.craftLootTable;
+        return getLootTable(key);
     }
-
-/*    private static final LootContext GENERIC_LOOT_CONTEXT;
-
-    static {
-        ServerLevel serverLevel = ((CraftWorld) Bukkit.getWorld("world")).getHandle();
-        LootParams.Builder paramsBuilder = new LootParams.Builder(serverLevel);
-        paramsBuilder.withLuck(1);
-        LootContext.Builder contextBuilder = new LootContext.Builder(paramsBuilder.create());
-        LootContext.
-    }*/
-
+    protected @NotNull LootTable getLootTable(@NotNull ResourceKey<net.minecraft.world.level.storage.loot.LootTable> resourceKey){
+        ReloadableServerRegistries.Holder registries = ((CraftServer) Bukkit.getServer()).getServer().reloadableRegistries();
+        return registries.getLootTable(resourceKey).craftLootTable;
+    }
     public List<ItemStack> getPossibleLoot(LootTable lootTable) {
 
         ArrayList<ItemStack> result = new ArrayList<>();
@@ -216,27 +218,50 @@ public class Nms {
 
 
             for (LootPoolEntryContainer entryContainer : lootPoolEntryContainers) {
-                ItemConsumer itemConsumer = null;
+                if (!(entryContainer instanceof LootPoolSingletonContainer container)) continue;
+
+                LootPoolEntry poolEntry;
+
+                try {
+                    poolEntry = (LootPoolEntry) FieldUtils.readField(container, "entry", true);
+                } catch (IllegalArgumentException e) {
+                    LogUtils.logDeclaredFields(lootPool);
+                    throw new RuntimeException(e);
+                } catch (IllegalAccessException e) {
+                    throw new RuntimeException(e);
+                }
+
+                ItemConsumer itemConsumer = new MultipleItemConsumer();
+                poolEntry.createItemStack(itemConsumer, GENERIC_LOOT_CONTEXT);
+
+
+/*                ItemConsumer itemConsumer = null;
 
                 if (entryContainer instanceof LootItem entry) {
                     entry.createItemStack(itemConsumer = new SingleItemConsumer(), null);
                 } else if (entryContainer instanceof TagEntry entry) {
                     entry.createItemStack(itemConsumer = new MultipleItemConsumer(), null);
                     // TODO: 7/25/2024 ADD ALTERNATIVES ENTRY
-/*                } else if (entryContainer instanceof NestedLootTable entry) {
-                    entry.createItemStack(itemConsumer = new MultipleItemConsumer(), null);*/
+                } else if (entryContainer instanceof NestedLootTable entry) {
+                    entry.createItemStack(itemConsumer = new MultipleItemConsumer(), null);
                 } else if (entryContainer instanceof DynamicLoot entry) {
                     entry.createItemStack(itemConsumer = new MultipleItemConsumer(), null);
                 }
                 // TODO: 7/25/2024 ADD ALTERNATIVES ENTRY
 
-                if (itemConsumer == null) continue;
+                if (itemConsumer == null) continue;*/
                 for (net.minecraft.world.item.ItemStack itemStack : itemConsumer.get()) {
+                    if (itemStack.getCount() == 0) itemStack.setCount(1);
                     result.add(toBukkitItemStack(itemStack));
                 }
             }
         }
         return result;
+    }
+    public @NotNull LootTable getDeathLootTable(@NotNull org.bukkit.entity.LivingEntity bukkitEntity){
+        LivingEntity entity = ((CraftLivingEntity) bukkitEntity).getHandle();
+        return getLootTable(entity.getLootTable());
+
     }
     ///////////////////////////////////////////////////////////////////////////
     // STRUCTURE

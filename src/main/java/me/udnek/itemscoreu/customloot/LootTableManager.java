@@ -11,6 +11,7 @@ import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.world.LootGenerateEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.loot.LootTable;
@@ -124,5 +125,10 @@ public class LootTableManager extends CustomRegistry<CustomLootTable> implements
         if (lootTable instanceof CustomLootTable customLootTable) {
             customLootTable.onLootGeneratesEvent(event);
         }
+    }
+
+    public void onEntityDeath(EntityDeathEvent event){
+        LootTable lootTable = Nms.get().getDeathLootTable(event.getEntity());
+        // TODO: 7/29/2024 CALL LOOTTABLE
     }
 }
