@@ -8,6 +8,8 @@ public enum FileType {
     PNG("png"),
     JSON("json"),
     MCMETA("mcmeta"),
+    VSH("vsh"),
+    FSH("fsh"),
     UNKNOWN(null);
 
     public final @Nullable String extension;
