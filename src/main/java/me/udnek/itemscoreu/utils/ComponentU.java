@@ -1,11 +1,15 @@
 package me.udnek.itemscoreu.utils;
 
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextColor;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ComponentU {
+
+    public static final TextColor NO_SHADOW_COLOR = TextColor.fromHexString("#4e5c24");
 
     public static Component translatableWithInsertion(String key, Component ...insertion){
         return Component.translatable(key, List.of(insertion));
