@@ -1,5 +1,6 @@
 package me.udnek.itemscoreu.customitem;
 
+import com.google.common.base.Preconditions;
 import me.udnek.itemscoreu.customattribute.AttributeUtils;
 import me.udnek.itemscoreu.customrecipe.RecipeManager;
 import org.bukkit.NamespacedKey;
@@ -32,6 +33,7 @@ public abstract class ConstructableCustomItem implements CustomItem, CustomItemP
     public final @NotNull String getId(){return this.id;}
     @Override
     public void initialize(@NotNull JavaPlugin javaPlugin){
+        Preconditions.checkArgument(plugin == null, "Item already initialized!");
         this.plugin = javaPlugin;
         this.id = new NamespacedKey(javaPlugin, getRawId()).asString();
         this.recipes = new ArrayList<>();
@@ -55,6 +57,7 @@ public abstract class ConstructableCustomItem implements CustomItem, CustomItemP
         itemMeta.setRarity(getItemRarity());
         itemMeta.setHideTooltip(getHideTooltip());
         itemMeta.setFood(getFoodComponent());
+        itemMeta.setTool(getToolComponent());
         itemMeta.displayName(getCustomDisplayName());
         itemMeta.setUnbreakable(getUnbreakable());
         itemMeta.setEnchantmentGlintOverride(getEnchantmentGlintOverride());

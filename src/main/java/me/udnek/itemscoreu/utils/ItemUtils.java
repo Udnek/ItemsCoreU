@@ -7,6 +7,7 @@ import org.bukkit.FireworkEffect;
 import org.bukkit.Material;
 import org.bukkit.inventory.*;
 import org.bukkit.inventory.meta.FireworkEffectMeta;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -20,6 +21,11 @@ public class ItemUtils {
         CustomItem customB = CustomItem.get(itemB);
         if (customA == customB) return true;
         return itemA.getType() == itemB.getType();
+    }
+    public static String getId(@NotNull ItemStack itemStack){
+        CustomItem customItem = CustomItem.get(itemStack);
+        if (customItem != null) return customItem.getId();
+        return itemStack.getType().toString().toLowerCase();
     }
 
     public static boolean isCustomItemOrMaterial(String name){

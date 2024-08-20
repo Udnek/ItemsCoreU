@@ -1,25 +1,44 @@
 package me.udnek.itemscoreu.utils.NMS;
 
 import io.papermc.paper.registry.RegistryKey;
-import net.minecraft.core.Registry;
+import net.minecraft.core.*;
+import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.dedicated.DedicatedServer;
+import net.minecraft.tags.InstrumentTags;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
+import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.attributes.RangedAttribute;
-import org.bukkit.entity.EntityType;
+import net.minecraft.world.food.Foods;
+import net.minecraft.world.item.*;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.level.block.Blocks;
+import org.bukkit.Bukkit;
+import org.bukkit.craftbukkit.v1_21_R1.CraftEquipmentSlot;
+import org.bukkit.craftbukkit.v1_21_R1.CraftServer;
+import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.trim.TrimPattern;
 
 import java.awt.*;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.sql.Ref;
+import java.util.IdentityHashMap;
+import java.util.Map;
 
 public class NMSTest {
 
@@ -54,31 +73,131 @@ public class NMSTest {
 
     }
 
+    private static ResourceKey<Enchantment> key(String name) {
+        return ResourceKey.create(Registries.ENCHANTMENT, ResourceLocation.fromNamespaceAndPath("icu", name));
+    }
+
+
+    // TODO: 8/18/2024 WRAP
+    public static void testEnchantment(){
+
+        DedicatedServer server = ((CraftServer) Bukkit.getServer()).getServer();
+        Registry<Enchantment> registry = server.registryAccess().registry(Registries.ENCHANTMENT).orElse(null);
+        // unfreeze
+        Reflex.setFieldValue(registry, "frozen", false);
+        Reflex.setFieldValue(registry, "unregisteredIntrusiveHolders", new IdentityHashMap<>());
+        // resource key
+        String enchantId = "test";
+        ResourceKey<Enchantment> key = key(enchantId);
+        // properties
+        Component description = Component.literal("test desc");
+        HolderSet<Enchantment> exclusiveSet = HolderSet.direct();
+        DataComponentMap effects = DataComponentMap.builder().build();
+
+        Registry<Item> items = server.registryAccess().registry(Registries.ITEM).orElseThrow();
+        HolderSet.Named<Item> supportedItems = items.getTag(ItemTags.SWORD_ENCHANTABLE).orElse(null);
+        HolderSet.Named<Item> primaryItems = items.getTag(ItemTags.SWORD_ENCHANTABLE).orElse(null);
+
+        EquipmentSlotGroup[] slots = nmsSlots(new EquipmentSlot[]{ EquipmentSlot.HAND});
+
+        // definition
+        int weight = 1;
+        int maxLevel = 5;
+        Enchantment.Cost minCost = new Enchantment.Cost(1, 11);
+        Enchantment.Cost maxCost = new Enchantment.Cost(12, 11);
+        int anvilCost = 2;
+
+        Enchantment.EnchantmentDefinition definition = Enchantment.definition(supportedItems, primaryItems, weight, maxLevel, minCost, maxCost, anvilCost, slots);
+        Enchantment enchantment = new Enchantment(description, definition, exclusiveSet, effects);
+        Holder.Reference<Enchantment> reference = registry.createIntrusiveHolder(enchantment);
+        Registry.register(registry, key, enchantment);
+
+        registry.freeze();
+    }
+
+    public static net.minecraft.world.entity.EquipmentSlotGroup[] nmsSlots(EquipmentSlot[] slots) {
+        net.minecraft.world.entity.EquipmentSlotGroup[] nmsSlots = new net.minecraft.world.entity.EquipmentSlotGroup[slots.length];
+
+        for (int index = 0; index < nmsSlots.length; index++) {
+            org.bukkit.inventory.EquipmentSlot bukkitSlot = slots[index];
+            nmsSlots[index] = CraftEquipmentSlot.getNMSGroup(bukkitSlot.getGroup());
+        }
+
+        return nmsSlots;
+    }
+
+
+    // TODO: 8/18/2024 WRAP
     public static MobEffect registerEffect(){
 
-        try {
-            Field field = BuiltInRegistries.MOB_EFFECT.getClass().getDeclaredField("frozen");
-            field.setAccessible(true);
-            field.set(BuiltInRegistries.MOB_EFFECT, false);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
+
+        Reflex.setFieldValue(BuiltInRegistries.MOB_EFFECT, "frozen", false);
 
         MobEffect mobEffect;
         try {
             Constructor<MobEffect> constructor = MobEffect.class.getDeclaredConstructor(MobEffectCategory.class, int.class, ParticleOptions.class);
             constructor.setAccessible(true);
             mobEffect = constructor.newInstance(MobEffectCategory.BENEFICIAL, new Color(1f, 0, 0).getRGB(), ParticleTypes.CAMPFIRE_SIGNAL_SMOKE)
-                    .addAttributeModifier(Attributes.SCALE, "91AEAA56-376B-4498-935B-2F7F68070636", 1, AttributeModifier.Operation.ADD_VALUE);
+                    .addAttributeModifier(Attributes.SCALE, ResourceLocation.fromNamespaceAndPath("icu", "test"), 1, AttributeModifier.Operation.ADD_VALUE);
         } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
 
-        Registry.registerForHolder(BuiltInRegistries.MOB_EFFECT, new ResourceLocation("test"), mobEffect);
+        Registry.registerForHolder(BuiltInRegistries.MOB_EFFECT, ResourceLocation.fromNamespaceAndPath("icu", "test"), mobEffect);
         BuiltInRegistries.MOB_EFFECT.freeze();
 
         return mobEffect;
     }
+
+
+    public static void registerItem(){
+        final DefaultedRegistry<Item> registry = BuiltInRegistries.ITEM;
+        Reflex.setFieldValue(registry, "frozen", false);
+        Reflex.setFieldValue(registry, "unregisteredIntrusiveHolders", new IdentityHashMap<>());
+
+        Item item = new Item(new Item.Properties());
+        registry.createIntrusiveHolder(item);
+
+        Method method = Reflex.getMethod(Items.class, "registerItem", String.class, Item.class);
+        Reflex.invokeMethod(null, method, "test", item);
+
+        //Registry.register(BuiltInRegistries.ITEM,ResourceKey.create(BuiltInRegistries.ITEM.key(), ResourceLocation.fromNamespaceAndPath("icu", "test")), new Item(new Item.Properties()));
+        registry.freeze();
+    }
+
+    public static void editItem(){
+        final MappedRegistry<Item> registry = (DefaultedMappedRegistry<Item>) BuiltInRegistries.ITEM;
+
+        Item item = Items.FIREWORK_ROCKET;
+        Item.Properties properties = new Item.Properties();
+        properties.stacksTo(5);
+        Method method = Reflex.getMethod(Item.Properties.class, "buildAndValidateComponents");
+        DataComponentMap dataComponentMap = (DataComponentMap) Reflex.invokeMethod(properties, method);
+        Reflex.setFieldValue(item, "components", dataComponentMap);
+/*        ResourceLocation resourceLocation = registry.getKey(item);
+        Map<ResourceLocation, Holder.Reference<Item>> byLocation = (Map<ResourceLocation, Holder.Reference<Item>>) Reflex.getFieldValue(registry, "byLocation");
+        Holder.Reference<Item> holder = byLocation.get(resourceLocation);
+        Reflex.setFieldValue(holder, "value", item);*/
+/*        Method method = Reflex.getMethod(Holder.Reference.class, "bindValue", Object.class);
+        Reflex.invokeMethod(holder, method, item);*/
+
+        
+/*        final DefaultedRegistry<Item> registry = BuiltInRegistries.ITEM;
+        Reflex.setFieldValue(registry, "frozen", false);
+        Reflex.setFieldValue(registry, "unregisteredIntrusiveHolders", new IdentityHashMap<>());
+
+        Item item = new InstrumentItem((new Item.Properties()).stacksTo(1), InstrumentTags.GOAT_HORNS);
+        registry.createIntrusiveHolder(item);
+
+        ResourceLocation resourceLocation = BuiltInRegistries.ITEM.getKey(Items.FIREWORK_ROCKET);
+
+        Method method = Reflex.getMethod(Items.class, "registerItem", String.class, Item.class);
+        Reflex.invokeMethod(null, method, "firework_rocket", item);
+
+        registry.freeze();*/
+    }
+
+
 /*    public static ServerPlayer getPlayer(Player player){
         return ((CraftPlayer) player).getHandle();
     }

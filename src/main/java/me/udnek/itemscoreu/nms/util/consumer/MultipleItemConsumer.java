@@ -1,4 +1,4 @@
-package me.udnek.itemscoreu.nms.consumer;
+package me.udnek.itemscoreu.nms.util.consumer;
 
 import net.minecraft.world.item.ItemStack;
 

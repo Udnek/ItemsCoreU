@@ -1,11 +1,15 @@
 package me.udnek.itemscoreu.nms;
 
+import com.google.common.base.Preconditions;
 import com.mojang.datafixers.util.Pair;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-import me.udnek.itemscoreu.nms.consumer.ItemConsumer;
-import me.udnek.itemscoreu.nms.consumer.MultipleItemConsumer;
-import me.udnek.itemscoreu.nms.consumer.SingleItemConsumer;
+import me.udnek.itemscoreu.customloot.entry.LootTableEntry;
+import me.udnek.itemscoreu.nms.util.NmsUtils;
+import me.udnek.itemscoreu.nms.util.consumer.ItemConsumer;
+import me.udnek.itemscoreu.nms.util.consumer.MultipleItemConsumer;
 import me.udnek.itemscoreu.utils.LogUtils;
+import me.udnek.itemscoreu.utils.NMS.NMSTest;
+import me.udnek.itemscoreu.utils.NMS.Reflex;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
@@ -18,10 +22,11 @@ import net.minecraft.server.ReloadableServerRegistries;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.npc.VillagerTrades;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.MapItem;
+import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.item.trading.MerchantOffer;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.ComposterBlock;
@@ -40,27 +45,28 @@ import net.minecraft.world.level.storage.loot.entries.*;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.bukkit.*;
-import org.bukkit.craftbukkit.v1_20_R4.CraftChunk;
-import org.bukkit.craftbukkit.v1_20_R4.CraftLootTable;
-import org.bukkit.craftbukkit.v1_20_R4.CraftServer;
-import org.bukkit.craftbukkit.v1_20_R4.CraftWorld;
-import org.bukkit.craftbukkit.v1_20_R4.entity.CraftEntity;
-import org.bukkit.craftbukkit.v1_20_R4.entity.CraftLivingEntity;
-import org.bukkit.craftbukkit.v1_20_R4.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_20_R4.generator.structure.CraftStructure;
-import org.bukkit.craftbukkit.v1_20_R4.inventory.CraftItemStack;
-import org.bukkit.craftbukkit.v1_20_R4.map.CraftMapCursor;
-import org.bukkit.craftbukkit.v1_20_R4.util.CraftLocation;
-import org.bukkit.craftbukkit.v1_20_R4.util.CraftMagicNumbers;
+import org.bukkit.craftbukkit.v1_21_R1.CraftChunk;
+import org.bukkit.craftbukkit.v1_21_R1.CraftLootTable;
+import org.bukkit.craftbukkit.v1_21_R1.CraftServer;
+import org.bukkit.craftbukkit.v1_21_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_21_R1.entity.*;
+import org.bukkit.craftbukkit.v1_21_R1.generator.structure.CraftStructure;
+import org.bukkit.craftbukkit.v1_21_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_21_R1.map.CraftMapCursor;
+import org.bukkit.craftbukkit.v1_21_R1.util.CraftLocation;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.generator.structure.Structure;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.MerchantRecipe;
 import org.bukkit.loot.LootTable;
+import org.bukkit.loot.LootTables;
 import org.bukkit.map.MapCursor;
 import org.bukkit.util.StructureSearchResult;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
+import java.sql.Ref;
 import java.util.*;
 
 public class Nms {
@@ -68,7 +74,7 @@ public class Nms {
     private static final LootContext GENERIC_LOOT_CONTEXT;
 
     static {
-        ServerLevel serverLevel = ((CraftWorld) Bukkit.getWorld("world")).getHandle();
+        ServerLevel serverLevel = NmsUtils.toNmsWorld(Bukkit.getWorld("world"));
         LootParams.Builder paramsBuilder = new LootParams.Builder(serverLevel);
         LootContextParamSet contextParamSet = new LootContextParamSet.Builder().build();
         paramsBuilder.withLuck(1);
@@ -76,29 +82,10 @@ public class Nms {
         GENERIC_LOOT_CONTEXT = contextBuilder.create(Optional.empty());
     }
 
-
     private static Nms instance;
     public static Nms get(){
-        if (instance == null){
-            instance = new Nms();
-        }
+        if (instance == null) instance = new Nms();
         return instance;
-    }
-    ///////////////////////////////////////////////////////////////////////////
-    // ITEMS
-    ///////////////////////////////////////////////////////////////////////////
-
-    public net.minecraft.world.item.ItemStack toNmsItemStack(ItemStack itemStack){
-        return CraftItemStack.asNMSCopy(itemStack);
-    }
-    public Item toNmsMaterial(Material material){
-        return CraftMagicNumbers.getItem(material);
-    }
-    public ItemStack toBukkitItemStack(net.minecraft.world.item.ItemStack itemStack){
-        return CraftItemStack.asBukkitCopy(itemStack);
-    }
-    public ServerLevel toNmsWorld(World world){
-        return ((CraftWorld) world).getHandle();
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -106,11 +93,16 @@ public class Nms {
     ///////////////////////////////////////////////////////////////////////////
 
     public float getCompostableChance(Material material){
-        return ComposterBlock.COMPOSTABLES.getOrDefault(toNmsMaterial(material), 0);
+        return ComposterBlock.COMPOSTABLES.getOrDefault(NmsUtils.toNmsMaterial(material), 0);
     }
 
     public int getFuelTime(Material material){
-        return AbstractFurnaceBlockEntity.getFuel().getOrDefault(toNmsMaterial(material), 0);
+        return AbstractFurnaceBlockEntity.getFuel().getOrDefault(NmsUtils.toNmsMaterial(material), 0);
+    }
+
+    public ItemStack getSpawnEggByType(EntityType type){
+        net.minecraft.world.entity.EntityType<?> aClass = CraftEntityType.bukkitToMinecraft(type);
+        return CraftItemStack.asNewCraftStack(SpawnEggItem.byId(aClass));
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -146,12 +138,12 @@ public class Nms {
                     MerchantOffer merchantOffer = itemListing.getOffer(entity, null);
                     if (merchantOffer == null) continue;
                     MerchantRecipe merchantRecipe = new MerchantRecipe(
-                            toBukkitItemStack(merchantOffer.getResult()),
+                            NmsUtils.toBukkitItemStack(merchantOffer.getResult()),
                             merchantOffer.getMaxUses()
                     );
                     List<ItemStack> ingredients = new ArrayList<>();
-                    ingredients.add(toBukkitItemStack(merchantOffer.getCostA()));
-                    ingredients.add(toBukkitItemStack(merchantOffer.getCostB()));
+                    ingredients.add(NmsUtils.toBukkitItemStack(merchantOffer.getCostA()));
+                    ingredients.add(NmsUtils.toBukkitItemStack(merchantOffer.getCostB()));
                     merchantRecipe.setIngredients(ingredients);
 
                     recipes.add(merchantRecipe);
@@ -160,7 +152,6 @@ public class Nms {
         }
         return recipes;
     }
-
     public List<String> getRegisteredLootTableIds(){
         List<String> ids = new ArrayList<>();
         ReloadableServerRegistries.Holder registries = ((CraftServer) Bukkit.getServer()).getServer().reloadableRegistries();
@@ -175,16 +166,20 @@ public class Nms {
         ReloadableServerRegistries.Holder registries = ((CraftServer) Bukkit.getServer()).getServer().reloadableRegistries();
         Collection<ResourceLocation> keys = registries.getKeys(Registries.LOOT_TABLE);
         for (ResourceLocation key : keys) {
-            lootTables.add(registries.getLootTable(ResourceKey.create(Registries.LOOT_TABLE, new ResourceLocation(key.toString()))).craftLootTable);
+            lootTables.add(registries.getLootTable(ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.parse(key.toString()))).craftLootTable);
         }
         return lootTables;
     }
     public @NotNull LootTable getLootTable(String id){
-        ResourceLocation resourceLocation = new ResourceLocation(id);
+        ResourceLocation resourceLocation = ResourceLocation.parse(id);
         ResourceKey<net.minecraft.world.level.storage.loot.LootTable> key = ResourceKey.create(Registries.LOOT_TABLE, resourceLocation);
         return getLootTable(key);
     }
-    protected @NotNull LootTable getLootTable(@NotNull ResourceKey<net.minecraft.world.level.storage.loot.LootTable> resourceKey){
+    private @NotNull ResourceKey<net.minecraft.world.level.storage.loot.LootTable> getResourceKeyLootTable(String id){
+        ResourceLocation resourceLocation = ResourceLocation.parse(id);
+        return ResourceKey.create(Registries.LOOT_TABLE, resourceLocation);
+    }
+    private @NotNull LootTable getLootTable(@NotNull ResourceKey<net.minecraft.world.level.storage.loot.LootTable> resourceKey){
         ReloadableServerRegistries.Holder registries = ((CraftServer) Bukkit.getServer()).getServer().reloadableRegistries();
         return registries.getLootTable(resourceKey).craftLootTable;
     }
@@ -193,43 +188,15 @@ public class Nms {
         ArrayList<ItemStack> result = new ArrayList<>();
 
         net.minecraft.world.level.storage.loot.LootTable nmsLootTable = ((CraftLootTable) lootTable).getHandle();
-        List<LootPool> lootPools;
-
-        try {
-            lootPools = (List<LootPool>) FieldUtils.readField(nmsLootTable, "pools", true);
-        } catch (IllegalArgumentException e) {
-            LogUtils.logDeclaredFields(nmsLootTable);
-            throw new RuntimeException(e);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
+        List<LootPool> lootPools = (List<LootPool>) Reflex.getFieldValue(nmsLootTable, "pools");
 
         for (LootPool lootPool : lootPools) {
-            List<LootPoolEntryContainer> lootPoolEntryContainers;
-
-            try {
-                lootPoolEntryContainers = (List<LootPoolEntryContainer>) FieldUtils.readField(lootPool, "entries", true);
-            } catch (IllegalArgumentException e) {
-                LogUtils.logDeclaredFields(lootPool);
-                throw new RuntimeException(e);
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException(e);
-            }
-
+            List<LootPoolEntryContainer> lootPoolEntryContainers = (List<LootPoolEntryContainer>) Reflex.getFieldValue(lootPool, "entries");
 
             for (LootPoolEntryContainer entryContainer : lootPoolEntryContainers) {
                 if (!(entryContainer instanceof LootPoolSingletonContainer container)) continue;
 
-                LootPoolEntry poolEntry;
-
-                try {
-                    poolEntry = (LootPoolEntry) FieldUtils.readField(container, "entry", true);
-                } catch (IllegalArgumentException e) {
-                    LogUtils.logDeclaredFields(lootPool);
-                    throw new RuntimeException(e);
-                } catch (IllegalAccessException e) {
-                    throw new RuntimeException(e);
-                }
+                LootPoolEntry poolEntry = (LootPoolEntry) Reflex.getFieldValue(container, "entry");
 
                 ItemConsumer itemConsumer = new MultipleItemConsumer();
                 poolEntry.createItemStack(itemConsumer, GENERIC_LOOT_CONTEXT);
@@ -252,17 +219,43 @@ public class Nms {
                 if (itemConsumer == null) continue;*/
                 for (net.minecraft.world.item.ItemStack itemStack : itemConsumer.get()) {
                     if (itemStack.getCount() == 0) itemStack.setCount(1);
-                    result.add(toBukkitItemStack(itemStack));
+                    result.add(NmsUtils.toBukkitItemStack(itemStack));
                 }
             }
         }
         return result;
     }
+    private List<LootPoolEntry> getAllEntries(LootPoolEntryContainer container){
+        if (container instanceof LootPoolSingletonContainer){
+            LootPoolEntry entry = (LootPoolEntry) Reflex.getFieldValue(container, "entry");
+            return List.of(entry);
+        } else if (container instanceof CompositeEntryBase){
+            List<LootPoolEntry> lootPools = new ArrayList<>();
+            List<LootPoolEntryContainer> childrenContainers = (List<LootPoolEntryContainer>) Reflex.getFieldValue(container, "children");
+            for (LootPoolEntryContainer childContainer : childrenContainers) {
+                lootPools.addAll(getAllEntries(childContainer));
+            }
+            return lootPools;
+        }
+        return List.of();
+    }
+
+
     public @NotNull LootTable getDeathLootTable(@NotNull org.bukkit.entity.LivingEntity bukkitEntity){
         LivingEntity entity = ((CraftLivingEntity) bukkitEntity).getHandle();
-        return getLootTable(entity.getLootTable());
-
+        ResourceKey<net.minecraft.world.level.storage.loot.LootTable> lootTable = entity.getLootTable();
+        return getLootTable(lootTable);
     }
+
+    public void setDeathLootTable(@NotNull org.bukkit.entity.Mob bukkitMob, @Nullable LootTable lootTable){
+        Mob mob = ((CraftMob) bukkitMob).getHandle();
+        if (lootTable == null){
+            mob.lootTable = getResourceKeyLootTable("minecraft:empty");
+        } else {
+            mob.lootTable = getResourceKeyLootTable(lootTable.getKey().asString());
+        }
+    }
+
     ///////////////////////////////////////////////////////////////////////////
     // STRUCTURE
     ///////////////////////////////////////////////////////////////////////////
@@ -270,7 +263,7 @@ public class Nms {
         return generateExplorerMap(location, bukkitStructure, radius, skipKnownStructures, MapCursor.Type.RED_X);
     }
     public ItemStack generateExplorerMap(Location location, Structure bukkitStructure, int radius, boolean skipKnownStructures, MapCursor.Type type){
-        ServerLevel serverLevel = toNmsWorld(location.getWorld());
+        ServerLevel serverLevel = NmsUtils.toNmsWorld(location.getWorld());
 
         CraftStructure craftStructure = (CraftStructure) bukkitStructure;
         if (craftStructure == null){
@@ -294,28 +287,12 @@ public class Nms {
         net.minecraft.world.item.ItemStack mapItem = MapItem.create(serverLevel, structureLocation.getX(), structureLocation.getZ(), (byte) 2, true, true);
         MapItem.renderBiomePreviewMap(serverLevel, mapItem);
         MapItemSavedData.addTargetDecoration(mapItem, structureLocation, "+", mapDecorationTypeHolder);
-/*
-        try {
-            Method privateMethod = MapItemSavedData.class.getDeclaredMethod("addDecoration");
-            privateMethod.setAccessible(true);
-            privateMethod.invoke(null, mapDecorationTypeHolder, null, "++", (double) structureLocation.getX(), (double) structureLocation.getZ(), (double) 0, Component.translatable("test.test"));
 
-
-        } catch (NoSuchMethodException e) {
-            LogUtils.log(Arrays.toString(MapItemSavedData.class.getDeclaredMethods()));
-            //throw new RuntimeException(e);
-        } catch (InvocationTargetException e) {
-            throw new RuntimeException(e);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
-*/
-
-        return toBukkitItemStack(mapItem);
+        return NmsUtils.toBukkitItemStack(mapItem);
     }
     public void generateBiomePreviewMap(World world, ItemStack itemStack){
-        ServerLevel serverLevel = ((CraftWorld) world).getHandle();
-        MapItem.renderBiomePreviewMap(serverLevel, toNmsItemStack(itemStack));
+        ServerLevel serverLevel =NmsUtils.toNmsWorld(world);
+        MapItem.renderBiomePreviewMap(serverLevel, NmsUtils.toNmsItemStack(itemStack));
     }
     public boolean containStructure(Chunk bukitChunk, Structure bukkitStructure){
         net.minecraft.world.level.levelgen.structure.Structure targerStructure = ((CraftStructure) bukkitStructure).getHandle();
@@ -344,7 +321,7 @@ public class Nms {
         }
         else {
             net.minecraft.world.level.levelgen.structure.Structure structure = ((CraftStructure) bukkitStructure).getHandle();
-            startForStructure = findStructureStartIn(toNmsWorld(location.getWorld()), structure, location.getChunk().getX(), location.getChunk().getZ(), radius);
+            startForStructure = findStructureStartIn((NmsUtils.toNmsWorld(location.getWorld())), structure, location.getChunk().getX(), location.getChunk().getZ(), radius);
         }
         
         LogUtils.log("time taken:" + (System.nanoTime() - startTime));
@@ -391,7 +368,7 @@ public class Nms {
     ///////////////////////////////////////////////////////////////////////////
     public DownfallType getDownfallType(Location location){
         BlockPos blockPosition = CraftLocation.toBlockPosition(location);
-        Biome.Precipitation precipitation = toNmsWorld(location.getWorld()).getBiome(blockPosition).value().getPrecipitationAt(blockPosition);
+        Biome.Precipitation precipitation = NmsUtils.toNmsWorld(location.getWorld()).getBiome(blockPosition).value().getPrecipitationAt(blockPosition);
         return DownfallType.fromNMS(precipitation);
     }
 

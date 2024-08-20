@@ -10,4 +10,5 @@ import java.util.Random;
 public interface LootTableEntry {
     @Nullable ItemStack roll(@Nullable Random random, @NotNull LootContext lootContext);
     @NotNull ItemStack getItem();
+    void replaceItem(@NotNull ItemStack newItem);
 }

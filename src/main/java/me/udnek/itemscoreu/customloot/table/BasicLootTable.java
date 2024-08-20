@@ -4,6 +4,9 @@ import me.udnek.itemscoreu.customitem.CustomItem;
 import me.udnek.itemscoreu.customloot.entry.LootTableEntry;
 import me.udnek.itemscoreu.utils.ItemUtils;
 import org.bukkit.Material;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.world.LootGenerateEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -32,6 +35,15 @@ public abstract class BasicLootTable implements CustomLootTable{
                 ItemUtils.isSameIds(lootTableEntry.getItem(), itemStack))
         );
     }
+
+    @Override
+    public void replaceItem(@NotNull ItemStack oldItem, ItemStack newItem) {
+        for (LootTableEntry entry : entries) {
+            if (!ItemUtils.isSameIds(oldItem, entry.getItem())) continue;
+            entry.replaceItem(newItem);
+        }
+    }
+
     @Override
     public @NotNull List<ItemStack> getAllItems() {
         List<ItemStack> stacks = new ArrayList<>();
@@ -58,12 +70,6 @@ public abstract class BasicLootTable implements CustomLootTable{
     }
 
     @Override
-    public void onLootGeneratesEvent(LootGenerateEvent event) {
-        // TODO: 7/24/2024 REMOVE WHEN FILL INVENTORY WORKS
-        event.setLoot(populateLoot(new Random(), event.getLootContext()));
-    }
-
-    @Override
     public boolean containsItem(ItemStack itemStack) {
         if (CustomItem.isCustom(itemStack)){
             CustomItem customItem = CustomItem.get(itemStack);
@@ -80,5 +86,23 @@ public abstract class BasicLootTable implements CustomLootTable{
             }
         }
         return false;
+    }
+
+    @Override
+    public void onLootGeneratesEvent(LootGenerateEvent event) {
+        // TODO: 7/24/2024 REMOVE WHEN FILL INVENTORY WORKS
+        event.setLoot(populateLoot(new Random(), event.getLootContext()));
+    }
+
+    @Override
+    public void onMobDeathEvent(EntityDeathEvent event) {
+        List<ItemStack> drops = event.getDrops();
+        drops.clear();
+        LivingEntity entity = event.getEntity();
+        LootContext.Builder builder = new LootContext.Builder(entity.getLocation());
+        builder.lootedEntity(entity);
+        builder.killer(entity.getKiller());
+        builder.luck((float) entity.getKiller().getAttribute(Attribute.GENERIC_LUCK).getValue());
+        drops.addAll(populateLoot(new Random(), builder.build()));
     }
 }

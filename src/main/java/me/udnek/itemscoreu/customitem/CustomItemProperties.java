@@ -9,36 +9,40 @@ import org.bukkit.block.data.BlockData;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemRarity;
 import org.bukkit.inventory.meta.components.FoodComponent;
+import org.bukkit.inventory.meta.components.ToolComponent;
 import org.bukkit.inventory.meta.trim.ArmorTrim;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Map;
 
 public interface CustomItemProperties {
-    Material getMaterial();
+    @NotNull Material getMaterial();
 
     // OPTIONAL
-    default String getRawItemName(){return null;};
-    default Component getItemName(){
+    @Nullable default String getRawItemName(){return null;}
+    @Nullable default Component getItemName(){
         if (getRawItemName() == null) return null;
         return Component.translatable(getRawItemName());
     }
-    default Component getCustomDisplayName(){return null;}
-    default List<Component> getLore(){return null;}
-    default ItemRarity getItemRarity(){return null;}
-    default Integer getCustomModelData(){return null;}
+    @Nullable default Component getCustomDisplayName(){return null;}
+    @Nullable default List<Component> getLore(){return null;}
+    @Nullable default ItemRarity getItemRarity(){return null;}
+    @Nullable default Integer getCustomModelData(){return null;}
     default boolean getHideTooltip(){return false;}
-    default FoodComponent getFoodComponent(){return null;}
-    default ItemFlag[] getTooltipHides(){return new ItemFlag[0];}
-    default Integer getMaxStackSize(){return null;}
-    default Integer getMaxDamage(){return null;}
-    default boolean getUnbreakable(){return false;}
-    default Boolean getFireResistant(){return null;}
-    default Boolean getEnchantmentGlintOverride(){return null;}
-    default ArmorTrim getArmorTrim(){return null;}
-    default MusicInstrument getMusicInstrument(){return null;}
+    @Nullable default FoodComponent getFoodComponent(){return null;}
+    @Nullable default ToolComponent getToolComponent(){return null;}
+    @Nullable default ItemFlag[] getTooltipHides(){return new ItemFlag[0];}
+    @Nullable default Integer getMaxStackSize(){return null;}
+    @Nullable default Integer getMaxDamage(){return null;}
+    @Nullable default boolean getUnbreakable(){return false;}
+    @Nullable default Boolean getFireResistant(){return null;}
+    @Nullable default Boolean getEnchantmentGlintOverride(){return null;}
+    @Nullable default ArmorTrim getArmorTrim(){return null;}
+    @Nullable default MusicInstrument getMusicInstrument(){return null;}
     default boolean getAddDefaultAttributes(){return false;}
-    default Map<Attribute, List<AttributeModifier>> getAttributes(){return null;}
-    default BlockData getBlockData(){return null;}
+    @Nullable default Map<Attribute, List<AttributeModifier>> getAttributes(){return null;}
+    @Nullable default BlockData getBlockData(){return null;}
 
 }

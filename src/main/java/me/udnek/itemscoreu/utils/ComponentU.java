@@ -28,10 +28,12 @@ public class ComponentU {
     }
 
     public static Component textWithNoSpace(int offset, Component text, int size){
+        if (size == 0) return text;
         size += 1; // SHADOW COUNTS
         return ComponentU.space(offset).append(text).append(ComponentU.space(-size-offset));
     }
     public static Component textWithNoSpace(Component text, int size){
+        if (size == 0) return text;
         size += 1; // SHADOW COUNTS
         return text.append(ComponentU.space(-size));
     }
