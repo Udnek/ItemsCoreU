@@ -1,14 +1,9 @@
 package me.udnek.itemscoreu.nms;
 
-import com.google.common.base.Preconditions;
+import com.mojang.datafixers.util.Either;
 import com.mojang.datafixers.util.Pair;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-import me.udnek.itemscoreu.customloot.entry.LootTableEntry;
-import me.udnek.itemscoreu.nms.util.NmsUtils;
-import me.udnek.itemscoreu.nms.util.consumer.ItemConsumer;
-import me.udnek.itemscoreu.nms.util.consumer.MultipleItemConsumer;
 import me.udnek.itemscoreu.utils.LogUtils;
-import me.udnek.itemscoreu.utils.NMS.NMSTest;
 import me.udnek.itemscoreu.utils.NMS.Reflex;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
@@ -41,14 +36,16 @@ import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.LootPool;
-import net.minecraft.world.level.storage.loot.entries.*;
+import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.level.storage.loot.entries.LootPoolEntry;
+import net.minecraft.world.level.storage.loot.entries.LootPoolEntryContainer;
+import net.minecraft.world.level.storage.loot.entries.LootPoolSingletonContainer;
+import net.minecraft.world.level.storage.loot.entries.NestedLootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
-import org.apache.commons.lang3.reflect.FieldUtils;
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_21_R1.CraftChunk;
 import org.bukkit.craftbukkit.v1_21_R1.CraftLootTable;
 import org.bukkit.craftbukkit.v1_21_R1.CraftServer;
-import org.bukkit.craftbukkit.v1_21_R1.CraftWorld;
 import org.bukkit.craftbukkit.v1_21_R1.entity.*;
 import org.bukkit.craftbukkit.v1_21_R1.generator.structure.CraftStructure;
 import org.bukkit.craftbukkit.v1_21_R1.inventory.CraftItemStack;
@@ -59,14 +56,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.generator.structure.Structure;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.MerchantRecipe;
-import org.bukkit.loot.LootTable;
-import org.bukkit.loot.LootTables;
 import org.bukkit.map.MapCursor;
 import org.bukkit.util.StructureSearchResult;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.sql.Ref;
 import java.util.*;
 
 public class Nms {
@@ -152,6 +146,17 @@ public class Nms {
         }
         return recipes;
     }
+
+    public void injectLootPoolListeners(){
+        for (org.bukkit.loot.LootTable bukkitLootTable : getRegisteredLootTables()) {
+            LootTable lootTable = ((CraftLootTable) bukkitLootTable).getHandle();
+
+            for (LootPoolSingletonContainer singletonContainer : getAllSingletonContainers(lootTable)) {
+                Reflex.setFieldValue(singletonContainer, "entry", new CustomNmsLootPoolEntry(lootTable, singletonContainer));
+            }
+        }
+    }
+
     public List<String> getRegisteredLootTableIds(){
         List<String> ids = new ArrayList<>();
         ReloadableServerRegistries.Holder registries = ((CraftServer) Bukkit.getServer()).getServer().reloadableRegistries();
@@ -161,8 +166,8 @@ public class Nms {
         }
         return ids;
     }
-    public List<LootTable> getRegisteredLootTables(){
-        List<LootTable> lootTables = new ArrayList<>();
+    public List<org.bukkit.loot.LootTable> getRegisteredLootTables(){
+        List<org.bukkit.loot.LootTable> lootTables = new ArrayList<>();
         ReloadableServerRegistries.Holder registries = ((CraftServer) Bukkit.getServer()).getServer().reloadableRegistries();
         Collection<ResourceLocation> keys = registries.getKeys(Registries.LOOT_TABLE);
         for (ResourceLocation key : keys) {
@@ -170,10 +175,10 @@ public class Nms {
         }
         return lootTables;
     }
-    public @NotNull LootTable getLootTable(String id){
+    public @NotNull org.bukkit.loot.LootTable getLootTable(String id){
         ResourceLocation resourceLocation = ResourceLocation.parse(id);
         ResourceKey<net.minecraft.world.level.storage.loot.LootTable> key = ResourceKey.create(Registries.LOOT_TABLE, resourceLocation);
-        return getLootTable(key);
+        return getLootTable(key).craftLootTable;
     }
     private @NotNull ResourceKey<net.minecraft.world.level.storage.loot.LootTable> getResourceKeyLootTable(String id){
         ResourceLocation resourceLocation = ResourceLocation.parse(id);
@@ -181,73 +186,95 @@ public class Nms {
     }
     private @NotNull LootTable getLootTable(@NotNull ResourceKey<net.minecraft.world.level.storage.loot.LootTable> resourceKey){
         ReloadableServerRegistries.Holder registries = ((CraftServer) Bukkit.getServer()).getServer().reloadableRegistries();
-        return registries.getLootTable(resourceKey).craftLootTable;
+        return registries.getLootTable(resourceKey);
     }
-    public List<ItemStack> getPossibleLoot(LootTable lootTable) {
 
-        ArrayList<ItemStack> result = new ArrayList<>();
-
+    public List<ItemStack> getPossibleLoot(org.bukkit.loot.LootTable lootTable) {
+        List<ItemStack> result = new ArrayList<>();
         net.minecraft.world.level.storage.loot.LootTable nmsLootTable = ((CraftLootTable) lootTable).getHandle();
-        List<LootPool> lootPools = (List<LootPool>) Reflex.getFieldValue(nmsLootTable, "pools");
+        List<LootPoolEntry> entries = getAllEntries(getAllSingletonContainers(nmsLootTable));
 
+        ItemConsumer itemConsumer = new ItemConsumer();
+        for (LootPoolEntry entry : entries) {
+            entry.createItemStack(itemConsumer, GENERIC_LOOT_CONTEXT);
+            for (net.minecraft.world.item.ItemStack itemStack : itemConsumer.get()) {
+                if (itemStack.getCount() == 0) itemStack.setCount(1);
+                result.add(NmsUtils.toBukkitItemStack(itemStack));
+            }
+            itemConsumer.clear();
+        }
+        return result;
+    }
+    private List<LootPoolSingletonContainer> getAllSingletonContainers(LootTable lootTable){
+        List<LootPool> lootPools = (List<LootPool>) Reflex.getFieldValue(lootTable, "pools");
+
+        List<LootPoolSingletonContainer> singletonContainers = new ArrayList<>();
         for (LootPool lootPool : lootPools) {
-            List<LootPoolEntryContainer> lootPoolEntryContainers = (List<LootPoolEntryContainer>) Reflex.getFieldValue(lootPool, "entries");
+            List<LootPoolEntryContainer> containers = (List<LootPoolEntryContainer>) Reflex.getFieldValue(lootPool, "entries");
+            singletonContainers.addAll(getAllSingletonContainers(containers));
+        }
+        return singletonContainers;
+    }
 
-            for (LootPoolEntryContainer entryContainer : lootPoolEntryContainers) {
-                if (!(entryContainer instanceof LootPoolSingletonContainer container)) continue;
+    private List<LootPoolSingletonContainer> getAllSingletonContainers(List<LootPoolEntryContainer> containers){
+        List<LootPoolSingletonContainer> result = new ArrayList<>();
+        for (LootPoolEntryContainer container : containers) {
+            if (container instanceof NestedLootTable){
+                LootTable lootTable;
+                Either<ResourceKey<LootTable>, LootTable> either = (Either<ResourceKey<LootTable>, LootTable>) Reflex.getFieldValue(container, "contents");
+                if (either.left() != null && either.left().isPresent()){
+                    lootTable = getLootTable(either.left().get());
+                } else lootTable = either.right().get();
 
-                LootPoolEntry poolEntry = (LootPoolEntry) Reflex.getFieldValue(container, "entry");
-
-                ItemConsumer itemConsumer = new MultipleItemConsumer();
-                poolEntry.createItemStack(itemConsumer, GENERIC_LOOT_CONTEXT);
-
-
-/*                ItemConsumer itemConsumer = null;
-
-                if (entryContainer instanceof LootItem entry) {
-                    entry.createItemStack(itemConsumer = new SingleItemConsumer(), null);
-                } else if (entryContainer instanceof TagEntry entry) {
-                    entry.createItemStack(itemConsumer = new MultipleItemConsumer(), null);
-                    // TODO: 7/25/2024 ADD ALTERNATIVES ENTRY
-                } else if (entryContainer instanceof NestedLootTable entry) {
-                    entry.createItemStack(itemConsumer = new MultipleItemConsumer(), null);
-                } else if (entryContainer instanceof DynamicLoot entry) {
-                    entry.createItemStack(itemConsumer = new MultipleItemConsumer(), null);
-                }
-                // TODO: 7/25/2024 ADD ALTERNATIVES ENTRY
-
-                if (itemConsumer == null) continue;*/
-                for (net.minecraft.world.item.ItemStack itemStack : itemConsumer.get()) {
-                    if (itemStack.getCount() == 0) itemStack.setCount(1);
-                    result.add(NmsUtils.toBukkitItemStack(itemStack));
-                }
+                result.addAll(getAllSingletonContainers(lootTable));
+            }
+            else if (container instanceof LootPoolSingletonContainer singletonContainer) {
+                result.add(singletonContainer);
+            } else {
+                List<LootPoolEntryContainer> childrenContainers = (List<LootPoolEntryContainer>) Reflex.getFieldValue(container, "children");
+                result.addAll(getAllSingletonContainers(childrenContainers));
             }
         }
         return result;
+    }
+
+    private List<LootPoolEntry> getAllEntries(List<LootPoolSingletonContainer> containers){
+        List<LootPoolEntry> entries = new ArrayList<>();
+        for (LootPoolSingletonContainer container : containers) {
+            entries.add((LootPoolEntry) Reflex.getFieldValue(container, "entry"));
+        }
+        return entries;
+    }
+
+/*    private List<LootPoolEntry> getAllEntries(List<LootPoolEntryContainer> containers){
+        List<LootPoolEntry> entries = new ArrayList<>();
+        for (LootPoolEntryContainer container : containers) {
+            entries.addAll(getAllEntries(container));
+        }
+        return entries;
     }
     private List<LootPoolEntry> getAllEntries(LootPoolEntryContainer container){
         if (container instanceof LootPoolSingletonContainer){
             LootPoolEntry entry = (LootPoolEntry) Reflex.getFieldValue(container, "entry");
             return List.of(entry);
-        } else if (container instanceof CompositeEntryBase){
-            List<LootPoolEntry> lootPools = new ArrayList<>();
+        } else {
+            List<LootPoolEntry> entries = new ArrayList<>();
             List<LootPoolEntryContainer> childrenContainers = (List<LootPoolEntryContainer>) Reflex.getFieldValue(container, "children");
             for (LootPoolEntryContainer childContainer : childrenContainers) {
-                lootPools.addAll(getAllEntries(childContainer));
+                entries.addAll(getAllEntries(childContainer));
             }
-            return lootPools;
+            return entries;
         }
-        return List.of();
-    }
+    }*/
 
 
-    public @NotNull LootTable getDeathLootTable(@NotNull org.bukkit.entity.LivingEntity bukkitEntity){
+    public @NotNull org.bukkit.loot.LootTable getDeathLootTable(@NotNull org.bukkit.entity.LivingEntity bukkitEntity){
         LivingEntity entity = ((CraftLivingEntity) bukkitEntity).getHandle();
         ResourceKey<net.minecraft.world.level.storage.loot.LootTable> lootTable = entity.getLootTable();
-        return getLootTable(lootTable);
+        return getLootTable(lootTable).craftLootTable;
     }
 
-    public void setDeathLootTable(@NotNull org.bukkit.entity.Mob bukkitMob, @Nullable LootTable lootTable){
+    public void setDeathLootTable(@NotNull org.bukkit.entity.Mob bukkitMob, @Nullable org.bukkit.loot.LootTable lootTable){
         Mob mob = ((CraftMob) bukkitMob).getHandle();
         if (lootTable == null){
             mob.lootTable = getResourceKeyLootTable("minecraft:empty");

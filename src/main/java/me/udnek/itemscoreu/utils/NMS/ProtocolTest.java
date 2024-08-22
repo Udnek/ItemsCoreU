@@ -42,7 +42,7 @@ public class ProtocolTest{
 
         //player.sendMessage(Component.text("MODIFING").color(NamedTextColor.RED));
 
-        packet.getModifier().write(1, MobEffects.ABSORPTION);
+        packet.getModifier().write(1, MobEffects.HEAL);
     }
 
     public static void kek(){

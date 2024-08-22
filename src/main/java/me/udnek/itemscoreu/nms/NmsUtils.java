@@ -1,4 +1,4 @@
-package me.udnek.itemscoreu.nms.util;
+package me.udnek.itemscoreu.nms;
 
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;

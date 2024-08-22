@@ -19,7 +19,6 @@ public interface CustomItem extends PluginInitializable {
     ///////////////////////////////////////////////////////////////////////////
     // STATIC
     ///////////////////////////////////////////////////////////////////////////
-
     static String getId(ItemStack itemStack){
         if (itemStack == null) return null;
         if (!itemStack.hasItemMeta()) return null;

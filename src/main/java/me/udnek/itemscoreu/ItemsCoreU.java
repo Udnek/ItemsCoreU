@@ -11,6 +11,7 @@ import me.udnek.itemscoreu.customitem.CustomItemListener;
 import me.udnek.itemscoreu.customitem.CustomItemRegistry;
 import me.udnek.itemscoreu.customloot.LootTableUtils;
 import me.udnek.itemscoreu.customrecipe.RecipeManager;
+import me.udnek.itemscoreu.nms.Nms;
 import me.udnek.itemscoreu.resourcepack.ResourcePackCommand;
 import me.udnek.itemscoreu.resourcepack.ResourcePackablePlugin;
 import me.udnek.itemscoreu.serializabledata.SerializableDataManager;
@@ -19,6 +20,7 @@ import me.udnek.itemscoreu.utils.NMS.NMSTest;
 import me.udnek.itemscoreu.utils.NMS.ProtocolTest;
 import me.udnek.itemscoreu.utils.VanillaItemManager;
 import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.level.storage.loot.LootTable;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -65,8 +67,12 @@ public final class ItemsCoreU extends JavaPlugin implements ResourcePackablePlug
             public void run(){
                 LogUtils.pluginLog("Recipe registration started");
                 CustomItemRegistry.registerRecipes();
+
                 LogUtils.pluginLog("Vanilla disabler started");
                 VanillaItemManager.getInstance().start();
+
+                LogUtils.pluginLog("Loot pool injection started");
+                Nms.get().injectLootPoolListeners();
             }
         });
     }

@@ -31,6 +31,7 @@ public abstract class ConstructableCustomItem implements CustomItem, CustomItemP
     ///////////////////////////////////////////////////////////////////////////
     @Override
     public final @NotNull String getId(){return this.id;}
+
     @Override
     public void initialize(@NotNull JavaPlugin javaPlugin){
         Preconditions.checkArgument(plugin == null, "Item already initialized!");
