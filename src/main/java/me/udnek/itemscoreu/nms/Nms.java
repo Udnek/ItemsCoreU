@@ -3,11 +3,11 @@ package me.udnek.itemscoreu.nms;
 import com.mojang.datafixers.util.Either;
 import com.mojang.datafixers.util.Pair;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import me.udnek.itemscoreu.nms.spy.CollectorSpyLootEntry;
+import me.udnek.itemscoreu.nms.spy.MainSpyLootEntry;
 import me.udnek.itemscoreu.utils.LogUtils;
 import me.udnek.itemscoreu.utils.NMS.Reflex;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Holder;
-import net.minecraft.core.HolderSet;
+import net.minecraft.core.*;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
 import net.minecraft.network.protocol.common.custom.GameTestAddMarkerDebugPayload;
@@ -37,10 +37,7 @@ import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.LootTable;
-import net.minecraft.world.level.storage.loot.entries.LootPoolEntry;
-import net.minecraft.world.level.storage.loot.entries.LootPoolEntryContainer;
-import net.minecraft.world.level.storage.loot.entries.LootPoolSingletonContainer;
-import net.minecraft.world.level.storage.loot.entries.NestedLootTable;
+import net.minecraft.world.level.storage.loot.entries.*;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_21_R1.CraftChunk;
@@ -147,12 +144,27 @@ public class Nms {
         return recipes;
     }
 
-    public void injectLootPoolListeners(){
+    public void injectLootEntrySpies(){
+        lootTableLoop:
         for (org.bukkit.loot.LootTable bukkitLootTable : getRegisteredLootTables()) {
             LootTable lootTable = ((CraftLootTable) bukkitLootTable).getHandle();
 
-            for (LootPoolSingletonContainer singletonContainer : getAllSingletonContainers(lootTable)) {
-                Reflex.setFieldValue(singletonContainer, "entry", new CustomNmsLootPoolEntry(lootTable, singletonContainer));
+            List<LootPoolSingletonContainer> containers = getAllSingletonContainers(lootTable);
+            if (containers.isEmpty()) continue;
+
+            for (LootPoolSingletonContainer container : containers) {
+                // TODO: 8/23/2024 FIX DYMAMIC LOOT
+                if (container instanceof DynamicLoot) continue lootTableLoop;
+            }
+            
+
+            LootPoolSingletonContainer lastContainer = containers.getLast();
+            MainSpyLootEntry mainSpyLootEntry = new MainSpyLootEntry(lootTable, lastContainer);
+            Reflex.setFieldValue(lastContainer, "entry", mainSpyLootEntry);
+
+            for (int i = 0; i < containers.size()-1; i++) {
+                LootPoolSingletonContainer container = containers.get(i);
+                Reflex.setFieldValue(container, "entry", new CollectorSpyLootEntry(mainSpyLootEntry, container));
             }
         }
     }
@@ -245,29 +257,7 @@ public class Nms {
         }
         return entries;
     }
-
-/*    private List<LootPoolEntry> getAllEntries(List<LootPoolEntryContainer> containers){
-        List<LootPoolEntry> entries = new ArrayList<>();
-        for (LootPoolEntryContainer container : containers) {
-            entries.addAll(getAllEntries(container));
-        }
-        return entries;
-    }
-    private List<LootPoolEntry> getAllEntries(LootPoolEntryContainer container){
-        if (container instanceof LootPoolSingletonContainer){
-            LootPoolEntry entry = (LootPoolEntry) Reflex.getFieldValue(container, "entry");
-            return List.of(entry);
-        } else {
-            List<LootPoolEntry> entries = new ArrayList<>();
-            List<LootPoolEntryContainer> childrenContainers = (List<LootPoolEntryContainer>) Reflex.getFieldValue(container, "children");
-            for (LootPoolEntryContainer childContainer : childrenContainers) {
-                entries.addAll(getAllEntries(childContainer));
-            }
-            return entries;
-        }
-    }*/
-
-
+    
     public @NotNull org.bukkit.loot.LootTable getDeathLootTable(@NotNull org.bukkit.entity.LivingEntity bukkitEntity){
         LivingEntity entity = ((CraftLivingEntity) bukkitEntity).getHandle();
         ResourceKey<net.minecraft.world.level.storage.loot.LootTable> lootTable = entity.getLootTable();
@@ -294,7 +284,7 @@ public class Nms {
 
         CraftStructure craftStructure = (CraftStructure) bukkitStructure;
         if (craftStructure == null){
-            LogUtils.log("structure not found in registry!");
+            LogUtils.pluginLog("structure not found in registry!");
             return null;
         }
         net.minecraft.world.level.levelgen.structure.Structure structure = craftStructure.getHandle();
@@ -304,7 +294,7 @@ public class Nms {
                 serverLevel.getChunkSource().getGenerator().findNearestMapStructure(
                         serverLevel, holders, CraftLocation.toBlockPosition(location), radius, skipKnownStructures);
         if (pair == null){
-            LogUtils.log("structure not found in world!");
+            LogUtils.pluginLog("structure not found in world!");
             return null;
         }
 

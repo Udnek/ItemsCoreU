@@ -3,6 +3,7 @@ package me.udnek.itemscoreu.nms;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
@@ -22,5 +23,10 @@ public class ItemConsumer implements Consumer<ItemStack> {
     }
     public void copyTo(Consumer<ItemStack> other){
         itemStacks.forEach(other);
+    }
+
+    @Override
+    public String toString() {
+        return itemStacks.toString();
     }
 }

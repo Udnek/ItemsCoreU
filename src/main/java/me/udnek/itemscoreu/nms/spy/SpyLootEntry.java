@@ -1,11 +1,11 @@
-package me.udnek.itemscoreu.nms;
+package me.udnek.itemscoreu.nms.spy;
 
-import me.udnek.itemscoreu.customevent.LootEntryCreateItemEvent;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import me.udnek.itemscoreu.nms.ItemConsumer;
 import me.udnek.itemscoreu.utils.LogUtils;
 import me.udnek.itemscoreu.utils.NMS.Reflex;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.entries.LootPoolEntry;
@@ -16,14 +16,13 @@ import java.lang.reflect.Method;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
-public class CustomNmsLootPoolEntry implements LootPoolEntry {
+public abstract class SpyLootEntry implements LootPoolEntry {
 
-    private final LootPoolSingletonContainer container;
-    private final LootTable lootTable;
-    private final int weight;
-    private final int quality;
-    private final BiFunction<ItemStack, LootContext, ItemStack> compositeFunction;
-    private static final Method createItemStackMethod;
+    protected final LootPoolSingletonContainer container;
+    protected final int weight;
+    protected final int quality;
+    protected final BiFunction<ItemStack, LootContext, ItemStack> compositeFunction;
+    protected static final Method createItemStackMethod;
 
     static {
         createItemStackMethod = Reflex.getMethod(
@@ -32,8 +31,7 @@ public class CustomNmsLootPoolEntry implements LootPoolEntry {
         );
     }
 
-    public CustomNmsLootPoolEntry(LootTable lootTable, LootPoolSingletonContainer container){
-        this.lootTable = lootTable;
+    public SpyLootEntry(LootPoolSingletonContainer container){
         this.container = container;
         weight = (int) Reflex.getFieldValue(container, "weight");
         quality = (int) Reflex.getFieldValue(container, "quality");
@@ -44,15 +42,8 @@ public class CustomNmsLootPoolEntry implements LootPoolEntry {
         return Math.max(Mth.floor((float)weight + (float)quality * var0), 0);
     }
     @Override
-    public void createItemStack(Consumer<ItemStack> consumer, LootContext lootContext) {
-        ItemConsumer injectedConsumer = new ItemConsumer();
-        Reflex.invokeMethod(container, createItemStackMethod, LootItemFunction.decorate(compositeFunction, injectedConsumer, lootContext), lootContext);
-
-        LootEntryCreateItemEvent event = new LootEntryCreateItemEvent(lootTable, injectedConsumer);
-        boolean shouldProceed = event.callEvent();
-        if (!shouldProceed) return;
-
-        injectedConsumer.copyTo(consumer);
+    public void createItemStack(Consumer<ItemStack> consumer, LootContext lootContext){
+        Reflex.invokeMethod(container, createItemStackMethod, LootItemFunction.decorate(compositeFunction, consumer, lootContext), lootContext);
     }
 }
 

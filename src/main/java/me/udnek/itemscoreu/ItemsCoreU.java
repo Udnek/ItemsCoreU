@@ -20,7 +20,6 @@ import me.udnek.itemscoreu.utils.NMS.NMSTest;
 import me.udnek.itemscoreu.utils.NMS.ProtocolTest;
 import me.udnek.itemscoreu.utils.VanillaItemManager;
 import net.minecraft.world.effect.MobEffect;
-import net.minecraft.world.level.storage.loot.LootTable;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -72,7 +71,7 @@ public final class ItemsCoreU extends JavaPlugin implements ResourcePackablePlug
                 VanillaItemManager.getInstance().start();
 
                 LogUtils.pluginLog("Loot pool injection started");
-                Nms.get().injectLootPoolListeners();
+                Nms.get().injectLootEntrySpies();
             }
         });
     }

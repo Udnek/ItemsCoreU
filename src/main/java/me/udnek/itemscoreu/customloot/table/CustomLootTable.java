@@ -1,5 +1,6 @@
 package me.udnek.itemscoreu.customloot.table;
 
+import me.udnek.itemscoreu.customevent.LootTableGenerateEvent;
 import me.udnek.itemscoreu.customloot.entry.LootTableEntry;
 import me.udnek.itemscoreu.utils.PluginInitializable;
 import org.bukkit.event.entity.EntityDeathEvent;
@@ -16,7 +17,7 @@ public interface CustomLootTable extends LootTable, PluginInitializable {
     void removeItem(@NotNull ItemStack itemStack);
     void replaceItem(@NotNull ItemStack oldItem, ItemStack newItem);
     @NotNull List<ItemStack> getAllItems();
-    void onLootGeneratesEvent(LootGenerateEvent event);
-    void onMobDeathEvent(EntityDeathEvent event);
     boolean containsItem(ItemStack itemStack);
+    void onContainerLootGeneratesEvent(LootGenerateEvent event);
+    void onMobDeathEvent(EntityDeathEvent event);
 }

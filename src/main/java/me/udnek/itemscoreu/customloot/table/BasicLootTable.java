@@ -1,5 +1,6 @@
 package me.udnek.itemscoreu.customloot.table;
 
+import me.udnek.itemscoreu.customevent.LootTableGenerateEvent;
 import me.udnek.itemscoreu.customitem.CustomItem;
 import me.udnek.itemscoreu.customloot.entry.LootTableEntry;
 import me.udnek.itemscoreu.utils.ItemUtils;
@@ -66,7 +67,7 @@ public abstract class BasicLootTable implements CustomLootTable{
 
     @Override
     public void fillInventory(@NotNull Inventory inventory, @Nullable Random random, @NotNull LootContext lootContext) {
-        // TODO: 7/24/2024 FILL INVENTORY
+        // TODO: 7/24/2024 REALISE
     }
 
     @Override
@@ -89,7 +90,7 @@ public abstract class BasicLootTable implements CustomLootTable{
     }
 
     @Override
-    public void onLootGeneratesEvent(LootGenerateEvent event) {
+    public void onContainerLootGeneratesEvent(LootGenerateEvent event) {
         // TODO: 7/24/2024 REMOVE WHEN FILL INVENTORY WORKS
         event.setLoot(populateLoot(new Random(), event.getLootContext()));
     }
