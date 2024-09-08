@@ -1,6 +1,5 @@
 package me.udnek.itemscoreu.utils;
 
-import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 

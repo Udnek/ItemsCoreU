@@ -2,10 +2,8 @@ package me.udnek.itemscoreu.customloot;
 
 import com.google.common.base.Preconditions;
 import me.udnek.itemscoreu.ItemsCoreU;
-import me.udnek.itemscoreu.customevent.LootTableGenerateEvent;
 import me.udnek.itemscoreu.customitem.CustomItem;
 import me.udnek.itemscoreu.customloot.table.CustomLootTable;
-import me.udnek.itemscoreu.customloot.table.VanillaLikeLootTable;
 import me.udnek.itemscoreu.nms.Nms;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -112,15 +110,6 @@ public class LootTableUtils implements Listener {
         if (lootTable instanceof CustomLootTable customLootTable) {
             customLootTable.onMobDeathEvent(event);
         }
-    }
-
-    @EventHandler
-    public void onLootTableGenerateEvent(LootTableGenerateEvent event){
-        CustomLootTable lootTable = manager.getCustomLootTables().get(event.getLootTable().getKey().asString());
-        if (lootTable instanceof VanillaLikeLootTable vanillaLikeLootTable){
-            vanillaLikeLootTable.onLootTableGenerateEvent(event);
-        }
-
     }
 
 }

@@ -2,7 +2,6 @@ package me.udnek.itemscoreu.customentity;
 
 import com.google.common.base.Preconditions;
 import me.udnek.itemscoreu.ItemsCoreU;
-import me.udnek.itemscoreu.utils.LogUtils;
 import me.udnek.itemscoreu.utils.TickingTask;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;

@@ -9,9 +9,6 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.*;
 
 public abstract class CustomEntityType implements PluginInitializable {
     public static final NamespacedKey NAMESPACED_KEY = new NamespacedKey(ItemsCoreU.getInstance(), "custom_entity_type");

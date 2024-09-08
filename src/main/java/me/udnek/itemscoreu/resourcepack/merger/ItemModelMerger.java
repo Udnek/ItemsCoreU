@@ -8,10 +8,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import me.udnek.itemscoreu.utils.LogUtils;
-import org.checkerframework.checker.units.qual.C;
 import org.jetbrains.annotations.NotNull;
-import org.json.simple.JSONArray;
 
 import java.io.BufferedReader;
 import java.util.*;

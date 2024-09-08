@@ -4,7 +4,6 @@ import me.udnek.itemscoreu.ItemsCoreU;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
-import org.bukkit.Color;
 
 import java.lang.reflect.AccessFlag;
 import java.lang.reflect.Field;

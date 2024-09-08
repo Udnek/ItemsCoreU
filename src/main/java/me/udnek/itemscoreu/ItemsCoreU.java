@@ -1,17 +1,17 @@
 package me.udnek.itemscoreu;
 
+import io.papermc.paper.command.brigadier.argument.predicate.ItemStackPredicate;
 import me.udnek.itemscoreu.customblock.CustomBlockListener;
 import me.udnek.itemscoreu.customentity.CustomEntityCommand;
 import me.udnek.itemscoreu.customentity.CustomEntityManager;
 import me.udnek.itemscoreu.customhud.CustomHudTicker;
 import me.udnek.itemscoreu.custominventory.CustomInventoryListener;
-import me.udnek.itemscoreu.customitem.CraftListener;
-import me.udnek.itemscoreu.customitem.CustomItemCommand;
-import me.udnek.itemscoreu.customitem.CustomItemListener;
-import me.udnek.itemscoreu.customitem.CustomItemRegistry;
+import me.udnek.itemscoreu.customitem.*;
 import me.udnek.itemscoreu.customloot.LootTableUtils;
 import me.udnek.itemscoreu.customrecipe.RecipeManager;
+import me.udnek.itemscoreu.nms.CustomNmsLootPoolBuilder;
 import me.udnek.itemscoreu.nms.Nms;
+import me.udnek.itemscoreu.nms.entry.SimpleNmsEntry;
 import me.udnek.itemscoreu.resourcepack.ResourcePackCommand;
 import me.udnek.itemscoreu.resourcepack.ResourcePackablePlugin;
 import me.udnek.itemscoreu.serializabledata.SerializableDataManager;
@@ -19,10 +19,19 @@ import me.udnek.itemscoreu.utils.LogUtils;
 import me.udnek.itemscoreu.utils.NMS.NMSTest;
 import me.udnek.itemscoreu.utils.NMS.ProtocolTest;
 import me.udnek.itemscoreu.utils.VanillaItemManager;
+import net.minecraft.advancements.Advancement;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.level.storage.loot.LootPool;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_21_R1.inventory.CraftRecipe;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.loot.LootTables;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.util.function.Predicate;
 
 public final class ItemsCoreU extends JavaPlugin implements ResourcePackablePlugin {
     private static JavaPlugin instance;
@@ -55,6 +64,8 @@ public final class ItemsCoreU extends JavaPlugin implements ResourcePackablePlug
         customHudTicker = new CustomHudTicker();
         customHudTicker.start(this);
 
+
+
         // TODO: 8/19/2024 REMOVE
         //NMSTest.registerAttribute("test", 0, 0, 8);
         MobEffect mobEffect = NMSTest.registerEffect();
@@ -69,9 +80,25 @@ public final class ItemsCoreU extends JavaPlugin implements ResourcePackablePlug
 
                 LogUtils.pluginLog("Vanilla disabler started");
                 VanillaItemManager.getInstance().start();
+                Predicate<ItemStack> predicate = new Predicate<>() {
+                    @Override
+                    public boolean test(ItemStack itemStack) {
+                        return !CustomItem.isCustom(itemStack) && itemStack.getType() == Material.ROTTEN_FLESH;
+                    }
+                };
+                Nms.get().addLootPool(
+                        LootTables.SHULKER.getLootTable(),
+                        new CustomNmsLootPoolBuilder(
+                                SimpleNmsEntry.fromVanilla(LootTables.ZOMBIE.getLootTable(), predicate, new ItemStack(Material.COMMAND_BLOCK)))
+                                .rolls(1)
+                );
 
-                LogUtils.pluginLog("Loot pool injection started");
-                Nms.get().injectLootEntrySpies();
+                ItemStackPredicate predicate1 = itemStack -> !CustomItem.isCustom(itemStack) && itemStack.getType() == Material.BLAZE_ROD;
+                Nms.get().replaceAllEntriesContains(
+                        LootTables.BLAZE.getLootTable(),
+                        predicate1,
+                        SimpleNmsEntry.fromVanilla(LootTables.BLAZE.getLootTable(), predicate1, new ItemStack(Material.CHAIN_COMMAND_BLOCK))
+                );
             }
         });
     }

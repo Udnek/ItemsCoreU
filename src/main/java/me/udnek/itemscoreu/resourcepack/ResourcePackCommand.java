@@ -2,11 +2,9 @@ package me.udnek.itemscoreu.resourcepack;
 
 import me.udnek.itemscoreu.ItemsCoreU;
 import me.udnek.itemscoreu.resourcepack.merger.ResourcePackMerger;
-import me.udnek.itemscoreu.serializabledata.SerializableData;
 import me.udnek.itemscoreu.serializabledata.SerializableDataManager;
 import me.udnek.itemscoreu.utils.LogUtils;
 import org.bukkit.command.*;
-import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

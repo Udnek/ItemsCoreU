@@ -1,10 +1,11 @@
 package me.udnek.itemscoreu.resourcepack;
 
 import com.google.common.base.Preconditions;
-import me.udnek.itemscoreu.resourcepack.FileType;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;

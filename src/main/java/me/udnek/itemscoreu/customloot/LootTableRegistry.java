@@ -20,6 +20,7 @@ import java.util.List;
 
 public class LootTableRegistry extends CustomRegistry<CustomLootTable> implements Listener {
 
+    // TODO: 8/24/2024 REMOVE OR CHANGE VANILLA REPLACED
     private final List<String> vanillaReplaced = new ArrayList<>();
     private final HashMap<String, CustomLootTable> customLootTables = new HashMap<>();
     private static LootTableRegistry instance;

@@ -6,6 +6,7 @@ import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Material;
 import org.bukkit.inventory.*;
+import org.bukkit.inventory.meta.ArmorMeta;
 import org.bukkit.inventory.meta.FireworkEffectMeta;
 import org.jetbrains.annotations.NotNull;
 
@@ -19,8 +20,8 @@ public class ItemUtils {
     public static boolean isSameIds(ItemStack itemA, ItemStack itemB){
         CustomItem customA = CustomItem.get(itemA);
         CustomItem customB = CustomItem.get(itemB);
-        if (customA == customB) return true;
-        return itemA.getType() == itemB.getType();
+        if (customA == null && customB == null) return itemA.getType() == itemB.getType();
+        return customA == customB;
     }
     public static String getId(@NotNull ItemStack itemStack){
         CustomItem customItem = CustomItem.get(itemStack);

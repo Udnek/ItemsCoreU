@@ -1,6 +1,5 @@
 package me.udnek.itemscoreu.customloot.table;
 
-import me.udnek.itemscoreu.customevent.LootTableGenerateEvent;
 import me.udnek.itemscoreu.customloot.entry.LootTableEntry;
 import me.udnek.itemscoreu.utils.PluginInitializable;
 import org.bukkit.event.entity.EntityDeathEvent;

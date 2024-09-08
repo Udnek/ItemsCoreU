@@ -2,6 +2,7 @@ package me.udnek.itemscoreu.utils.NMS;
 
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -62,4 +63,39 @@ public class Reflex {
             throw new RuntimeException(e);
         }
     }
+
+    public static <T> Constructor<T> getConstructor(Class<T> clazz, Class<?> ...parameterTypes){
+        try {
+            Constructor<T> constructor = clazz.getConstructor(parameterTypes);
+            constructor.setAccessible(true);
+            return constructor;
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static <T> T construct(Constructor<T> constructor, Object ...args){
+        try {
+            return constructor.newInstance(args);
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

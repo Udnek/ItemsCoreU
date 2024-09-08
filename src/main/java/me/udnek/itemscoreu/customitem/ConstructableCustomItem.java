@@ -2,6 +2,7 @@ package me.udnek.itemscoreu.customitem;
 
 import com.google.common.base.Preconditions;
 import me.udnek.itemscoreu.customattribute.AttributeUtils;
+import me.udnek.itemscoreu.customcomponent.AbstractComponentHolder;
 import me.udnek.itemscoreu.customrecipe.RecipeManager;
 import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
@@ -19,16 +20,17 @@ import java.util.List;
 import java.util.Map;
 
 
-public abstract class ConstructableCustomItem implements CustomItem, CustomItemProperties {
+public abstract class ConstructableCustomItem extends AbstractComponentHolder<CustomItem> implements CustomItem, CustomItemProperties {
     private JavaPlugin plugin;
     private List<Recipe> recipes;
     private String id;
     protected ItemStack itemStack;
-    protected ConstructableCustomItem(){}
 
     ///////////////////////////////////////////////////////////////////////////
     // INITIAL
     ///////////////////////////////////////////////////////////////////////////
+    protected ConstructableCustomItem(){}
+
     @Override
     public final @NotNull String getId(){return this.id;}
 

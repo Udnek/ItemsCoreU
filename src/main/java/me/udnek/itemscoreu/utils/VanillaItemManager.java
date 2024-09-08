@@ -8,16 +8,16 @@ import me.udnek.itemscoreu.customitem.VanillaBasedCustomItem;
 import me.udnek.itemscoreu.customloot.LootTableRegistry;
 import me.udnek.itemscoreu.customloot.LootTableUtils;
 import me.udnek.itemscoreu.customloot.table.CustomLootTable;
-import me.udnek.itemscoreu.customloot.table.VanillaBasedLootTable;
 import me.udnek.itemscoreu.customrecipe.CustomRecipe;
 import me.udnek.itemscoreu.customrecipe.RecipeManager;
+import me.udnek.itemscoreu.nms.Nms;
+import me.udnek.itemscoreu.nms.entry.SimpleNmsEntry;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import org.apache.commons.lang3.tuple.Pair;
 import org.bukkit.Material;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntitySpawnEvent;
 import org.bukkit.event.inventory.InventoryCreativeEvent;
 import org.bukkit.inventory.*;
@@ -25,6 +25,7 @@ import org.bukkit.loot.LootTable;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
+import java.util.function.Predicate;
 
 public class VanillaItemManager extends SelfRegisteringListener{
 
@@ -59,11 +60,11 @@ public class VanillaItemManager extends SelfRegisteringListener{
         RecipeManager recipeManager = RecipeManager.getInstance();
         for (Material material : disabled) {
 
-            ItemStack item = new ItemStack(material);
+            ItemStack toRemoveItem = new ItemStack(material);
 
             // recipe removal
-            List<Recipe> recipes = recipeManager.getRecipesAsIngredient(item);
-            recipes.addAll(recipeManager.getRecipesAsResult(item));
+            List<Recipe> recipes = recipeManager.getRecipesAsIngredient(toRemoveItem);
+            recipes.addAll(recipeManager.getRecipesAsResult(toRemoveItem));
             for (Recipe recipe : recipes) {
                 recipeManager.unregister(recipe);
                 LogUtils.pluginLog("Unregistered recipe: " + recipe);
@@ -71,15 +72,18 @@ public class VanillaItemManager extends SelfRegisteringListener{
 
             // loot table removal
             LootTableRegistry lootTableRegistry = LootTableRegistry.getInstance();
-            for (LootTable lootTable : LootTableUtils.getWhereItemOccurs(item)) {
+            for (LootTable lootTable : LootTableUtils.getWhereItemOccurs(toRemoveItem)) {
                 if (lootTable instanceof CustomLootTable customLootTable) {
-                    customLootTable.removeItem(item);
+                    customLootTable.removeItem(toRemoveItem);
                     LogUtils.pluginLog("Custom lootTable was edited: " + customLootTable.getKey().asString());
                 } else {
-                    VanillaBasedLootTable vanillaBasedLootTable = new VanillaBasedLootTable(lootTable);
-                    vanillaBasedLootTable.removeItem(item);
-                    lootTableRegistry.register(ItemsCoreU.getInstance(), vanillaBasedLootTable);
-                    LogUtils.pluginLog("Vanilla lootTable was replaced!: " + lootTable.getKey().asString());
+                    Nms.get().removeAllEntriesContains(lootTable, new Predicate<ItemStack>() {
+                        @Override
+                        public boolean test(ItemStack itemStack) {
+                            return !CustomItem.isCustom(itemStack) && itemStack.getType() == toRemoveItem.getType();
+                        }
+                    });
+                    LogUtils.pluginLog("Vanilla lootTable was removed!: " + lootTable.getKey().asString());
                 }
             }
 
@@ -97,7 +101,7 @@ public class VanillaItemManager extends SelfRegisteringListener{
 
             ItemStack oldItem = new ItemStack(entry.getKey());
 
-            // recipe removal
+            // recipe replace
             List<Recipe> recipes = recipeManager.getRecipesAsIngredient(oldItem);
             recipes.addAll(recipeManager.getRecipesAsResult(oldItem));
 
@@ -109,16 +113,22 @@ public class VanillaItemManager extends SelfRegisteringListener{
                 LogUtils.pluginLog("Replaced recipe: " + newRecipe);
             }
 
-            // loot table removal
+            // loot table replace
             LootTableRegistry lootTableRegistry = LootTableRegistry.getInstance();
             for (LootTable lootTable : LootTableUtils.getWhereItemOccurs(oldItem)) {
                 if (lootTable instanceof CustomLootTable customLootTable) {
                     customLootTable.replaceItem(oldItem, vanillaBasedItem.getItem());
                     LogUtils.pluginLog("Custom lootTable was edited: " + customLootTable.getKey().asString());
                 } else {
-                    VanillaBasedLootTable vanillaBasedLootTable = new VanillaBasedLootTable(lootTable);
-                    vanillaBasedLootTable.replaceItem(oldItem, vanillaBasedItem.getItem());
-                    lootTableRegistry.register(ItemsCoreU.getInstance(), vanillaBasedLootTable);
+                    Predicate<ItemStack> predicate = new Predicate<>() {
+                        @Override
+                        public boolean test(ItemStack itemStack) {
+                            return !CustomItem.isCustom(itemStack) && itemStack.getType() == oldItem.getType();
+                        }
+                    };
+                    Pair<Integer, Integer> weightAndQuality = Nms.get().getWeightAndQuality(lootTable, predicate);
+                    if (weightAndQuality == null) continue;
+                    Nms.get().replaceAllEntriesContains(lootTable, predicate, SimpleNmsEntry.fromVanilla(lootTable, predicate, vanillaBasedItem.getItem()));
                     LogUtils.pluginLog("Vanilla lootTable was replaced!: " + lootTable.getKey().asString());
                 }
             }

@@ -1,12 +1,12 @@
-package me.udnek.itemscoreu.nms.spy;
+package me.udnek.itemscoreu.nms.spy.entry;
 
-import me.udnek.itemscoreu.nms.ItemConsumer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.entries.LootPoolSingletonContainer;
 
 import java.util.function.Consumer;
 
+@Deprecated
 public class CollectorSpyLootEntry extends SpyLootEntry{
 
     protected final MainSpyLootEntry mainSpy;

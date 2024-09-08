@@ -1,13 +1,9 @@
-package me.udnek.itemscoreu.nms.spy;
+package me.udnek.itemscoreu.nms.spy.entry;
 
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import me.udnek.itemscoreu.nms.ItemConsumer;
-import me.udnek.itemscoreu.utils.LogUtils;
 import me.udnek.itemscoreu.utils.NMS.Reflex;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.LootContext;
-import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.entries.LootPoolEntry;
 import net.minecraft.world.level.storage.loot.entries.LootPoolSingletonContainer;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
@@ -16,6 +12,7 @@ import java.lang.reflect.Method;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
+@Deprecated
 public abstract class SpyLootEntry implements LootPoolEntry {
 
     protected final LootPoolSingletonContainer container;

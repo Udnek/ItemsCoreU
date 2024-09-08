@@ -1,6 +1,5 @@
 package me.udnek.itemscoreu.customloot.table;
 
-import me.udnek.itemscoreu.customevent.LootTableGenerateEvent;
 import me.udnek.itemscoreu.customitem.CustomItem;
 import me.udnek.itemscoreu.nms.Nms;
 import me.udnek.itemscoreu.utils.ItemUtils;
@@ -16,7 +15,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-public class VanillaBasedLootTable extends BasicLootTable implements VanillaLikeLootTable{
+@Deprecated
+public class VanillaBasedLootTable extends BasicLootTable{
 
     protected final LootTable vanillaLootTable;
     protected Set<Material> toRemoveItems;
@@ -91,12 +91,4 @@ public class VanillaBasedLootTable extends BasicLootTable implements VanillaLike
         return vanillaLootTable.getKey();
     }
 
-    @Override
-    public void onLootTableGenerateEvent(LootTableGenerateEvent event) {
-        List<ItemStack> stacks = event.getAll();
-        removeItems(stacks);
-        stacks = replaceItems(stacks);
-        stacks.addAll(super.populateLoot(null, event.getLootContext()));
-        event.setAll(stacks);
-    }
 }

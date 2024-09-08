@@ -1,7 +1,9 @@
 package me.udnek.itemscoreu.resourcepack.merger;
 
 import com.google.common.base.Preconditions;
-import me.udnek.itemscoreu.resourcepack.*;
+import me.udnek.itemscoreu.resourcepack.FileType;
+import me.udnek.itemscoreu.resourcepack.ResourcePackablePlugin;
+import me.udnek.itemscoreu.resourcepack.VirtualResourcePack;
 import me.udnek.itemscoreu.resourcepack.path.RPPath;
 import me.udnek.itemscoreu.resourcepack.path.SamePathsContainer;
 import me.udnek.itemscoreu.resourcepack.path.SortedPathsContainer;
