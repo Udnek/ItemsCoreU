@@ -1,60 +1,54 @@
 package me.udnek.itemscoreu.customloot;
 
 import com.google.common.base.Preconditions;
-import me.udnek.itemscoreu.ItemsCoreU;
 import me.udnek.itemscoreu.customloot.table.CustomLootTable;
+import me.udnek.itemscoreu.customregistry.MappedCustomRegistry;
 import me.udnek.itemscoreu.nms.Nms;
-import me.udnek.itemscoreu.utils.CustomRegistry;
+import me.udnek.itemscoreu.utils.LogUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.NamespacedKey;
 import org.bukkit.event.Listener;
 import org.bukkit.loot.LootTable;
-import org.bukkit.loot.LootTables;
+import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 
-public class LootTableRegistry extends CustomRegistry<CustomLootTable> implements Listener {
+public class LootTableRegistry extends MappedCustomRegistry<CustomLootTable> {
 
-    // TODO: 8/24/2024 REMOVE OR CHANGE VANILLA REPLACED
-    private final List<String> vanillaReplaced = new ArrayList<>();
-    private final HashMap<String, CustomLootTable> customLootTables = new HashMap<>();
-    private static LootTableRegistry instance;
-    private LootTableRegistry(){
-        Bukkit.getPluginManager().registerEvents(this, ItemsCoreU.getInstance());
-    }
-    public static LootTableRegistry getInstance() {
-        if (instance == null) instance = new LootTableRegistry();
-        return instance;
-    }
-    
-    @Override
-    public String getCategory() {
-        return "CustomLootTable";
+    final List<String> vanillaReplaced = new ArrayList<>();
+
+    public LootTableRegistry(){
+        super("LootTable");
     }
 
     @Override
-    protected String getIdToLog(CustomLootTable custom) {
-        return custom.getKey().asString();
-    }
-
-    @Override
-    protected void put(CustomLootTable lootTable) {
+    public @NotNull CustomLootTable register(@NotNull Plugin plugin, @NotNull CustomLootTable lootTable) {
         Preconditions.checkArgument(
-                !customLootTables.containsKey(lootTable.getKey().asString()),
+                !map.containsKey(lootTable.getKey().asString()),
                 "LootTable already registered: " + lootTable.getKey().asString() + "!");
+
         if (Nms.get().getRegisteredLootTableIds().contains(lootTable.getKey().asString())){
             vanillaReplaced.add(lootTable.getKey().asString());
         }
-        customLootTables.put(lootTable.getKey().asString(), lootTable);
+
+        lootTable.initialize(plugin);
+        map.put(lootTable.getId(), lootTable);
+        logRegistered(lootTable);
+        if (lootTable instanceof Listener listener){
+            Bukkit.getPluginManager().registerEvents(listener, plugin);
+            LogUtils.pluginLog("(EventListener) " + listener.getClass().getName());
+        }
+        return lootTable;
     }
 
-    public @Nullable LootTable getLootTable(@NotNull NamespacedKey key){
-        LootTable lootTable = customLootTables.get(key.asString());
+    boolean isVanillaLootTableReplaced(LootTable lootTable){
+        return vanillaReplaced.contains(lootTable.getKey().asString());
+    }
+
+
+/*    public @Nullable LootTable getLootTable(@NotNull NamespacedKey key){
+        LootTable lootTable = map.get(key.asString());
         if (lootTable != null) return lootTable;
         lootTable = Nms.get().getLootTable(key.asString());
         if (lootTable != LootTables.EMPTY.getLootTable()) return lootTable;
@@ -79,8 +73,7 @@ public class LootTableRegistry extends CustomRegistry<CustomLootTable> implement
     public List<LootTable> getAllVanillaRegistered() {
         return Nms.get().getRegisteredLootTables();
     }
-
     public HashMap<String, CustomLootTable> getCustomLootTables() {
         return customLootTables;
-    }
+    }*/
 }

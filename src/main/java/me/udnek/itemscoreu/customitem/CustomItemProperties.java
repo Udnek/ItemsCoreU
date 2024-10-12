@@ -1,5 +1,6 @@
 package me.udnek.itemscoreu.customitem;
 
+import me.udnek.itemscoreu.utils.LoreBuilder;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.MusicInstrument;
@@ -14,8 +15,10 @@ import org.bukkit.inventory.meta.trim.ArmorTrim;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 public interface CustomItemProperties {
     @NotNull Material getMaterial();
@@ -27,16 +30,24 @@ public interface CustomItemProperties {
         return Component.translatable(getRawItemName());
     }
     @Nullable default Component getCustomDisplayName(){return null;}
-    @Nullable default List<Component> getLore(){return null;}
+    default void getLore(@NotNull Consumer<Component> consumer){}
+    default @Nullable LoreBuilder getLoreBuilder(){
+        ArrayList<Component> lore = new ArrayList<>();
+        getLore(lore::add);
+        if (lore.isEmpty()) return null;
+        LoreBuilder builder = new LoreBuilder();
+        lore.forEach(component -> builder.add(LoreBuilder.Position.VANILLA_LORE, component));
+        return builder;
+    }
     @Nullable default ItemRarity getItemRarity(){return null;}
     @Nullable default Integer getCustomModelData(){return null;}
     default boolean getHideTooltip(){return false;}
     @Nullable default FoodComponent getFoodComponent(){return null;}
     @Nullable default ToolComponent getToolComponent(){return null;}
-    @Nullable default ItemFlag[] getTooltipHides(){return new ItemFlag[0];}
+    @Nullable default ItemFlag[] getTooltipHides(){return null;}
     @Nullable default Integer getMaxStackSize(){return null;}
     @Nullable default Integer getMaxDamage(){return null;}
-    @Nullable default boolean getUnbreakable(){return false;}
+    default boolean getUnbreakable(){return false;}
     @Nullable default Boolean getFireResistant(){return null;}
     @Nullable default Boolean getEnchantmentGlintOverride(){return null;}
     @Nullable default ArmorTrim getArmorTrim(){return null;}

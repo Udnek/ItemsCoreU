@@ -1,7 +1,7 @@
 package me.udnek.itemscoreu.customblock;
 
 import com.destroystokyo.paper.event.block.BlockDestroyEvent;
-import me.udnek.itemscoreu.utils.RightClickable;
+import me.udnek.itemscoreu.customcomponent.CustomComponentType;
 import me.udnek.itemscoreu.utils.SelfRegisteringListener;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
@@ -62,8 +62,7 @@ public class CustomBlockListener extends SelfRegisteringListener {
         if (!event.getAction().isRightClick()) return;
         if (event.getClickedBlock() == null) return;
         CustomBlock customBlock = CustomBlock.get(event.getClickedBlock());
-        if (customBlock instanceof RightClickable rightClickable){
-            rightClickable.onRightClicks(event);
-        }
+        if (customBlock == null) return;
+        customBlock.getComponentOrDefault(CustomComponentType.RIGHT_CLICKABLE_BLOCK).onRightClick(customBlock, event);
     }
 }

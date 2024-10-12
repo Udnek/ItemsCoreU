@@ -9,7 +9,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.loot.LootContext;
 import org.bukkit.loot.LootTable;
-import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -25,7 +25,8 @@ public class VanillaBasedLootTable extends BasicLootTable{
         vanillaLootTable = vanilla;
     }
     @Override
-    public void initialize(@NotNull JavaPlugin plugin) {}
+    public void initialize(@NotNull Plugin plugin) {}
+
     public LootTable getVanilla() {return vanillaLootTable;}
     @Override
     public void removeItem(@NotNull ItemStack itemStack) {

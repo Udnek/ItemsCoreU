@@ -1,7 +1,29 @@
 package me.udnek.itemscoreu.customcomponent;
 
+import me.udnek.itemscoreu.ItemsCoreU;
+import me.udnek.itemscoreu.customblock.CustomBlock;
+import me.udnek.itemscoreu.customcomponent.instance.CustomItemAttributesComponent;
+import me.udnek.itemscoreu.customcomponent.instance.RightClickableBlock;
+import me.udnek.itemscoreu.customcomponent.instance.RightClickableItem;
+import me.udnek.itemscoreu.customitem.CustomItem;
+import me.udnek.itemscoreu.customregistry.CustomRegistries;
+import me.udnek.itemscoreu.customregistry.Registrable;
 import org.jetbrains.annotations.NotNull;
 
-public interface CustomComponentType<HolderType, Component extends CustomComponent<HolderType, ?>> {
+public interface CustomComponentType<HolderType, Component extends CustomComponent<HolderType>> extends Registrable {
+
+    CustomComponentType<CustomItem, CustomItemAttributesComponent>
+            CUSTOM_ITEM_ATTRIBUTES = register(new ConstructableComponentType("custom_item_attributes", CustomItemAttributesComponent.EMPTY));
+
+    CustomComponentType<CustomItem, RightClickableItem>
+            RIGHT_CLICKABLE_ITEM = register(new ConstructableComponentType("right_clickable_item", RightClickableItem.EMPTY));
+
+    CustomComponentType<CustomBlock, RightClickableBlock>
+            RIGHT_CLICKABLE_BLOCK = register(new ConstructableComponentType("right_clickable_block", RightClickableBlock.EMPTY));
+
     @NotNull Component getDefault();
+
+    private static <HolderType, Component extends CustomComponent<HolderType>> CustomComponentType<HolderType, Component> register(CustomComponentType<HolderType, Component> type){
+        return (CustomComponentType<HolderType, Component>) CustomRegistries.COMPONENT_TYPE.register(ItemsCoreU.getInstance(), type);
+    }
 }

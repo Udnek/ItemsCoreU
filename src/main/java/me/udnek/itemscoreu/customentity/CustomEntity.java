@@ -1,5 +1,6 @@
 package me.udnek.itemscoreu.customentity;
 
+import me.udnek.itemscoreu.customregistry.CustomRegistries;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.persistence.PersistentDataContainer;
@@ -19,7 +20,7 @@ public interface CustomEntity {
         return getType(id);
     }
     static @Nullable CustomEntityType getType(String id){
-        return CustomEntityTypeRegistry.getInstance().get(id);
+        return CustomRegistries.ENTITY_TYPE.get(id);
     }
     static @Nullable CustomEntity get(Entity entity){
         return CustomEntityManager.getInstance().get(entity);
@@ -29,7 +30,7 @@ public interface CustomEntity {
         return dataContainer.has(CustomEntityType.NAMESPACED_KEY);
     }
     static List<String> getAllIds(){
-        return new ArrayList<>(CustomEntityTypeRegistry.getInstance().getAllIds());
+        return new ArrayList<>(CustomRegistries.ENTITY_TYPE.getIds());
     }
     static boolean idExists(String id){
         return getType(id) != null;

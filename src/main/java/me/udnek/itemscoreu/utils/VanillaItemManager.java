@@ -3,15 +3,15 @@ package me.udnek.itemscoreu.utils;
 import com.google.common.base.Preconditions;
 import me.udnek.itemscoreu.ItemsCoreU;
 import me.udnek.itemscoreu.customitem.CustomItem;
-import me.udnek.itemscoreu.customitem.CustomItemRegistry;
 import me.udnek.itemscoreu.customitem.VanillaBasedCustomItem;
-import me.udnek.itemscoreu.customloot.LootTableRegistry;
 import me.udnek.itemscoreu.customloot.LootTableUtils;
 import me.udnek.itemscoreu.customloot.table.CustomLootTable;
 import me.udnek.itemscoreu.customrecipe.CustomRecipe;
 import me.udnek.itemscoreu.customrecipe.RecipeManager;
+import me.udnek.itemscoreu.customregistry.CustomRegistries;
 import me.udnek.itemscoreu.nms.Nms;
-import me.udnek.itemscoreu.nms.entry.SimpleNmsEntry;
+import me.udnek.itemscoreu.nms.entry.CustomNmsLootEntryBuilder;
+import me.udnek.itemscoreu.nms.entry.ItemStackCreator;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.apache.commons.lang3.tuple.Pair;
@@ -23,15 +23,17 @@ import org.bukkit.event.inventory.InventoryCreativeEvent;
 import org.bukkit.inventory.*;
 import org.bukkit.loot.LootTable;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.function.Predicate;
 
 public class VanillaItemManager extends SelfRegisteringListener{
 
-    public static final EquipmentSlot[] ENTITY_SLOTS = new EquipmentSlot[]{EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET, EquipmentSlot.HAND, EquipmentSlot.OFF_HAND};
+    private static final EquipmentSlot[] ENTITY_SLOTS = new EquipmentSlot[]{EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET, EquipmentSlot.HAND, EquipmentSlot.OFF_HAND};
     private final Set<Material> disabled = new HashSet<>();
-    private final EnumMap<Material, VanillaBasedCustomItem> replaced = new EnumMap<>(Material.class);
+    private final EnumMap<Material, VanillaBasedCustomItem> replacedByMaterial = new EnumMap<>(Material.class);
+    private final List<VanillaBasedCustomItem> replacedItems = new ArrayList<>();
     private static VanillaItemManager instance;
     public static VanillaItemManager getInstance() {
         if (instance == null) instance = new VanillaItemManager();
@@ -41,14 +43,17 @@ public class VanillaItemManager extends SelfRegisteringListener{
         super(ItemsCoreU.getInstance());
     }
 
-    public void disableItem(@NotNull Material material){
+    public void disableVanillaMaterial(@NotNull Material material){
         Preconditions.checkArgument(material != null, "Material can not be null!");
         disabled.add(material);
     }
-    public void replaceItem(@NotNull Material material){
+    public void replaceVanillaMaterial(@NotNull Material material){
         Preconditions.checkArgument(material != null, "Material can not be null!");
-        if (replaced.containsKey(material)) return;
-        replaced.put(material, new VanillaBasedCustomItem(material));
+        if (replacedByMaterial.containsKey(material)) return;
+        VanillaBasedCustomItem customItem = new VanillaBasedCustomItem(material);
+        replacedByMaterial.put(material, customItem);
+        replacedItems.add(customItem);
+        
     }
 
     public void start(){
@@ -71,7 +76,6 @@ public class VanillaItemManager extends SelfRegisteringListener{
             }
 
             // loot table removal
-            LootTableRegistry lootTableRegistry = LootTableRegistry.getInstance();
             for (LootTable lootTable : LootTableUtils.getWhereItemOccurs(toRemoveItem)) {
                 if (lootTable instanceof CustomLootTable customLootTable) {
                     customLootTable.removeItem(toRemoveItem);
@@ -93,11 +97,10 @@ public class VanillaItemManager extends SelfRegisteringListener{
 
     private void startReplacer(){
         RecipeManager recipeManager = RecipeManager.getInstance();
-        for (Map.Entry<Material, VanillaBasedCustomItem> entry : replaced.entrySet()) {
-
+        for (Map.Entry<Material, VanillaBasedCustomItem> entry : replacedByMaterial.entrySet()) {
             VanillaBasedCustomItem vanillaBasedItem = entry.getValue();
 
-            CustomItemRegistry.getInstance().register(ItemsCoreU.getInstance(), vanillaBasedItem);
+            CustomRegistries.ITEM.register(ItemsCoreU.getInstance(), vanillaBasedItem);
 
             ItemStack oldItem = new ItemStack(entry.getKey());
 
@@ -114,7 +117,6 @@ public class VanillaItemManager extends SelfRegisteringListener{
             }
 
             // loot table replace
-            LootTableRegistry lootTableRegistry = LootTableRegistry.getInstance();
             for (LootTable lootTable : LootTableUtils.getWhereItemOccurs(oldItem)) {
                 if (lootTable instanceof CustomLootTable customLootTable) {
                     customLootTable.replaceItem(oldItem, vanillaBasedItem.getItem());
@@ -128,7 +130,7 @@ public class VanillaItemManager extends SelfRegisteringListener{
                     };
                     Pair<Integer, Integer> weightAndQuality = Nms.get().getWeightAndQuality(lootTable, predicate);
                     if (weightAndQuality == null) continue;
-                    Nms.get().replaceAllEntriesContains(lootTable, predicate, SimpleNmsEntry.fromVanilla(lootTable, predicate, vanillaBasedItem.getItem()));
+                    Nms.get().replaceAllEntriesContains(lootTable, predicate, CustomNmsLootEntryBuilder.fromVanilla(lootTable, predicate, new ItemStackCreator.CustomSimple(vanillaBasedItem)));
                     LogUtils.pluginLog("Vanilla lootTable was replaced!: " + lootTable.getKey().asString());
                 }
             }
@@ -139,19 +141,26 @@ public class VanillaItemManager extends SelfRegisteringListener{
 
     public static boolean isDisabled(@NotNull ItemStack item){
         if (CustomItem.isCustom(item)) return false;
-        return isDisabled(item.getType());
+        return getInstance().disabled.contains(item.getType());
     }
-    public static boolean isDisabled(@NotNull Material material){return getInstance().disabled.contains(material);}
-
-    public static boolean isReplaced(@NotNull ItemStack item){
-        if (CustomItem.isCustom(item)) return false;
-        return getInstance().replaced.containsKey(item.getType());
+    public static boolean isReplaced(@NotNull ItemStack itemStack){
+        CustomItem customItem = CustomItem.get(itemStack);
+        if (customItem == null) return false;
+        return getInstance().replacedItems.contains(customItem);
     }
-    public static @NotNull ItemStack getReplaced(@NotNull ItemStack itemStack){
-        if (CustomItem.isCustom(itemStack)) return itemStack;
-        VanillaBasedCustomItem vanillaBasedCustomItem = getInstance().replaced.get(itemStack.getType());
-        if (vanillaBasedCustomItem == null) return itemStack;
-        return vanillaBasedCustomItem.getFrom(itemStack);
+    public static boolean isReplaced(@NotNull Material material){
+        return getInstance().replacedByMaterial.containsKey(material);
+    }
+    public static @NotNull ItemStack replace(@NotNull ItemStack itemStack){
+        if (!isReplaced(itemStack)) return itemStack;
+        return getInstance().replacedByMaterial.get(itemStack.getType()).getFrom(itemStack);
+    }
+    public static @Nullable VanillaBasedCustomItem getReplaced(@NotNull ItemStack itemStack){
+        if (!isReplaced(itemStack)) return null;
+        return getInstance().replacedByMaterial.get(itemStack.getType());
+    }
+    public static @Nullable VanillaBasedCustomItem getReplaced(@NotNull Material material){
+        return getInstance().replacedByMaterial.get(material);
     }
 
     @EventHandler
@@ -162,7 +171,7 @@ public class VanillaItemManager extends SelfRegisteringListener{
         for (EquipmentSlot slot : ENTITY_SLOTS) {
             ItemStack item = equipment.getItem(slot);
             if (isDisabled(item)) equipment.setItem(slot, null);
-            else if (isReplaced(item)) equipment.setItem(slot, getReplaced(item));
+            else if (isReplaced(item)) equipment.setItem(slot, replace(item));
         }
     }
 
@@ -171,17 +180,18 @@ public class VanillaItemManager extends SelfRegisteringListener{
         ItemStack item = event.getCursor();
         if (isDisabled(item)){
             event.setCancelled(true);
-            event.getViewers().get(0)
-                    .sendMessage(Component.text("Item is disabled!").color(NamedTextColor.RED));
+            event.getViewers().get(0).sendMessage(
+                    Component.text("Item is disabled!").color(NamedTextColor.RED));
+
         } else if (isReplaced(item)){
-            event.getViewers().get(0)
-                    .sendMessage(Component.text("Item is replaced!").color(NamedTextColor.GREEN));
-            event.setCursor(getReplaced(item));
+            event.getViewers().get(0).sendMessage(
+                    Component.text("Item is replaced!").color(NamedTextColor.GREEN));
+            event.setCursor(replace(item));
         }
 
     }
 
-    public class ReplaceHelper{
+    public static class ReplaceHelper{
 
         private final ItemStack oldItem;
         private final VanillaBasedCustomItem newItem;

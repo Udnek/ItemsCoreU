@@ -1,5 +1,6 @@
 package me.udnek.itemscoreu.customitem;
 
+import me.udnek.itemscoreu.customregistry.CustomRegistries;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -10,8 +11,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 public class CustomItemCommand implements CommandExecutor, TabExecutor {
     @Override
@@ -39,7 +40,7 @@ public class CustomItemCommand implements CommandExecutor, TabExecutor {
 
         if (args.length > 1) return new ArrayList<>();
 
-        Set<String> allIds = CustomItem.getAllIds();
+        Collection<String> allIds = CustomRegistries.ITEM.getIds();
         ArrayList<String> ids = new ArrayList<>();
 
         for (String id : allIds) {
