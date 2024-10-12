@@ -1,13 +1,9 @@
 package me.udnek.itemscoreu.custominventory;
 
-import me.udnek.itemscoreu.utils.LogUtils;
-import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
-import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.inventory.ItemStack;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public interface SmartIntractableCustomInventory extends CustomInventory {

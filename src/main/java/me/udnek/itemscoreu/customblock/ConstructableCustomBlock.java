@@ -2,6 +2,8 @@ package me.udnek.itemscoreu.customblock;
 
 import com.destroystokyo.paper.ParticleBuilder;
 import com.destroystokyo.paper.event.block.BlockDestroyEvent;
+import com.google.common.base.Preconditions;
+import me.udnek.itemscoreu.customcomponent.AbstractComponentHolder;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
@@ -12,26 +14,32 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.util.EulerAngle;
 import org.jetbrains.annotations.NotNull;
 
-public abstract class ConstructableCustomBlock implements CustomBlock{
-
+public abstract class ConstructableCustomBlock extends AbstractComponentHolder<CustomBlock> implements CustomBlock{
     private String id;
     protected EntitySnapshot visualRepresentation;
-    protected ConstructableCustomBlock(){}
+
     @Override
-    public void initialize(@NotNull JavaPlugin javaPlugin){
-        this.id = new NamespacedKey(javaPlugin, getRawId()).asString();
+    public void initialize(@NotNull Plugin plugin) {
+        Preconditions.checkArgument(id == null, "Registrable already initialized!");
+        id = new NamespacedKey(plugin, getRawId()).asString();
     }
+
+    public abstract @NotNull String getRawId();
+
+    @Override
+    public @NotNull String getId() {return id;}
+
     @Override
     public void place(Location location){
         CreatureSpawner blockState = (CreatureSpawner) Material.SPAWNER.createBlockData().createBlockState().copy(location);
         blockState.getLocation(location);
         blockState.setRequiredPlayerRange(0);
         blockState.setSpawnedEntity(getVisualRepresentation());
-        blockState.getPersistentDataContainer().set(PERSISTENT_DATA_CONTAINER_NAMESPACE, PersistentDataType.STRING, id);
+        blockState.getPersistentDataContainer().set(PERSISTENT_DATA_CONTAINER_NAMESPACE, PersistentDataType.STRING, getId());
         blockState.update(true, false);
 
     }
@@ -40,13 +48,11 @@ public abstract class ConstructableCustomBlock implements CustomBlock{
     public void onLoad(BlockState blockState) {}
     @Override
     public void onUnload(BlockState blockState) {}
-
     @Override
     public void destroy(Location location) {
         location.getWorld().getBlockAt(location).setType(Material.AIR);
         onDestroy(location.getBlock());
     }
-
     @Override
     public void onDestroy(BlockDestroyEvent event){
         event.setExpToDrop(0);
@@ -75,9 +81,6 @@ public abstract class ConstructableCustomBlock implements CustomBlock{
         builder.extra(0);
         builder.spawn();
     }
-    @Override
-    public final @NotNull String getId() {return id;}
-
 
     ///////////////////////////////////////////////////////////////////////////
     // PROPERTIES

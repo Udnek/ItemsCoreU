@@ -132,7 +132,7 @@ public class NMSTest {
         try {
             Constructor<MobEffect> constructor = MobEffect.class.getDeclaredConstructor(MobEffectCategory.class, int.class, ParticleOptions.class);
             constructor.setAccessible(true);
-            mobEffect = constructor.newInstance(MobEffectCategory.BENEFICIAL, new Color(1f, 0, 0).getRGB(), ParticleTypes.CAMPFIRE_SIGNAL_SMOKE)
+            mobEffect = constructor.newInstance(MobEffectCategory.BENEFICIAL, new Color(1f, 0, 0).getRGB(), ParticleTypes.CAMPFIRE_COSY_SMOKE)
                     .addAttributeModifier(Attributes.SCALE, ResourceLocation.fromNamespaceAndPath("icu", "test"), 1, AttributeModifier.Operation.ADD_VALUE);
         } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
             throw new RuntimeException(e);

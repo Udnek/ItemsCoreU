@@ -4,7 +4,6 @@ import com.google.common.base.Preconditions;
 import me.udnek.itemscoreu.utils.ItemUtils;
 import me.udnek.itemscoreu.utils.LogUtils;
 import net.kyori.adventure.key.Keyed;
-import net.minecraft.world.item.crafting.RecipeType;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;

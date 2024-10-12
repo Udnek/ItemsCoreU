@@ -3,6 +3,7 @@ package me.udnek.itemscoreu.nms;
 import com.mojang.datafixers.util.Pair;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import me.udnek.itemscoreu.nms.entry.CustomNmsLootEntry;
+import me.udnek.itemscoreu.nms.entry.CustomNmsLootEntryBuilder;
 import me.udnek.itemscoreu.utils.LogUtils;
 import me.udnek.itemscoreu.utils.NMS.Reflex;
 import net.minecraft.core.BlockPos;
@@ -65,7 +66,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public class Nms {
@@ -154,7 +154,7 @@ public class Nms {
         }
         return recipes;
     }
-    public void addLootPool(@NotNull org.bukkit.loot.LootTable bukkitLootTable, CustomNmsLootPoolBuilder lootPoolBuilder){
+    public void addLootPool(@NotNull org.bukkit.loot.LootTable bukkitLootTable, @NotNull CustomNmsLootPoolBuilder lootPoolBuilder){
         LootTable lootTable = NmsUtils.toNmsLootTable(bukkitLootTable);
 
         for (LootPoolSingletonContainer singletonContainer : NmsUtils.getAllSingletonContainers(lootTable)) {
@@ -179,7 +179,7 @@ public class Nms {
     public void removeAllEntriesContains(@NotNull org.bukkit.loot.LootTable bukkitLootTable, @NotNull Predicate<ItemStack> predicate){
         replaceAllEntriesContains(bukkitLootTable, predicate, null);
     }
-    public void replaceAllEntriesContains(@NotNull org.bukkit.loot.LootTable bukkitLootTable, @NotNull Predicate<ItemStack> predicate, @Nullable CustomNmsLootEntry newEntry){
+    public void replaceAllEntriesContains(@NotNull org.bukkit.loot.LootTable bukkitLootTable, @NotNull Predicate<ItemStack> predicate, @Nullable CustomNmsLootEntryBuilder newEntry){
         LootTable lootTable = NmsUtils.toNmsLootTable(bukkitLootTable);
 
         List<LootPoolEntryContainer> toReplace = new ArrayList<>();
@@ -200,7 +200,7 @@ public class Nms {
             for (LootPoolEntryContainer container : NmsUtils.getContainers(pool)) {
                 if (toReplace.contains(container)){
                     changed = true;
-                    if (newEntry != null) newContainers.add(newEntry);
+                    if (newEntry != null) newContainers.add(newEntry.build());
                     continue;
                 }
                 newContainers.add(container);

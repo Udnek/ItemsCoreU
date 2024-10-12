@@ -6,13 +6,14 @@ import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Material;
 import org.bukkit.inventory.*;
-import org.bukkit.inventory.meta.ArmorMeta;
 import org.bukkit.inventory.meta.FireworkEffectMeta;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.Consumer;
 
 
 public class ItemUtils {
@@ -45,7 +46,9 @@ public class ItemUtils {
     public static List<Recipe> getRecipesOfItemStack(ItemStack itemStack){
         if (CustomItem.isCustom(itemStack)){
             CustomItem customItem = CustomItem.get(itemStack);
-            return customItem.getRecipes();
+            ArrayList<Recipe> recipes = new ArrayList<>();
+            customItem.getRecipes(recipes::add);
+            return recipes;
         }
         else {
             List<Recipe> rawRecipes = Bukkit.getRecipesFor(itemStack);

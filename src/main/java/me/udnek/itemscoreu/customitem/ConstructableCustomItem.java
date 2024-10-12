@@ -3,43 +3,54 @@ package me.udnek.itemscoreu.customitem;
 import com.google.common.base.Preconditions;
 import me.udnek.itemscoreu.customattribute.AttributeUtils;
 import me.udnek.itemscoreu.customcomponent.AbstractComponentHolder;
+import me.udnek.itemscoreu.customevent.CustomItemGeneratedEvent;
 import me.udnek.itemscoreu.customrecipe.RecipeManager;
+import net.kyori.adventure.text.Component;
 import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.meta.*;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 
 public abstract class ConstructableCustomItem extends AbstractComponentHolder<CustomItem> implements CustomItem, CustomItemProperties {
-    private JavaPlugin plugin;
-    private List<Recipe> recipes;
     private String id;
     protected ItemStack itemStack;
+    protected List<Recipe> recipes = null;
 
     ///////////////////////////////////////////////////////////////////////////
     // INITIAL
     ///////////////////////////////////////////////////////////////////////////
-    protected ConstructableCustomItem(){}
 
     @Override
     public final @NotNull String getId(){return this.id;}
 
     @Override
-    public void initialize(@NotNull JavaPlugin javaPlugin){
-        Preconditions.checkArgument(plugin == null, "Item already initialized!");
-        this.plugin = javaPlugin;
-        this.id = new NamespacedKey(javaPlugin, getRawId()).asString();
-        this.recipes = new ArrayList<>();
+    public void initialize(@NotNull Plugin plugin){
+        Preconditions.checkArgument(id == null, "Item already initialized!");
+        id = new NamespacedKey(plugin, getRawId()).asString();
+    }
+
+    @Override
+    public void afterInitialization() {
+        CustomItem.super.afterInitialization();
+        List<Recipe> generatedRecipes = new ArrayList<>();
+        generateRecipes(generatedRecipes::add);
+        if (!generatedRecipes.isEmpty()) recipes = generatedRecipes;
+        for (Recipe recipe : generatedRecipes) {
+            RecipeManager.getInstance().register(recipe);
+        }
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -52,11 +63,16 @@ public abstract class ConstructableCustomItem extends AbstractComponentHolder<Cu
     }
 
     protected ItemMeta getMainItemMeta(){
-        ItemMeta itemMeta = new ItemStack(this.getMaterial()).getItemMeta();
-        this.setPersistentData(itemMeta);
+        ItemMeta itemMeta = new ItemStack(getMaterial()).getItemMeta();
+        setPersistentData(itemMeta);
 
         itemMeta.itemName(this.getItemName());
-        itemMeta.lore(this.getLore());
+
+        ArrayList<Component> lore = new ArrayList<>();
+        getLore(lore::add);
+        if (lore.isEmpty()) itemMeta.lore(null);
+        else itemMeta.lore(lore);
+
         itemMeta.setRarity(getItemRarity());
         itemMeta.setHideTooltip(getHideTooltip());
         itemMeta.setFood(getFoodComponent());
@@ -87,8 +103,8 @@ public abstract class ConstructableCustomItem extends AbstractComponentHolder<Cu
         if (getBlockData() != null && itemMeta instanceof BlockDataMeta blockDataMeta){
             blockDataMeta.setBlockData(getBlockData());
         }
-        itemMeta.addItemFlags(getTooltipHides());
-
+        ItemFlag[] tooltipHides = getTooltipHides();
+        if (tooltipHides != null) itemMeta.addItemFlags(tooltipHides);
         return itemMeta;
     }
 
@@ -102,42 +118,31 @@ public abstract class ConstructableCustomItem extends AbstractComponentHolder<Cu
         return itemStack;
     }
 
-    protected void modifyFinalItemStack(ItemStack itemStack){
-    }
+    protected void modifyFinalItemStack(ItemStack itemStack){}
 
     @Override
-    public ItemStack getItem(){
-        if (this.itemStack == null){
-            ItemStack itemStack = this.getMainItemStack();
-            this.modifyFinalItemStack(itemStack);
-            this.itemStack = itemStack;
+    public @NotNull ItemStack getItem(){
+        if (itemStack == null){
+            ItemStack newItem = this.getMainItemStack();
+            modifyFinalItemStack(newItem);
+            CustomItemGeneratedEvent event = new CustomItemGeneratedEvent(this, newItem, getLoreBuilder());
+            event.callEvent();
+            event.getLoreBuilder().buildAndApply(event.getItemStack());
+            itemStack = event.getItemStack();
         }
-        return this.itemStack.clone();
+        return itemStack.clone();
     }
 
-    ///////////////////////////////////////////////////////////////////////////
-    // RECIPES
-    ///////////////////////////////////////////////////////////////////////////
-
-    protected List<Recipe> generateRecipes(){return new ArrayList<>();}
-    @Override
-    public final void registerRecipes(){
-        List<Recipe> recipes = generateRecipes();
-        this.recipes = recipes;
-        RecipeManager recipeManager = RecipeManager.getInstance();
-        for (Recipe recipe : recipes) {
-            recipeManager.register(recipe);
-        }
+    protected @NotNull NamespacedKey getRecipeNamespace(int recipeNumber) {
+        NamespacedKey id = NamespacedKey.fromString(getId());
+        return new NamespacedKey(id.getNamespace(), getRawId() + "_" + recipeNumber);
     }
 
     @Override
-    public final @NotNull List<Recipe> getRecipes(){
-        return this.recipes;
+    public void getRecipes(@NotNull Consumer<@NotNull Recipe> consumer) {
+        if (recipes == null) return;
+        recipes.forEach(consumer);
     }
 
-    protected NamespacedKey getRecipeNamespace(int recipeNumber){
-        return new NamespacedKey(this.plugin, this.getRawId()+ "_" + recipeNumber);
-    }
-
-
+    protected void generateRecipes(@NotNull Consumer<@NotNull Recipe> consumer){}
 }

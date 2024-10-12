@@ -1,6 +1,6 @@
 package me.udnek.itemscoreu.customattribute;
 
-import me.udnek.itemscoreu.customattribute.equipmentslot.CustomEquipmentSlot;
+import me.udnek.itemscoreu.customequipmentslot.CustomEquipmentSlot;
 import org.bukkit.attribute.AttributeModifier;
 
 import java.util.ArrayList;
@@ -29,6 +29,9 @@ public class CustomAttributesContainer{
         }
         return newContainer;
     }
+    public boolean isEmpty(){
+        return attributes.isEmpty();
+    }
     public boolean contains(CustomAttribute customAttribute){
         return attributes.containsKey(customAttribute);
     }
@@ -45,7 +48,7 @@ public class CustomAttributesContainer{
 
     public static class Builder{
 
-        private CustomAttributesContainer container;
+        private final CustomAttributesContainer container;
         public Builder(){
             container = new CustomAttributesContainer();
         }

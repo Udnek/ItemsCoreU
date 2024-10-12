@@ -2,7 +2,9 @@ package me.udnek.itemscoreu.customblock;
 
 import com.destroystokyo.paper.event.block.BlockDestroyEvent;
 import me.udnek.itemscoreu.ItemsCoreU;
-import me.udnek.itemscoreu.utils.PluginInitializable;
+import me.udnek.itemscoreu.customcomponent.ComponentHolder;
+import me.udnek.itemscoreu.customregistry.CustomRegistries;
+import me.udnek.itemscoreu.customregistry.Registrable;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
@@ -12,11 +14,9 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Set;
+public interface CustomBlock extends Registrable, ComponentHolder<CustomBlock> {
 
-public interface CustomBlock extends PluginInitializable {
-
-    static final NamespacedKey PERSISTENT_DATA_CONTAINER_NAMESPACE = new NamespacedKey(ItemsCoreU.getInstance(), "block");
+    NamespacedKey PERSISTENT_DATA_CONTAINER_NAMESPACE = new NamespacedKey(ItemsCoreU.getInstance(), "block");
 
     void onLoad(BlockState blockState);
     void onUnload(BlockState blockState);
@@ -47,17 +47,15 @@ public interface CustomBlock extends PluginInitializable {
     }
 
     static CustomBlock get(Block block){
-        return CustomBlockRegistry.get(getId(block));
+        return CustomRegistries.BLOCK.get(getId(block));
     }
     static CustomBlock get(BlockState blockState){
-        return CustomBlockRegistry.get(getId(blockState));
+        return CustomRegistries.BLOCK.get(getId(blockState));
     }
     static CustomBlock get(Location location){
-        return CustomBlockRegistry.get(getId(location));
+        return CustomRegistries.BLOCK.get(getId(location));
     }
     static CustomBlock get(String id){
-        return CustomBlockRegistry.get(id);
+        return CustomRegistries.BLOCK.get(id);
     }
-
-    static Set<String> getAllIds(){return CustomBlockRegistry.getAllIds();}
 }

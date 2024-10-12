@@ -1,6 +1,6 @@
 package me.udnek.itemscoreu.customitem;
 
-import me.udnek.itemscoreu.utils.RightClickable;
+import me.udnek.itemscoreu.customcomponent.CustomComponentType;
 import me.udnek.itemscoreu.utils.SelfRegisteringListener;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.BlockPlaceEvent;
@@ -19,9 +19,8 @@ public class CustomItemListener extends SelfRegisteringListener {
     public void onPlayerInteract(PlayerInteractEvent event) {
         if (!event.getAction().isRightClick()) return;
         CustomItem customItem = CustomItem.get(event.getItem());
-        if (customItem instanceof RightClickable rightClickable){
-            rightClickable.onRightClicks(event);
-        }
+        if (customItem == null) return;
+        customItem.getComponentOrDefault(CustomComponentType.RIGHT_CLICKABLE_ITEM).onRightClick(customItem, event);
     }
 
     @EventHandler

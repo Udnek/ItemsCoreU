@@ -1,7 +1,7 @@
 package me.udnek.itemscoreu.customloot.table;
 
 import me.udnek.itemscoreu.customloot.entry.LootTableEntry;
-import me.udnek.itemscoreu.utils.PluginInitializable;
+import me.udnek.itemscoreu.customregistry.Registrable;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.world.LootGenerateEvent;
 import org.bukkit.inventory.ItemStack;
@@ -10,7 +10,10 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public interface CustomLootTable extends LootTable, PluginInitializable {
+public interface CustomLootTable extends LootTable, Registrable {
+    @Override
+    default @NotNull String getId(){return getKey().asString();}
+
     void addEntry(@NotNull LootTableEntry lootTableEntry);
     void removeEntry(@NotNull LootTableEntry lootTableEntry);
     void removeItem(@NotNull ItemStack itemStack);

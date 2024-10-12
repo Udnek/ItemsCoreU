@@ -15,12 +15,10 @@ import java.util.Collection;
 import java.util.Map;
 
 public class AttributeUtils {
-    public static void addDefaultAttributes(ItemStack itemStack){
-        ItemMeta itemMeta = itemStack.getItemMeta();
-        addDefaultAttributes(itemMeta, itemStack.getType());
-        itemStack.setItemMeta(itemMeta);
+    public static void addDefaultAttributes(@NotNull ItemStack itemStack){
+        itemStack.editMeta(itemMeta -> addDefaultAttributes(itemMeta, itemStack.getType()));
     }
-    public static void addDefaultAttributes(ItemMeta itemMeta, Material material){
+    public static void addDefaultAttributes(@NotNull ItemMeta itemMeta, @NotNull Material material){
         Multimap<Attribute, AttributeModifier> attributeModifiers = material.getDefaultAttributeModifiers();
         itemMeta.setAttributeModifiers(attributeModifiers);
     }
@@ -29,10 +27,16 @@ public class AttributeUtils {
         itemMeta.addAttributeModifier(attribute, new AttributeModifier(id, amount, operation, slot));
     }
 
+    public static @NotNull Multimap<Attribute, AttributeModifier> getAttributes(@NotNull ItemStack itemStack){
+        Multimap<Attribute, AttributeModifier> vanillaAttributes = itemStack.getItemMeta().getAttributeModifiers();
+        if (vanillaAttributes == null || vanillaAttributes.isEmpty()){
+            vanillaAttributes = itemStack.getType().getDefaultAttributeModifiers();
+        }
+        return vanillaAttributes;
+    }
+
     public static void appendAttribute(ItemStack itemStack, Attribute attribute, NamespacedKey id, double amount, AttributeModifier.Operation operation, @NotNull EquipmentSlotGroup slot){
-        ItemMeta itemMeta = itemStack.getItemMeta();
-        appendAttribute(itemMeta, attribute, id, amount, operation, slot);
-        itemStack.setItemMeta(itemMeta);
+        itemStack.editMeta(itemMeta -> appendAttribute(itemMeta, attribute, id, amount, operation, slot));
     }
 
     public static void appendAttribute(ItemMeta itemMeta, Attribute attribute, NamespacedKey id,  double amount, AttributeModifier.Operation operation, @NotNull EquipmentSlotGroup slot) {

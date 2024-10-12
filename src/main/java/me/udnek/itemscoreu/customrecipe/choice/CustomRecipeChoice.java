@@ -1,10 +1,8 @@
 package me.udnek.itemscoreu.customrecipe.choice;
 
-import me.udnek.itemscoreu.customitem.CustomItem;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.RecipeChoice;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 

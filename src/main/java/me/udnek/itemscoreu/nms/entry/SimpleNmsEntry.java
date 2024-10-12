@@ -1,16 +1,13 @@
+/*
 package me.udnek.itemscoreu.nms.entry;
 
-import me.udnek.itemscoreu.customloot.entry.SimpleLootEntry;
 import me.udnek.itemscoreu.nms.Nms;
-import me.udnek.itemscoreu.nms.NmsUtils;
-import net.minecraft.world.level.storage.loot.entries.LootPoolSingletonContainer;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.loot.LootContext;
 import org.bukkit.loot.LootTable;
-import org.bukkit.loot.Lootable;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -49,3 +46,4 @@ public class SimpleNmsEntry extends CustomNmsLootEntry{
         return itemStack;
     }
 }
+*/
