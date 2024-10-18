@@ -1,11 +1,11 @@
 package me.udnek.itemscoreu.utils;
 
 import me.udnek.itemscoreu.customitem.CustomItem;
-import org.bukkit.Bukkit;
-import org.bukkit.Color;
-import org.bukkit.FireworkEffect;
-import org.bukkit.Material;
+import net.kyori.adventure.text.Component;
+import net.minecraft.server.commands.RecipeCommand;
+import org.bukkit.*;
 import org.bukkit.inventory.*;
+import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.FireworkEffectMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
@@ -14,11 +14,12 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 
 public class ItemUtils {
 
-    public static boolean isSameIds(ItemStack itemA, ItemStack itemB){
+    public static boolean isSameIds(@NotNull ItemStack itemA, @NotNull ItemStack itemB){
         CustomItem customA = CustomItem.get(itemA);
         CustomItem customB = CustomItem.get(itemB);
         if (customA == null && customB == null) return itemA.getType() == itemB.getType();
@@ -29,13 +30,21 @@ public class ItemUtils {
         if (customItem != null) return customItem.getId();
         return itemStack.getType().toString().toLowerCase();
     }
+    public static @NotNull Component getDisplayName(@NotNull ItemStack itemStack){
+        if (itemStack.hasItemMeta()){
+            ItemMeta itemMeta = itemStack.getItemMeta();
+            if (itemMeta.hasDisplayName()) return itemMeta.displayName();
+            if (itemMeta.hasItemName()) return itemMeta.itemName();
+        }
+        return Component.translatable(itemStack.getType().getItemTranslationKey());
+    }
 
-    public static boolean isCustomItemOrMaterial(String name){
+    public static boolean isCustomItemOrMaterial(@NotNull String name){
         if (CustomItem.idExists(name)) return true;
         return Material.getMaterial(name.toUpperCase()) != null;
     }
 
-    public static ItemStack getFromCustomItemOrMaterial(String name){
+    public static ItemStack getFromCustomItemOrMaterial(@NotNull String name){
         if (CustomItem.idExists(name)) return CustomItem.get(name).getItem();
         Material material = Material.getMaterial(name.toUpperCase());
         if (material == null) return new ItemStack(Material.AIR);
@@ -43,7 +52,7 @@ public class ItemUtils {
     }
 
     @Deprecated
-    public static List<Recipe> getRecipesOfItemStack(ItemStack itemStack){
+    public static List<Recipe> getRecipesOfItemStack(@NotNull ItemStack itemStack){
         if (CustomItem.isCustom(itemStack)){
             CustomItem customItem = CustomItem.get(itemStack);
             ArrayList<Recipe> recipes = new ArrayList<>();
@@ -51,6 +60,16 @@ public class ItemUtils {
             return recipes;
         }
         else {
+            // FIXED DURABILITY BUG
+            if (itemStack.hasItemMeta()){
+                ItemMeta itemMeta = itemStack.getItemMeta();
+                if (itemMeta instanceof Damageable damageable){
+                    damageable.setDamage(0);
+                    itemStack = itemStack.clone();
+                    itemStack.setItemMeta(damageable);
+                }
+            }
+
             List<Recipe> rawRecipes = Bukkit.getRecipesFor(itemStack);
             List<Recipe> recipes = new ArrayList<>();
             for (Recipe recipe : rawRecipes) {
@@ -63,69 +82,83 @@ public class ItemUtils {
     }
 
     @Deprecated
-    public static List<Recipe> getItemInRecipesUsages(ItemStack itemStack){
-        // TODO: 7/26/2024 CUSTOM ITEM
+    public static List<Recipe> getItemInRecipesUsages(@NotNull ItemStack itemStack){
+        List<Recipe> recipes = new ArrayList<>();
         if (CustomItem.isCustom(itemStack)){
-            return new ArrayList<>();
+            CustomItem customItem = CustomItem.get(itemStack);
+            iterateTroughRecipesChoosing(recipes::add, new Predicate<RecipeChoice>() {
+                @Override
+                public boolean test(RecipeChoice recipeChoice) {
+                    if (!(recipeChoice instanceof RecipeChoice.ExactChoice exactChoice)) return false;
+                    List<ItemStack> choices = exactChoice.getChoices();
+                    return choices.stream().anyMatch(choice -> customItem.isThisItem(choice));
+                }
+            });
+            return recipes;
         }
         else {
             Material neededMaterial = itemStack.getType();
-            Iterator<Recipe> recipeIterator = Bukkit.recipeIterator();
-            ArrayList<Recipe> recipes = new ArrayList<>();
-            Recipe recipe;
-            while (recipeIterator.hasNext()){
-                recipe = recipeIterator.next();
-                if (recipe instanceof ShapedRecipe){
-                    for(RecipeChoice recipeChoice: ((ShapedRecipe) recipe).getChoiceMap().values()) {
-                        if (isMaterialInRecipeChoice(neededMaterial, recipeChoice)){
-                            recipes.add(recipe);
-                            break;
-                        }
-                    }
+            iterateTroughRecipesChoosing(recipes::add, new Predicate<RecipeChoice>() {
+                @Override
+                public boolean test(RecipeChoice recipeChoice) {
+                    if (!(recipeChoice instanceof RecipeChoice.MaterialChoice materialChoice)) return false;
+                    List<Material> choices = materialChoice.getChoices();
+                    return choices.contains(neededMaterial);
                 }
-                else if (recipe instanceof ShapelessRecipe){
-                    for (RecipeChoice recipeChoice : ((ShapelessRecipe) recipe).getChoiceList()) {
-                        if (isMaterialInRecipeChoice(neededMaterial, recipeChoice)){
-                            recipes.add(recipe);
-                            break;
-                        }
-                    }
-                }
-                else if (recipe instanceof CookingRecipe){
-                    if (isMaterialInRecipeChoice(neededMaterial, ((CookingRecipe<?>) recipe).getInputChoice())){
-                        recipes.add(recipe);
-                    }
-                }
-                else if (recipe instanceof StonecuttingRecipe){
-                    if (isMaterialInRecipeChoice(neededMaterial, ((StonecuttingRecipe) recipe).getInputChoice())){
-                        recipes.add(recipe);
-                    }
-                }
-                else if (recipe instanceof SmithingTransformRecipe){
-                    if (isMaterialInRecipeChoice(neededMaterial, ((SmithingTransformRecipe) recipe).getBase()) ||
-                            isMaterialInRecipeChoice(neededMaterial, ((SmithingTransformRecipe) recipe).getTemplate()) ||
-                            isMaterialInRecipeChoice(neededMaterial, ((SmithingTransformRecipe) recipe).getAddition())){
+            });
+        }
+        return recipes;
+    }
 
-                        recipes.add(recipe);
-                    }
-                }
-                else if (recipe instanceof SmithingTrimRecipe){
-                    if (isMaterialInRecipeChoice(neededMaterial, ((SmithingTrimRecipe) recipe).getBase()) ||
-                            isMaterialInRecipeChoice(neededMaterial, ((SmithingTrimRecipe) recipe).getTemplate()) ||
-                            isMaterialInRecipeChoice(neededMaterial, ((SmithingTrimRecipe) recipe).getAddition())){
 
-                        recipes.add(recipe);
+    public static void iterateTroughRecipesChoosing(@NotNull Consumer<Recipe> recipes, @NotNull Predicate<RecipeChoice> predicate){
+        Iterator<Recipe> recipeIterator = Bukkit.recipeIterator();
+        while (recipeIterator.hasNext()){
+            Recipe recipe = recipeIterator.next();
+
+            if (recipe instanceof ShapedRecipe shapedRecipe){
+                for(RecipeChoice recipeChoice: shapedRecipe.getChoiceMap().values()) {
+                    if (predicate.test(recipeChoice)){
+                        recipes.accept(recipe);
+                        break;
                     }
                 }
             }
-            return recipes;
+            else if (recipe instanceof ShapelessRecipe shapelessRecipe){
+                for (RecipeChoice recipeChoice : shapelessRecipe.getChoiceList()) {
+                    if (predicate.test(recipeChoice)){
+                        recipes.accept(recipe);
+                        break;
+                    }
+                }
+            }
+            else if (recipe instanceof CookingRecipe<?> cookingRecipe){
+                if (predicate.test(cookingRecipe.getInputChoice())){
+                    recipes.accept(recipe);
+                }
+            }
+            else if (recipe instanceof StonecuttingRecipe stonecuttingRecipe){
+                if (predicate.test(stonecuttingRecipe.getInputChoice())){
+                    recipes.accept(recipe);
+                }
+            }
+            else if (recipe instanceof SmithingTransformRecipe smithingTransformRecipe){
+                if (
+                        predicate.test(smithingTransformRecipe.getBase()) ||
+                        predicate.test(smithingTransformRecipe.getTemplate()) ||
+                        predicate.test(smithingTransformRecipe.getAddition())
+                )
+                {recipes.accept(recipe);}
+            }
+            else if (recipe instanceof SmithingTrimRecipe smithingTrimRecipe){
+                if (
+                        predicate.test(smithingTrimRecipe.getBase()) ||
+                        predicate.test(smithingTrimRecipe.getTemplate()) ||
+                        predicate.test(smithingTrimRecipe.getAddition())
+                )
+                {recipes.accept(recipe);}
+            }
         }
-    }
-
-    private static boolean isMaterialInRecipeChoice(Material material, RecipeChoice recipeChoice){
-        if (!(recipeChoice instanceof RecipeChoice.MaterialChoice)) return false;
-        List<Material> choices = ((RecipeChoice.MaterialChoice) recipeChoice).getChoices();
-        return choices.contains(material);
     }
 
     public static void setFireworkColor(FireworkEffectMeta itemMeta, Color color){
@@ -136,7 +169,6 @@ public class ItemUtils {
     public static void setFireworkColor(FireworkEffectMeta itemMeta, int color){
         setFireworkColor(itemMeta, Color.fromRGB(color));
     }
-
 }
 
 

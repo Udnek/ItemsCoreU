@@ -56,29 +56,30 @@ public class LootTableUtils implements Listener {
     ///////////////////////////////////////////////////////////////////////////
     // ITEM
     ///////////////////////////////////////////////////////////////////////////
-    public static List<ItemStack> getPossibleLoot(LootTable lootTable){
+    public static @NotNull List<ItemStack> getPossibleLoot(@NotNull LootTable lootTable){
         if (lootTable instanceof CustomLootTable customLootTable){
             return customLootTable.getAllItems();
         }
         return Nms.get().getPossibleLoot(lootTable);
     }
-    public static List<LootTable> getWhereItemOccurs(ItemStack itemStack){
+    public static @NotNull List<LootTable> getWhereItemOccurs(@NotNull ItemStack target){
         List<LootTable> lootTables = new ArrayList<>();
         for (CustomLootTable customLootTable : registry.getAll()) {
-            if (customLootTable.containsItem(itemStack)) lootTables.add(customLootTable);
+            if (customLootTable.containsItem(target)) lootTables.add(customLootTable);
         }
-        //if (CustomItem.isCustom(itemStack)) return lootTables;
 
         Nms nms = Nms.get();
-        Material material = itemStack.getType();
         for (LootTable lootTable : getAllVanillaRegistered()) {
-
             if (registry.isVanillaLootTableReplaced(lootTable)) continue;
 
             List<ItemStack> itemStacks = nms.getPossibleLoot(lootTable);
 
             for (ItemStack loot : itemStacks) {
-                if (ItemUtils.isSameIds(loot, itemStack)){
+                if (loot.getType() == Material.LEATHER_CHESTPLATE && target.getType() == Material.LEATHER_CHESTPLATE){
+                    System.out.println(CustomItem.isCustom(loot) + " " + CustomItem.get(loot));
+                    System.out.println(CustomItem.isCustom(target) + " " + CustomItem.get(target));
+                }
+                if (ItemUtils.isSameIds(loot, target)){
                     lootTables.add(lootTable);
                     break;
                 }

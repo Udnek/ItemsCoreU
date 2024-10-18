@@ -43,7 +43,7 @@ public class CustomAttributeUtils {
         for (int slot : allSlots) {
             CustomItem customItem = CustomItem.get(inventory.getItem(slot));
             if (customItem == null) continue;
-            CustomAttributesContainer container = customItem.getComponentOrDefault(CustomComponentType.CUSTOM_ITEM_ATTRIBUTES).getAttributes();
+            CustomAttributesContainer container = customItem.getComponentOrDefault(CustomComponentType.CUSTOM_ITEM_ATTRIBUTES).getAttributes(customItem);
             if (container.isEmpty()) continue;
 
             for (Map.Entry<CustomAttribute, List<CustomAttributeModifier>> entry : container.getAll().entrySet()) {

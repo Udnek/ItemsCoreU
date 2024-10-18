@@ -12,6 +12,7 @@ import me.udnek.itemscoreu.customregistry.CustomRegistries;
 import me.udnek.itemscoreu.nms.Nms;
 import me.udnek.itemscoreu.nms.entry.CustomNmsLootEntryBuilder;
 import me.udnek.itemscoreu.nms.entry.ItemStackCreator;
+import net.kyori.adventure.key.Keyed;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.apache.commons.lang3.tuple.Pair;
@@ -49,10 +50,11 @@ public class VanillaItemManager extends SelfRegisteringListener{
     }
     public void replaceVanillaMaterial(@NotNull Material material){
         Preconditions.checkArgument(material != null, "Material can not be null!");
-        if (replacedByMaterial.containsKey(material)) return;
+        if (isReplaced(material)) return;
         VanillaBasedCustomItem customItem = new VanillaBasedCustomItem(material);
         replacedByMaterial.put(material, customItem);
         replacedItems.add(customItem);
+        CustomRegistries.ITEM.register(ItemsCoreU.getInstance(), customItem);
         
     }
 
@@ -72,7 +74,7 @@ public class VanillaItemManager extends SelfRegisteringListener{
             recipes.addAll(recipeManager.getRecipesAsResult(toRemoveItem));
             for (Recipe recipe : recipes) {
                 recipeManager.unregister(recipe);
-                LogUtils.pluginLog("Unregistered recipe: " + recipe);
+                LogUtils.pluginLog("Unregistered recipe: " + (recipe instanceof Keyed keyed ? keyed.key().asString() : recipe));
             }
 
             // loot table removal
@@ -81,13 +83,8 @@ public class VanillaItemManager extends SelfRegisteringListener{
                     customLootTable.removeItem(toRemoveItem);
                     LogUtils.pluginLog("Custom lootTable was edited: " + customLootTable.getKey().asString());
                 } else {
-                    Nms.get().removeAllEntriesContains(lootTable, new Predicate<ItemStack>() {
-                        @Override
-                        public boolean test(ItemStack itemStack) {
-                            return !CustomItem.isCustom(itemStack) && itemStack.getType() == toRemoveItem.getType();
-                        }
-                    });
-                    LogUtils.pluginLog("Vanilla lootTable was removed!: " + lootTable.getKey().asString());
+                    Nms.get().removeAllEntriesContains(lootTable, VanillaItemManager::isDisabled);
+                    LogUtils.pluginLog("Removed entries from vanilla lootTable: " + lootTable.getKey().asString());
                 }
             }
 
@@ -100,20 +97,18 @@ public class VanillaItemManager extends SelfRegisteringListener{
         for (Map.Entry<Material, VanillaBasedCustomItem> entry : replacedByMaterial.entrySet()) {
             VanillaBasedCustomItem vanillaBasedItem = entry.getValue();
 
-            CustomRegistries.ITEM.register(ItemsCoreU.getInstance(), vanillaBasedItem);
-
             ItemStack oldItem = new ItemStack(entry.getKey());
 
             // recipe replace
             List<Recipe> recipes = recipeManager.getRecipesAsIngredient(oldItem);
             recipes.addAll(recipeManager.getRecipesAsResult(oldItem));
 
+            ReplaceHelper replaceHelper = new ReplaceHelper(oldItem, vanillaBasedItem);
             for (Recipe oldRecipe : recipes) {
-                ReplaceHelper replaceHelper = new ReplaceHelper(oldItem, vanillaBasedItem);
                 Recipe newRecipe = replaceHelper.copyRecipeWithReplacedIngredient(oldRecipe);
                 recipeManager.unregister(oldRecipe);
                 recipeManager.register(newRecipe);
-                LogUtils.pluginLog("Replaced recipe: " + newRecipe);
+                LogUtils.pluginLog("Replaced recipe: " + (newRecipe instanceof Keyed keyed ? keyed.key().asString() : newRecipe));
             }
 
             // loot table replace
@@ -122,12 +117,7 @@ public class VanillaItemManager extends SelfRegisteringListener{
                     customLootTable.replaceItem(oldItem, vanillaBasedItem.getItem());
                     LogUtils.pluginLog("Custom lootTable was edited: " + customLootTable.getKey().asString());
                 } else {
-                    Predicate<ItemStack> predicate = new Predicate<>() {
-                        @Override
-                        public boolean test(ItemStack itemStack) {
-                            return !CustomItem.isCustom(itemStack) && itemStack.getType() == oldItem.getType();
-                        }
-                    };
+                    Predicate<ItemStack> predicate = itemStack -> CustomItem.get(itemStack) == vanillaBasedItem;
                     Pair<Integer, Integer> weightAndQuality = Nms.get().getWeightAndQuality(lootTable, predicate);
                     if (weightAndQuality == null) continue;
                     Nms.get().replaceAllEntriesContains(lootTable, predicate, CustomNmsLootEntryBuilder.fromVanilla(lootTable, predicate, new ItemStackCreator.CustomSimple(vanillaBasedItem)));

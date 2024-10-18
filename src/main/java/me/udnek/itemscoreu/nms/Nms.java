@@ -23,6 +23,8 @@ import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.npc.VillagerTrades;
 import net.minecraft.world.item.MapItem;
 import net.minecraft.world.item.SpawnEggItem;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.item.trading.MerchantOffer;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.ComposterBlock;
@@ -172,7 +174,7 @@ public class Nms {
         List<LootPool> newPools = new ArrayList<>(pools);
         newPools.add(lootPool);
 
-        LogUtils.pluginLog("Added loot pool to: " + lootTable);
+        LogUtils.pluginLog("Added loot pool to: " + lootTable.craftLootTable.key().asString());
         Reflex.setFieldValue(lootTable, "pools", newPools);
     }
 
@@ -201,12 +203,11 @@ public class Nms {
                 if (toReplace.contains(container)){
                     changed = true;
                     if (newEntry != null) newContainers.add(newEntry.build());
-                    continue;
-                }
-                newContainers.add(container);
+                } else { newContainers.add(container); }
+
             }
             if (changed){
-                LogUtils.pluginLog("Changed loot entry container from: " + lootTable);
+                LogUtils.pluginLog("Changed loot entry container from: " + lootTable.craftLootTable.getKey().asString());
                 Reflex.setFieldValue(pool, "entries", newContainers);
             }
         }

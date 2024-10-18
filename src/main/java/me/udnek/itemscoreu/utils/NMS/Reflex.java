@@ -33,6 +33,11 @@ public class Reflex {
         return null;
     }
 
+    public static <T> T getFieldValue(Object source, String name, Class<T> tClass) {
+        return (T) getFieldValue(source, name);
+    }
+
+
     public static void setFieldValue(Object source, String name, @Nullable Object value) {
         try {
             boolean isStatic = source instanceof Class;

@@ -13,6 +13,8 @@ import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 
 public interface CustomItem extends Registrable, ComponentHolder<CustomItem> {
@@ -30,7 +32,6 @@ public interface CustomItem extends Registrable, ComponentHolder<CustomItem> {
         }
         VanillaBasedCustomItem replaced = VanillaItemManager.getReplaced(itemStack.getType());
         return replaced == null ? null : replaced.getId();
-        
     }
     static @Nullable CustomItem get(@Nullable ItemStack itemStack){
         return get(getId(itemStack));

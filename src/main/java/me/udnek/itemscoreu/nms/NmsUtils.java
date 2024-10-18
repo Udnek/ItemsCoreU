@@ -120,7 +120,9 @@ public class NmsUtils {
     }
     public static void getPossibleLoot(LootPoolEntry entry, Consumer<net.minecraft.world.item.ItemStack> consumer){
         ItemConsumer localConsumer = new ItemConsumer();
-        entry.createItemStack(localConsumer, Nms.GENERIC_LOOT_CONTEXT);
+        try {entry.createItemStack(localConsumer, Nms.GENERIC_LOOT_CONTEXT);
+        } catch (Exception ignored) {}
+
         for (net.minecraft.world.item.ItemStack itemStack : localConsumer.get()) {
             if (itemStack.getCount() == 0) itemStack.setCount(1);
             consumer.accept(itemStack);
