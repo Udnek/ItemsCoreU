@@ -76,10 +76,13 @@ public class NmsUtils {
         }
         return entries;
     }
+/*    public static LootPoolEntryContainer getEntries(LootPool pool){
+        return (LootPoolEntryContainer) Reflex.getFieldValue(pool, "entries");
+    }*/
     public static LootPoolEntry getEntry(LootPoolSingletonContainer container){
         return ((LootPoolEntry) Reflex.getFieldValue(container, "entry"));
     }
-    public static List<LootPoolEntryContainer> getContainers(LootPool lootPool){
+    public static List<LootPoolEntryContainer> getEntries(LootPool lootPool){
         return (List<LootPoolEntryContainer>) Reflex.getFieldValue(lootPool, "entries");
     }
     public static List<LootPoolSingletonContainer> getAllSingletonContainers(List<LootPoolEntryContainer> containers){

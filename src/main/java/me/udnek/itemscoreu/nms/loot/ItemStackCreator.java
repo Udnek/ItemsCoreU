@@ -1,4 +1,4 @@
-package me.udnek.itemscoreu.nms.entry;
+package me.udnek.itemscoreu.nms.loot;
 
 import me.udnek.itemscoreu.customitem.CustomItem;
 import org.bukkit.inventory.ItemStack;
@@ -8,19 +8,19 @@ import org.jetbrains.annotations.NotNull;
 public interface ItemStackCreator {
     @NotNull ItemStack createItemStack(@NotNull LootContext lootContext);
 
-    class Simple implements ItemStackCreator{
-        protected ItemStack itemStack;
-        public Simple(@NotNull ItemStack itemStack){
-            this.itemStack = itemStack;
+    class Material implements ItemStackCreator{
+        protected org.bukkit.Material material;
+        public Material(@NotNull org.bukkit.Material material){
+            this.material= material;
         }
         @Override
         public @NotNull ItemStack createItemStack(@NotNull LootContext lootContext) {
-            return itemStack.clone();
+            return new ItemStack(material);
         }
     }
-    class CustomSimple implements ItemStackCreator{
+    class Custom implements ItemStackCreator{
         protected CustomItem customItem;
-        public CustomSimple(@NotNull CustomItem customItem){
+        public Custom(@NotNull CustomItem customItem){
             this.customItem = customItem;
         }
         @Override

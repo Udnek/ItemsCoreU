@@ -1,6 +1,7 @@
-package me.udnek.itemscoreu.nms.entry;
+package me.udnek.itemscoreu.nms.loot.entry;
 
 import me.udnek.itemscoreu.nms.NmsUtils;
+import me.udnek.itemscoreu.nms.loot.ItemStackCreator;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.entries.LootPoolEntries;
@@ -14,10 +15,10 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class CustomNmsLootEntry extends LootPoolSingletonContainer {
+public class NmsCustomLootEntry extends LootPoolSingletonContainer {
     protected final ItemStackCreator creator;
 
-    protected CustomNmsLootEntry(int weight, int quality, @NotNull List<LootItemCondition> conditions, @NotNull List<LootItemFunction> functions, @NotNull ItemStackCreator creator) {
+    protected NmsCustomLootEntry(int weight, int quality, @NotNull List<LootItemCondition> conditions, @NotNull List<LootItemFunction> functions, @NotNull ItemStackCreator creator) {
         super(weight, quality, conditions, functions);
         this.creator = creator;
     }

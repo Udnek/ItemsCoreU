@@ -1,10 +1,14 @@
-package me.udnek.itemscoreu.nms;
+package me.udnek.itemscoreu.nms.loot.pool;
 
 import com.google.common.base.Preconditions;
-import me.udnek.itemscoreu.nms.entry.CustomNmsLootEntryBuilder;
+import me.udnek.itemscoreu.nms.NmsUtils;
+import me.udnek.itemscoreu.nms.loot.entry.NmsCompositeLootEntryContainer;
+import me.udnek.itemscoreu.nms.loot.entry.NmsLootEntryContainer;
+import me.udnek.itemscoreu.nms.loot.entry.NmsSingletonLootEntryContainer;
 import me.udnek.itemscoreu.utils.NMS.Reflex;
 import net.minecraft.Util;
 import net.minecraft.world.level.storage.loot.LootPool;
+import net.minecraft.world.level.storage.loot.entries.CompositeEntryBase;
 import net.minecraft.world.level.storage.loot.entries.LootPoolEntryContainer;
 import net.minecraft.world.level.storage.loot.entries.LootPoolSingletonContainer;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
@@ -14,49 +18,55 @@ import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.loot.LootTable;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
 
-public class CustomNmsLootPoolBuilder {
+public class NmsLootPoolBuilder implements NmsLootPoolContainer{
 
     protected Integer rolls = 1;
     protected int bonusRolls = 0;
-    protected List<CustomNmsLootEntryBuilder> entries = new ArrayList<>();
+    protected List<LootPoolEntryContainer> entries = new ArrayList<>();
     protected List<LootItemCondition> conditions;
     protected List<LootItemFunction> functions;
 
-    public CustomNmsLootPoolBuilder(@NotNull CustomNmsLootEntryBuilder...entries){
-        this.entries.addAll(Arrays.asList(entries));
-    }
-    public @NotNull CustomNmsLootPoolBuilder rolls(int rolls){
-        this.rolls = rolls;
-        return this;
-    }
-    public @NotNull CustomNmsLootPoolBuilder bonusRolls(int bonusRolls){
-        this.bonusRolls = bonusRolls;
-        return this;
+    public NmsLootPoolBuilder(@NotNull NmsLootEntryContainer...entries){
+        Arrays.asList(entries).forEach(nms -> this.entries.add(nms.get()));
     }
 
+    public @NotNull NmsLootPoolBuilder rolls(int rolls){
+        this.rolls = rolls; return this;
+    }
+
+    public @NotNull NmsLootPoolBuilder bonusRolls(int bonusRolls){
+        this.bonusRolls = bonusRolls; return this;
+    }
+
+    @Override
+    public @NotNull NmsLootEntryContainer getEntry(int n) {
+        return NmsLootEntryContainer.from(entries.get(n));
+    }
+
+    @Override
+    public void addEntry(@NotNull NmsLootEntryContainer entry) {entries.add(entry.get());}
+
     protected LootPoolSingletonContainer getContainerByPredicate(@NotNull LootTable lootTable, Predicate<ItemStack> predicate){
-        LootPoolSingletonContainer foundContainer = NmsUtils.getSingletonContainerByItems(NmsUtils.toNmsLootTable(lootTable), new Predicate<net.minecraft.world.item.ItemStack>() {
-            @Override
-            public boolean test(net.minecraft.world.item.ItemStack itemStack) {
-                return predicate.test(NmsUtils.toBukkitItemStack(itemStack));
-            }
-        });
+        LootPoolSingletonContainer foundContainer = NmsUtils.getSingletonContainerByItems(
+                NmsUtils.toNmsLootTable(lootTable),
+                itemStack -> predicate.test(NmsUtils.toBukkitItemStack(itemStack)));
 
         return foundContainer;
     }
-    public @NotNull CustomNmsLootPoolBuilder copyConditionsFrom(@NotNull LootTable lootTable, Predicate<ItemStack> predicate){
+    public @NotNull NmsLootPoolBuilder copyConditionsFrom(@NotNull LootTable lootTable, Predicate<ItemStack> predicate){
         LootPoolSingletonContainer foundContainer = getContainerByPredicate(lootTable, predicate);
         Preconditions.checkArgument(foundContainer != null, "Container not found!");
         this.conditions = (List<LootItemCondition>) Reflex.getFieldValue(foundContainer, "conditions");
         return this;
     }
-    public @NotNull CustomNmsLootPoolBuilder copyFunctionsFrom(@NotNull LootTable lootTable, Predicate<ItemStack> predicate){
+    public @NotNull NmsLootPoolBuilder copyFunctionsFrom(@NotNull LootTable lootTable, Predicate<ItemStack> predicate){
         LootPoolSingletonContainer foundContainer = getContainerByPredicate(lootTable, predicate);
         Preconditions.checkArgument(foundContainer != null, "Container not found!");
         this.functions = (List<LootItemFunction>) Reflex.getFieldValue(foundContainer, "functions");
@@ -64,12 +74,12 @@ public class CustomNmsLootPoolBuilder {
     }
 
     public void validate(){
-        for (CustomNmsLootEntryBuilder container : entries) {
+        for (LootPoolEntryContainer container : entries) {
             Preconditions.checkArgument(container != null, "Container can not be null!");
         }
     }
 
-    public LootPool create(){
+    public LootPool build(){
         validate();
 
         LootPool.Builder builder = LootPool.lootPool()
@@ -84,11 +94,14 @@ public class CustomNmsLootPoolBuilder {
             Reflex.setFieldValue(lootPool, "functions", functions);
             Reflex.setFieldValue(lootPool, "compositeFunction", LootItemFunctions.compose(functions));
         }
-        List<LootPoolEntryContainer> containers = new ArrayList<>();
-        entries.forEach(b -> containers.add(b.build()));
-        Reflex.setFieldValue(lootPool, "entries", containers);
+        Reflex.setFieldValue(lootPool, "entries", new ArrayList<>(entries));
         return lootPool;
     }
 
 
+
+    @Override
+    public @NotNull LootPool get() {
+        return build();
+    }
 }

@@ -60,6 +60,16 @@ public class Reflex {
             throw new RuntimeException(e);
         }
     }
+    public static Method getMethod(Class<?> clazz, String name){
+        Method[] methods = clazz.getDeclaredMethods();
+        for (Method method : methods) {
+            if (method.getName().equals(name)){
+                method.setAccessible(true);
+                return method;
+            }
+        }
+        throw new RuntimeException(new NoSuchFieldException(name));
+    }
 
     public static Object invokeMethod(Object object, Method method, Object ...args){
         try {
@@ -69,9 +79,15 @@ public class Reflex {
         }
     }
 
+    public static <T> Constructor<T> getFirstConstructor(Class<T> clazz){
+        Constructor<?>[] constructor = clazz.getDeclaredConstructors();
+        constructor[0].setAccessible(true);
+        return (Constructor<T>) constructor[0];
+    }
+
     public static <T> Constructor<T> getConstructor(Class<T> clazz, Class<?> ...parameterTypes){
         try {
-            Constructor<T> constructor = clazz.getConstructor(parameterTypes);
+            Constructor<T> constructor = clazz.getDeclaredConstructor(parameterTypes);
             constructor.setAccessible(true);
             return constructor;
         } catch (NoSuchMethodException e) {

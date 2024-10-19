@@ -10,8 +10,8 @@ import me.udnek.itemscoreu.customrecipe.CustomRecipe;
 import me.udnek.itemscoreu.customrecipe.RecipeManager;
 import me.udnek.itemscoreu.customregistry.CustomRegistries;
 import me.udnek.itemscoreu.nms.Nms;
-import me.udnek.itemscoreu.nms.entry.CustomNmsLootEntryBuilder;
-import me.udnek.itemscoreu.nms.entry.ItemStackCreator;
+import me.udnek.itemscoreu.nms.loot.entry.NmsCustomLootEntryBuilder;
+import me.udnek.itemscoreu.nms.loot.ItemStackCreator;
 import net.kyori.adventure.key.Keyed;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -120,7 +120,7 @@ public class VanillaItemManager extends SelfRegisteringListener{
                     Predicate<ItemStack> predicate = itemStack -> CustomItem.get(itemStack) == vanillaBasedItem;
                     Pair<Integer, Integer> weightAndQuality = Nms.get().getWeightAndQuality(lootTable, predicate);
                     if (weightAndQuality == null) continue;
-                    Nms.get().replaceAllEntriesContains(lootTable, predicate, CustomNmsLootEntryBuilder.fromVanilla(lootTable, predicate, new ItemStackCreator.CustomSimple(vanillaBasedItem)));
+                    Nms.get().replaceAllEntriesContains(lootTable, predicate, NmsCustomLootEntryBuilder.fromVanilla(lootTable, predicate, new ItemStackCreator.Custom(vanillaBasedItem)));
                     LogUtils.pluginLog("Vanilla lootTable was replaced!: " + lootTable.getKey().asString());
                 }
             }

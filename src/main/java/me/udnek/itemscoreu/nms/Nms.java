@@ -2,8 +2,8 @@ package me.udnek.itemscoreu.nms;
 
 import com.mojang.datafixers.util.Pair;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-import me.udnek.itemscoreu.nms.entry.CustomNmsLootEntry;
-import me.udnek.itemscoreu.nms.entry.CustomNmsLootEntryBuilder;
+import me.udnek.itemscoreu.nms.loot.entry.NmsCustomLootEntryBuilder;
+import me.udnek.itemscoreu.nms.loot.pool.NmsLootPoolContainer;
 import me.udnek.itemscoreu.utils.LogUtils;
 import me.udnek.itemscoreu.utils.NMS.Reflex;
 import net.minecraft.core.BlockPos;
@@ -23,8 +23,6 @@ import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.npc.VillagerTrades;
 import net.minecraft.world.item.MapItem;
 import net.minecraft.world.item.SpawnEggItem;
-import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.item.trading.MerchantOffer;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.ComposterBlock;
@@ -110,25 +108,6 @@ public class Nms {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    // BREWING
-    ///////////////////////////////////////////////////////////////////////////
-    // TODO: 6/1/2024 FIX BREWING
-/*    public boolean isBrewableIngredient(Material material){
-        return PotionBrewing.isIngredient(getNMSItemStack(material));
-    }
-    public boolean isBrewablePotion(ItemStack itemStack){
-        net.minecraft.world.item.ItemStack nmsItemStack = getNMSItemStack(itemStack);
-        Potion potion = PotionUtils.getPotion(nmsItemStack);
-        return PotionBrewing.isBrewablePotion(potion);
-    }
-    public boolean hasBrewingMix(ItemStack potion, Material ingredient){
-        return PotionBrewing.hasMix(getNMSItemStack(potion), getNMSItemStack(ingredient));
-    }
-    public ItemStack getBrewingMix(ItemStack potion, Material ingredient){
-        net.minecraft.world.item.ItemStack mixed = PotionBrewing.mix(getNMSItemStack(potion), getNMSItemStack(ingredient));
-        return getNormalItemStack(mixed);
-    }*/
-    ///////////////////////////////////////////////////////////////////////////
     // LOOT
     ///////////////////////////////////////////////////////////////////////////
     public List<MerchantRecipe> getAllPossibleTrades(){
@@ -156,15 +135,15 @@ public class Nms {
         }
         return recipes;
     }
-    public void addLootPool(@NotNull org.bukkit.loot.LootTable bukkitLootTable, @NotNull CustomNmsLootPoolBuilder lootPoolBuilder){
+
+    public void addLootPool(@NotNull org.bukkit.loot.LootTable bukkitLootTable, @NotNull NmsLootPoolContainer nmsLootPoolContainer){
         LootTable lootTable = NmsUtils.toNmsLootTable(bukkitLootTable);
 
         for (LootPoolSingletonContainer singletonContainer : NmsUtils.getAllSingletonContainers(lootTable)) {
-            // TODO: 8/23/2024 FIX DYMAMIC LOOT
             if (singletonContainer instanceof DynamicLoot) return;
         }
 
-        LootPool lootPool = lootPoolBuilder.create();
+        LootPool lootPool = nmsLootPoolContainer.get();
 
         List<LootPool> pools = NmsUtils.getPools(lootTable);
         if (pools instanceof ArrayList<LootPool>){
@@ -181,7 +160,7 @@ public class Nms {
     public void removeAllEntriesContains(@NotNull org.bukkit.loot.LootTable bukkitLootTable, @NotNull Predicate<ItemStack> predicate){
         replaceAllEntriesContains(bukkitLootTable, predicate, null);
     }
-    public void replaceAllEntriesContains(@NotNull org.bukkit.loot.LootTable bukkitLootTable, @NotNull Predicate<ItemStack> predicate, @Nullable CustomNmsLootEntryBuilder newEntry){
+    public void replaceAllEntriesContains(@NotNull org.bukkit.loot.LootTable bukkitLootTable, @NotNull Predicate<ItemStack> predicate, @Nullable NmsCustomLootEntryBuilder newEntry){
         LootTable lootTable = NmsUtils.toNmsLootTable(bukkitLootTable);
 
         List<LootPoolEntryContainer> toReplace = new ArrayList<>();
@@ -199,7 +178,7 @@ public class Nms {
         for (LootPool pool : NmsUtils.getPools(lootTable)) {
             List<LootPoolEntryContainer> newContainers = new ArrayList<>();
             boolean changed = false;
-            for (LootPoolEntryContainer container : NmsUtils.getContainers(pool)) {
+            for (LootPoolEntryContainer container : NmsUtils.getEntries(pool)) {
                 if (toReplace.contains(container)){
                     changed = true;
                     if (newEntry != null) newContainers.add(newEntry.build());
