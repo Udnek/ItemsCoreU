@@ -4,6 +4,8 @@ import com.mojang.datafixers.util.Pair;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import me.udnek.itemscoreu.nms.loot.entry.NmsCustomLootEntryBuilder;
 import me.udnek.itemscoreu.nms.loot.pool.NmsLootPoolContainer;
+import me.udnek.itemscoreu.nms.loot.table.NmsDefaultLootTableContainer;
+import me.udnek.itemscoreu.nms.loot.table.NmsLootTableContainer;
 import me.udnek.itemscoreu.utils.LogUtils;
 import me.udnek.itemscoreu.utils.NMS.Reflex;
 import net.minecraft.core.BlockPos;
@@ -136,7 +138,12 @@ public class Nms {
         return recipes;
     }
 
-    public void addLootPool(@NotNull org.bukkit.loot.LootTable bukkitLootTable, @NotNull NmsLootPoolContainer nmsLootPoolContainer){
+
+    public @NotNull NmsLootTableContainer getLootTableContainer(org.bukkit.loot.LootTable lootTable){
+        return new NmsDefaultLootTableContainer(NmsUtils.toNmsLootTable(lootTable));
+    }
+
+/*    public void addLootPool(@NotNull org.bukkit.loot.LootTable bukkitLootTable, @NotNull NmsLootPoolContainer nmsLootPoolContainer){
         LootTable lootTable = NmsUtils.toNmsLootTable(bukkitLootTable);
 
         for (LootPoolSingletonContainer singletonContainer : NmsUtils.getAllSingletonContainers(lootTable)) {
@@ -155,7 +162,7 @@ public class Nms {
 
         LogUtils.pluginLog("Added loot pool to: " + lootTable.craftLootTable.key().asString());
         Reflex.setFieldValue(lootTable, "pools", newPools);
-    }
+    }*/
 
     public void removeAllEntriesContains(@NotNull org.bukkit.loot.LootTable bukkitLootTable, @NotNull Predicate<ItemStack> predicate){
         replaceAllEntriesContains(bukkitLootTable, predicate, null);

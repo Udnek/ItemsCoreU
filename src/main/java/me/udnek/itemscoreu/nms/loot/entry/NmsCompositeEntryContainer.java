@@ -1,11 +1,11 @@
 package me.udnek.itemscoreu.nms.loot.entry;
 
-import me.udnek.itemscoreu.nms.Nms;
 import me.udnek.itemscoreu.nms.NmsUtils;
+import me.udnek.itemscoreu.nms.loot.util.NmsFields;
+import me.udnek.itemscoreu.nms.loot.util.NmsLootConditionsContainer;
 import me.udnek.itemscoreu.utils.NMS.Reflex;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.entries.*;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.loot.LootTable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -14,24 +14,20 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Predicate;
 
-public class NmsCompositeLootEntryContainer implements NmsLootEntryContainer {
+public class NmsCompositeEntryContainer implements NmsLootEntryContainer {
 
-    @NotNull CompositeEntryBase entry;
+    CompositeEntryBase supply;
 
-    public NmsCompositeLootEntryContainer(@NotNull CompositeEntryBase entry){
-        this.entry = entry;
-    }
+    public NmsCompositeEntryContainer(@NotNull CompositeEntryBase supply) {this.supply = supply;}
 
-    public static @Nullable NmsCompositeLootEntryContainer fromVanilla(@NotNull LootTable lootTable, int n){
+    public static @Nullable NmsCompositeEntryContainer fromVanilla(@NotNull LootTable lootTable, int n){
         int i = -1;
         for (LootPool pool : NmsUtils.getPools(NmsUtils.toNmsLootTable(lootTable))) {
             for (LootPoolEntryContainer entry : NmsUtils.getEntries(pool)) {
                 if (entry instanceof CompositeEntryBase compositeEntryBase){
                     i ++;
-                    if (i == n) return new NmsCompositeLootEntryContainer(compositeEntryBase);
+                    if (i == n) return new NmsCompositeEntryContainer(compositeEntryBase);
                     if (i > n) return null;
                 }
             }
@@ -39,16 +35,29 @@ public class NmsCompositeLootEntryContainer implements NmsLootEntryContainer {
         return null;
     }
 
-    public @NotNull NmsCompositeLootEntryContainer copy(){
+    public @NotNull NmsCompositeEntryContainer copy(){
         Constructor<AlternativesEntry> constructor = Reflex.getFirstConstructor(AlternativesEntry.class);
-        AlternativesEntry newEntry = Reflex.construct(constructor, getChildren(), Reflex.getFieldValue(entry, "conditions"));
-        return new NmsCompositeLootEntryContainer(newEntry);
+        AlternativesEntry newEntry = Reflex.construct(constructor, getChildren(), Reflex.getFieldValue(supply, NmsFields.CONDITIONS));
+        return new NmsCompositeEntryContainer(newEntry);
     }
 
     public void addChild(@NotNull NmsLootEntryContainer container){
         List<LootPoolEntryContainer> newChildren = new ArrayList<>(getChildren());
         newChildren.add(container.get());
         setChildren(newChildren);
+    }
+    public void addChild(int n, @NotNull NmsLootEntryContainer container){
+        List<LootPoolEntryContainer> newChildren = new ArrayList<>(getChildren());
+        newChildren.add(n, container.get());
+        setChildren(newChildren);
+    }
+    public @NotNull NmsLootEntryContainer getChild(int n){
+        return NmsLootEntryContainer.from(getChildren().get(n));
+    }
+    public void removeChild(int n){
+        List<LootPoolEntryContainer> children = new ArrayList<>(getChildren());
+        children.remove(n);
+        setChildren(children);
     }
 
     public void setChildren(@NotNull List<LootPoolEntryContainer> newChildren){
@@ -57,21 +66,20 @@ public class NmsCompositeLootEntryContainer implements NmsLootEntryContainer {
                 CompositeEntryBase.class,
                 "compose"
         );
-        System.out.println(method);
         Object compose = Reflex.invokeMethod(
-                entry,
+                supply,
                 method,
                 newChildren
         );
-        System.out.println(compose);
 
-        Reflex.setFieldValue(entry, "children", newChildren);
-        Reflex.setFieldValue(entry, "composedChildren", compose);
+        Reflex.setFieldValue(supply, NmsFields.CHILDREN, newChildren);
+        Reflex.setFieldValue(supply, NmsFields.COMPOSED_CHILDREN, compose);
     }
 
     public List<LootPoolEntryContainer> getChildren(){
-        return  (List<LootPoolEntryContainer>) Reflex.getFieldValue(entry, "children");
+        return  (List<LootPoolEntryContainer>) Reflex.getFieldValue(supply, NmsFields.CHILDREN);
     }
+/*
 
     public boolean removeChild(@NotNull Predicate<ItemStack> predicate){
         List<LootPoolEntryContainer> children = getChildren();
@@ -103,8 +111,20 @@ public class NmsCompositeLootEntryContainer implements NmsLootEntryContainer {
         return true;
     }
 
+*/
+
     @Override
-    public @NotNull LootPoolEntryContainer get() {
-        return entry;
+    public @NotNull NmsLootConditionsContainer getConditions() {
+        return null;
+    }
+
+    @Override
+    public void setConditions(@NotNull NmsLootConditionsContainer conditions) {
+
+    }
+
+    @Override
+    public CompositeEntryBase get() {
+        return supply;
     }
 }

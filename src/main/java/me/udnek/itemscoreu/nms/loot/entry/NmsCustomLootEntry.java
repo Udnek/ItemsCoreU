@@ -1,7 +1,7 @@
 package me.udnek.itemscoreu.nms.loot.entry;
 
 import me.udnek.itemscoreu.nms.NmsUtils;
-import me.udnek.itemscoreu.nms.loot.ItemStackCreator;
+import me.udnek.itemscoreu.nms.loot.util.ItemStackCreator;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.entries.LootPoolEntries;

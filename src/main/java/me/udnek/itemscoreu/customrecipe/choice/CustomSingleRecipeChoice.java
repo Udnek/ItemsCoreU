@@ -5,13 +5,14 @@ import org.bukkit.Material;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 public class CustomSingleRecipeChoice extends CustomCompatibleRecipeChoice {
 
     public CustomSingleRecipeChoice(CustomItem customItem) {
-        super(Collections.singletonList(customItem), List.of());
+        super(Set.of(customItem), Set.of());
     }
     public CustomSingleRecipeChoice(Material material) {
-        super(List.of(), Collections.singletonList(material));
+        super(Set.of(), Set.of(material));
     }
 }

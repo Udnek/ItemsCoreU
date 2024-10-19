@@ -1,4 +1,4 @@
-package me.udnek.itemscoreu.nms.loot;
+package me.udnek.itemscoreu.nms.loot.util;
 
 import me.udnek.itemscoreu.customitem.CustomItem;
 import org.bukkit.inventory.ItemStack;

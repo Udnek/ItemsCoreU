@@ -1,11 +1,5 @@
 package me.udnek.itemscoreu;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.mojang.datafixers.util.Pair;
-import com.mojang.serialization.*;
-import io.papermc.paper.command.brigadier.argument.predicate.ItemStackPredicate;
 import me.udnek.itemscoreu.customblock.CustomBlock;
 import me.udnek.itemscoreu.customblock.CustomBlockListener;
 import me.udnek.itemscoreu.customentity.CustomEntityCommand;
@@ -27,41 +21,20 @@ import me.udnek.itemscoreu.customregistry.CustomRegistry;
 import me.udnek.itemscoreu.customregistry.Registrable;
 import me.udnek.itemscoreu.nms.Nms;
 import me.udnek.itemscoreu.nms.NmsUtils;
-import me.udnek.itemscoreu.nms.loot.ItemStackCreator;
-import me.udnek.itemscoreu.nms.loot.entry.NmsCompositeLootEntryContainer;
-import me.udnek.itemscoreu.nms.loot.entry.NmsCustomLootEntryBuilder;
-import me.udnek.itemscoreu.nms.loot.entry.NmsLootEntryContainer;
-import me.udnek.itemscoreu.nms.loot.pool.NmsDefaultLootPoolContainer;
+import me.udnek.itemscoreu.nms.loot.entry.*;
 import me.udnek.itemscoreu.nms.loot.pool.NmsLootPoolBuilder;
+import me.udnek.itemscoreu.nms.loot.table.NmsLootTableContainer;
+import me.udnek.itemscoreu.nms.loot.util.ItemStackCreator;
 import me.udnek.itemscoreu.resourcepack.ResourcePackCommand;
 import me.udnek.itemscoreu.resourcepack.ResourcePackablePlugin;
 import me.udnek.itemscoreu.serializabledata.SerializableDataManager;
-import me.udnek.itemscoreu.customadvancement.CustomAdvancementUtils;
 import me.udnek.itemscoreu.utils.LogUtils;
 import me.udnek.itemscoreu.utils.NMS.NMSTest;
-import me.udnek.itemscoreu.utils.NMS.ProtocolTest;
 import me.udnek.itemscoreu.utils.VanillaItemManager;
-import net.minecraft.core.Holder;
-import net.minecraft.core.Registry;
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.resources.RegistryOps;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.RegistryLayer;
-import net.minecraft.server.ReloadableServerRegistries;
-import net.minecraft.server.ReloadableServerResources;
-import net.minecraft.server.packs.resources.Resource;
-import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.world.effect.MobEffect;
-import net.minecraft.world.level.storage.loot.LootDataType;
-import net.minecraft.world.level.storage.loot.LootPool;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.loot.LootTable;
-import org.bukkit.loot.LootTables;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import java.util.Optional;
 
 public final class ItemsCoreU extends JavaPlugin implements ResourcePackablePlugin {
     private static JavaPlugin instance;
@@ -121,10 +94,7 @@ public final class ItemsCoreU extends JavaPlugin implements ResourcePackablePlug
         this.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable(){
             public void run(){
 
-                new BeforeVanillaManagerActivationEvent().callEvent();
 
-                LogUtils.pluginLog("VanillaManager started");
-                VanillaItemManager.getInstance().start();
 
                 LogUtils.pluginLog("After-initialization started");
                 for (CustomRegistry<?> registry : CustomRegistries.getRegistries()) {
@@ -133,16 +103,45 @@ public final class ItemsCoreU extends JavaPlugin implements ResourcePackablePlug
                     }
                 }
 
-/*
-                LootTable lootTable = Nms.get().getLootTable("minecraft:blocks/iron_ore");
-                NmsDefaultLootPoolContainer ironPool = NmsDefaultLootPoolContainer.fromVanilla(lootTable, 0);
-                NmsCustomLootEntryBuilder goldSubEntry = NmsCustomLootEntryBuilder.fromVanilla(
+                new BeforeVanillaManagerActivationEvent().callEvent();
+
+                LogUtils.pluginLog("VanillaManager started");
+                VanillaItemManager.getInstance().start();
+
+/*                LootTable bukkitLootTable = Nms.get().getLootTable("minecraft:blocks/iron_ore");
+                NmsLootTableContainer oreLootTable = Nms.get().getLootTableContainer(bukkitLootTable);
+
+                NmsCompositeEntryContainer entry = (NmsCompositeEntryContainer) oreLootTable.getPool(0).getEntry(0);
+
+                // GETTING ORE BLOCK
+                //NmsLootEntryContainer oreBlock = entry.getChild(0);
+                // GETTING IRON
+                NmsSingletonEntryContainer rawIron = (NmsSingletonEntryContainer) entry.getChild(1);
+                NmsUtils.getPossibleLoot(((NmsSingletonEntryContainer) entry.getChild(0)).get(), System.out::println);
+                NmsUtils.getPossibleLoot(((NmsSingletonEntryContainer) entry.getChild(1)).get(), System.out::println);
+                // CREATING GOLD
+                NmsCustomLootEntryBuilder rawGold = new NmsCustomLootEntryBuilder(new ItemStackCreator.Material(Material.RAW_GOLD));
+                rawGold.setConditions(rawIron.getConditions());
+                rawGold.setFunctions(rawIron.getFunctions());
+                // MERGING GOLD AND IRON IN LOOTTABLE
+                NmsLootTableContainer newSubLootTable = oreLootTable.copy();
+                newSubLootTable.removePool(0);
+                newSubLootTable.addPool(new NmsLootPoolBuilder(rawIron));
+                newSubLootTable.addPool(new NmsLootPoolBuilder(rawGold));
+
+                // REMOVING OLD RAW IRON
+                entry.removeChild(1);
+                entry.addChild(NmsNestedEntryContainer.newFrom(newSubLootTable));*/
+
+
+/*                NmsDefaultLootPoolContainer ironPool = NmsDefaultLootPoolContainer.fromVanilla(lootTable, 0);
+                NmsCompositeLootEntryContainer ironEntry = (NmsCompositeLootEntryContainer) ironPool.getEntry(0);
+                NmsCompositeLootEntryContainer goldEntry = ironEntry.copy();
+
+                NmsCustomLootEntryBuilder goldItemEntry = NmsCustomLootEntryBuilder.fromVanilla(
                         lootTable,
                         (ItemStackPredicate) itemStack -> itemStack.getType() == Material.RAW_IRON,
                         new ItemStackCreator.Material(Material.GOLD_INGOT));
-
-                NmsCompositeLootEntryContainer ironEntry = (NmsCompositeLootEntryContainer) ironPool.getEntry(0);
-                NmsCompositeLootEntryContainer goldEntry = ironEntry.copy();
 
                 NmsCustomLootEntryBuilder ironOre = NmsCustomLootEntryBuilder.fromVanilla(
                         lootTable,
@@ -151,10 +150,9 @@ public final class ItemsCoreU extends JavaPlugin implements ResourcePackablePlug
 
 
 
-                goldEntry.replaceChild(itemStack -> itemStack.getType() == Material.RAW_IRON, goldSubEntry);
+                goldEntry.replaceChild(itemStack -> itemStack.getType() == Material.RAW_IRON, goldItemEntry);
                 goldEntry.removeChild(itemStack -> itemStack.getType() == Material.IRON_ORE);
-                Nms.get().addLootPool(lootTable, new NmsLootPoolBuilder(goldEntry));
-*/
+                Nms.get().addLootPool(lootTable, new NmsLootPoolBuilder(goldEntry));*/
 
 
                 new GlobalInitializationEndEvent().callEvent();

@@ -11,7 +11,7 @@ import me.udnek.itemscoreu.customrecipe.RecipeManager;
 import me.udnek.itemscoreu.customregistry.CustomRegistries;
 import me.udnek.itemscoreu.nms.Nms;
 import me.udnek.itemscoreu.nms.loot.entry.NmsCustomLootEntryBuilder;
-import me.udnek.itemscoreu.nms.loot.ItemStackCreator;
+import me.udnek.itemscoreu.nms.loot.util.ItemStackCreator;
 import net.kyori.adventure.key.Keyed;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -70,8 +70,10 @@ public class VanillaItemManager extends SelfRegisteringListener{
             ItemStack toRemoveItem = new ItemStack(material);
 
             // recipe removal
-            List<Recipe> recipes = recipeManager.getRecipesAsIngredient(toRemoveItem);
-            recipes.addAll(recipeManager.getRecipesAsResult(toRemoveItem));
+            ArrayList<Recipe> recipes = new ArrayList<>();
+            recipeManager.getRecipesAsIngredient(toRemoveItem, recipes::add);
+            recipeManager.getRecipesAsResult(toRemoveItem, recipes::add);
+
             for (Recipe recipe : recipes) {
                 recipeManager.unregister(recipe);
                 LogUtils.pluginLog("Unregistered recipe: " + (recipe instanceof Keyed keyed ? keyed.key().asString() : recipe));
@@ -100,8 +102,9 @@ public class VanillaItemManager extends SelfRegisteringListener{
             ItemStack oldItem = new ItemStack(entry.getKey());
 
             // recipe replace
-            List<Recipe> recipes = recipeManager.getRecipesAsIngredient(oldItem);
-            recipes.addAll(recipeManager.getRecipesAsResult(oldItem));
+            ArrayList<Recipe> recipes = new ArrayList<>();
+            recipeManager.getRecipesAsIngredient(oldItem, recipes::add);
+            recipeManager.getRecipesAsResult(oldItem, recipes::add);
 
             ReplaceHelper replaceHelper = new ReplaceHelper(oldItem, vanillaBasedItem);
             for (Recipe oldRecipe : recipes) {

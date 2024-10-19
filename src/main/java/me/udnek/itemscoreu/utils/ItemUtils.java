@@ -52,12 +52,10 @@ public class ItemUtils {
     }
 
     @Deprecated
-    public static List<Recipe> getRecipesOfItemStack(@NotNull ItemStack itemStack){
+    public static void getRecipesOfItemStack(@NotNull ItemStack itemStack, @NotNull Consumer<Recipe> consumer){
         if (CustomItem.isCustom(itemStack)){
             CustomItem customItem = CustomItem.get(itemStack);
-            ArrayList<Recipe> recipes = new ArrayList<>();
-            customItem.getRecipes(recipes::add);
-            return recipes;
+            customItem.getRecipes(consumer);
         }
         else {
             // FIXED DURABILITY BUG
@@ -71,22 +69,19 @@ public class ItemUtils {
             }
 
             List<Recipe> rawRecipes = Bukkit.getRecipesFor(itemStack);
-            List<Recipe> recipes = new ArrayList<>();
             for (Recipe recipe : rawRecipes) {
                 if (!(CustomItem.isCustom(recipe.getResult()))) {
-                    recipes.add(recipe);
+                    consumer.accept(recipe);
                 }
             }
-            return recipes;
         }
     }
 
     @Deprecated
-    public static List<Recipe> getItemInRecipesUsages(@NotNull ItemStack itemStack){
-        List<Recipe> recipes = new ArrayList<>();
+    public static void getItemInRecipesUsages(@NotNull ItemStack itemStack, @NotNull Consumer<Recipe> consumer){
         if (CustomItem.isCustom(itemStack)){
             CustomItem customItem = CustomItem.get(itemStack);
-            iterateTroughRecipesChoosing(recipes::add, new Predicate<RecipeChoice>() {
+            iterateTroughRecipesChoosing(consumer, new Predicate<RecipeChoice>() {
                 @Override
                 public boolean test(RecipeChoice recipeChoice) {
                     if (!(recipeChoice instanceof RecipeChoice.ExactChoice exactChoice)) return false;
@@ -94,11 +89,10 @@ public class ItemUtils {
                     return choices.stream().anyMatch(choice -> customItem.isThisItem(choice));
                 }
             });
-            return recipes;
         }
         else {
             Material neededMaterial = itemStack.getType();
-            iterateTroughRecipesChoosing(recipes::add, new Predicate<RecipeChoice>() {
+            iterateTroughRecipesChoosing(consumer, new Predicate<RecipeChoice>() {
                 @Override
                 public boolean test(RecipeChoice recipeChoice) {
                     if (!(recipeChoice instanceof RecipeChoice.MaterialChoice materialChoice)) return false;
@@ -107,7 +101,6 @@ public class ItemUtils {
                 }
             });
         }
-        return recipes;
     }
 
 

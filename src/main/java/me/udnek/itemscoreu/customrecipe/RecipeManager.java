@@ -11,9 +11,8 @@ import org.bukkit.inventory.Recipe;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
+import java.util.function.Consumer;
 
 public class RecipeManager {
 
@@ -39,20 +38,22 @@ public class RecipeManager {
             Bukkit.addRecipe(recipe);
         }
     }
-    public List<Recipe> getRecipesAsResult(ItemStack itemStack){
-        List<Recipe> recipes = ItemUtils.getRecipesOfItemStack(itemStack);
+    public void getRecipesAsResult(@NotNull ItemStack itemStack, @NotNull Consumer<Recipe> consumer){
+        Set<Recipe> recipes = new HashSet<>();
+        ItemUtils.getRecipesOfItemStack(itemStack, recipes::add);
         for (CustomRecipe<?> recipe : customRecipes.values()) {
             if (recipe.isResult(itemStack)) recipes.add(recipe);
         }
-        return recipes;
+        recipes.forEach(consumer);
     }
 
-    public List<Recipe> getRecipesAsIngredient(ItemStack itemStack){
-        List<Recipe> recipes = ItemUtils.getItemInRecipesUsages(itemStack);
+    public void getRecipesAsIngredient(ItemStack itemStack, @NotNull Consumer<Recipe> consumer){
+        Set<Recipe> recipes = new HashSet<>();
+        ItemUtils.getItemInRecipesUsages(itemStack, recipes::add);
         for (CustomRecipe<?> recipe : customRecipes.values()) {
             if (recipe.isIngredient(itemStack)) recipes.add(recipe);
         }
-        return recipes;
+        recipes.forEach(consumer);
     }
 
     // TODO: 8/25/2024 OPTIMIZE USING OTHER HASHMAP

@@ -1,7 +1,10 @@
 package me.udnek.itemscoreu.nms.loot.entry;
 
 import me.udnek.itemscoreu.nms.NmsUtils;
-import me.udnek.itemscoreu.nms.loot.ItemStackCreator;
+import me.udnek.itemscoreu.nms.loot.util.ItemStackCreator;
+import me.udnek.itemscoreu.nms.loot.util.NmsFunctioned;
+import me.udnek.itemscoreu.nms.loot.util.NmsLootConditionsContainer;
+import me.udnek.itemscoreu.nms.loot.util.NmsLootFunctionsContainer;
 import me.udnek.itemscoreu.utils.NMS.Reflex;
 import net.minecraft.world.level.storage.loot.entries.LootPoolEntryContainer;
 import net.minecraft.world.level.storage.loot.entries.LootPoolSingletonContainer;
@@ -14,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
-public class NmsCustomLootEntryBuilder implements NmsLootEntryContainer{
+public class NmsCustomLootEntryBuilder implements NmsLootEntryContainer, NmsFunctioned {
 
     protected int weight = 1;
     protected int quality = 0;
@@ -78,6 +81,26 @@ public class NmsCustomLootEntryBuilder implements NmsLootEntryContainer{
     @Override
     public @NotNull LootPoolEntryContainer get() {
         return build();
+    }
+
+    @Override
+    public @NotNull NmsLootConditionsContainer getConditions() {
+        return new NmsLootConditionsContainer(conditions);
+    }
+
+    @Override
+    public void setConditions(@NotNull NmsLootConditionsContainer conditions) {
+        conditions(conditions.get());
+    }
+
+    @Override
+    public @NotNull NmsLootFunctionsContainer getFunctions() {
+        return new NmsLootFunctionsContainer(functions);
+    }
+
+    @Override
+    public void setFunctions(@NotNull NmsLootFunctionsContainer functions) {
+        functions(functions.get());
     }
 }
 

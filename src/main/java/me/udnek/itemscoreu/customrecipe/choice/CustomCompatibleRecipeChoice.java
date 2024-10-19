@@ -8,31 +8,31 @@ import org.bukkit.inventory.RecipeChoice;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class CustomCompatibleRecipeChoice implements CustomRecipeChoice {
 
-    protected List<CustomItem> customs = new ArrayList<>();
-    protected List<Material> materials = new ArrayList<>();
+    protected Set<CustomItem> customs;
+    protected Set<Material> materials;
 
-    public CustomCompatibleRecipeChoice(@NotNull List<CustomItem> customItems, @NotNull List<Material> materialItems){
+    public CustomCompatibleRecipeChoice(@NotNull Set<CustomItem> customItems, @NotNull Set<Material> materialItems){
         Preconditions.checkArgument(customItems.size() + materialItems.size() > 0, "Choice can not be empty!");
         for (CustomItem custom : customItems) {
             Preconditions.checkArgument(custom != null, "Item can not be null!");
-            if (customs.contains(custom)) continue;
-            customs.add(custom);
         }
         for (Material material : materialItems) {
             Preconditions.checkArgument(material != null, "Item can not be null!");
-            if (materials.contains(material)) continue;
-            materials.add(material);
         }
+        customs = new HashSet<>(customItems);
+        materials = new HashSet<>(materialItems);
     }
     public static CustomCompatibleRecipeChoice fromCustomItems(@NotNull CustomItem ...customItems){
-        return new CustomCompatibleRecipeChoice(List.of(customItems), List.of());
+        return new CustomCompatibleRecipeChoice(Set.of(customItems), Set.of());
     }
     public static CustomCompatibleRecipeChoice fromMaterials(@NotNull Material ...materialItems){
-        return new CustomCompatibleRecipeChoice(List.of(), List.of(materialItems));
+        return new CustomCompatibleRecipeChoice(Set.of(), Set.of(materialItems));
     }
 
     @Override

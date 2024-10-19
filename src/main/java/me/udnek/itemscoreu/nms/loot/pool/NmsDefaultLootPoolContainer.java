@@ -2,9 +2,17 @@ package me.udnek.itemscoreu.nms.loot.pool;
 
 import me.udnek.itemscoreu.nms.NmsUtils;
 import me.udnek.itemscoreu.nms.loot.entry.NmsLootEntryContainer;
+import me.udnek.itemscoreu.nms.loot.util.NmsContainer;
+import me.udnek.itemscoreu.nms.loot.util.NmsFields;
+import me.udnek.itemscoreu.nms.loot.util.NmsLootConditionsContainer;
+import me.udnek.itemscoreu.nms.loot.util.NmsLootFunctionsContainer;
 import me.udnek.itemscoreu.utils.NMS.Reflex;
+import net.minecraft.Util;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.entries.LootPoolEntryContainer;
+import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
+import net.minecraft.world.level.storage.loot.functions.LootItemFunctions;
+import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import org.bukkit.loot.LootTable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -12,39 +20,58 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class NmsDefaultLootPoolContainer implements NmsLootPoolContainer{
+public class NmsDefaultLootPoolContainer extends NmsContainer<LootPool> implements NmsLootPoolContainer{
 
-    @NotNull LootPool pool;
-
-    public NmsDefaultLootPoolContainer(@NotNull LootPool pool){
-        this.pool = pool;
-    }
+    public NmsDefaultLootPoolContainer(@NotNull LootPool supply) {super(supply);}
 
     public static @Nullable NmsDefaultLootPoolContainer fromVanilla(@NotNull LootTable lootTable, int n){
-        if (n < 0) return null;
         List<LootPool> pools = NmsUtils.getPools(NmsUtils.toNmsLootTable(lootTable));
-        if (n >= pools.size()) return null;
         return new NmsDefaultLootPoolContainer(pools.get(n));
     }
 
     public List<LootPoolEntryContainer> getEntries(){
-        return (List<LootPoolEntryContainer>) Reflex.getFieldValue(pool, "entries");
+        return (List<LootPoolEntryContainer>) Reflex.getFieldValue(supply, NmsFields.ENTRIES);
     }
 
     @Override
     public void addEntry(@NotNull NmsLootEntryContainer entry) {
         List<LootPoolEntryContainer> newEntries = new ArrayList<>(getEntries());
         newEntries.add(entry.get());
-        Reflex.setFieldValue(pool, "entries", newEntries);
+        Reflex.setFieldValue(supply, NmsFields.ENTRIES, newEntries);
     }
 
+    @Override
+    public void removeEntry(int n) {
+        List<LootPoolEntryContainer> newEntries = new ArrayList<>(getEntries());
+        newEntries.remove(n);
+        Reflex.setFieldValue(supply, NmsFields.ENTRIES, newEntries);
+    }
     @Override
     public @NotNull NmsLootEntryContainer getEntry(int n) {
         return NmsLootEntryContainer.from(getEntries().get(n));
     }
 
     @Override
-    public @NotNull LootPool get() {
-        return pool;
+    public @NotNull NmsLootConditionsContainer getConditions() {
+        return new NmsLootConditionsContainer((List<LootItemCondition>) Reflex.getFieldValue(supply, NmsFields.CONDITIONS));
+    }
+
+    @Override
+    public void setConditions(@NotNull NmsLootConditionsContainer conditions) {
+        List<LootItemCondition> list = conditions.get();
+        Reflex.setFieldValue(supply, NmsFields.CONDITIONS, list);
+        Reflex.setFieldValue(supply, NmsFields.COMPOSITE_CONDITIONS, Util.allOf(list));
+    }
+
+    @Override
+    public @NotNull NmsLootFunctionsContainer getFunctions() {
+        return new NmsLootFunctionsContainer((List<LootItemFunction>) Reflex.getFieldValue(supply, NmsFields.FUNCTIONS));
+    }
+
+    @Override
+    public void setFunctions(@NotNull NmsLootFunctionsContainer functions) {
+        List<LootItemFunction> list = functions.get();
+        Reflex.setFieldValue(supply, NmsFields.FUNCTIONS, list);
+        Reflex.setFieldValue(supply, NmsFields.COMPOSITE_FUNCTIONS, LootItemFunctions.compose(list));
     }
 }
