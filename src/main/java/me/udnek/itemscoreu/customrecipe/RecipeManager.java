@@ -57,7 +57,7 @@ public class RecipeManager {
     }
 
     // TODO: 8/25/2024 OPTIMIZE USING OTHER HASHMAP
-    public <T extends CustomRecipe<?>> List<T> getByType(CustomRecipeType<T> type){
+    public <T extends CustomRecipe<?>> List<T> getByType(@NotNull CustomRecipeType<T> type){
         List<T> recipes = new ArrayList<>();
         for (CustomRecipe<?> recipe : customRecipes.values()) {
             if (recipe.getType() == type) recipes.add((T) recipe);
@@ -72,8 +72,14 @@ public class RecipeManager {
         }
         return null;
     }
+    
+    public @Nullable Recipe get(@NotNull NamespacedKey id){
+        Recipe recipe = Bukkit.getRecipe(id);
+        if (recipe != null) return recipe;
+        return customRecipes.get(id.asString());
+    }
 
-    public void unregister(Recipe recipe){
+    public void unregister(@NotNull Recipe recipe){
         if (recipe instanceof CustomRecipe<?> customRecipe){
             customRecipes.remove(customRecipe.key().asString());
             LogUtils.pluginLog("Custom recipe was unregistered: " + customRecipe.key().asString());
@@ -83,12 +89,16 @@ public class RecipeManager {
             LogUtils.pluginLog("Vanilla recipe was unregistered: " + keyed.key().asString());
         }
     }
-    public void unregister(NamespacedKey key){
-        Bukkit.removeRecipe(key);
-        customRecipes.remove(key.asString());
+    public void unregister(@NotNull NamespacedKey key){
+        Recipe recipe = get(key);
+        if (recipe == null) return;
+        unregister(recipe);
     }
 
-    public void unregister(Iterable<Recipe> recipes){
+    public void unregister(@NotNull Iterable<Recipe> recipes){
+        for (Recipe recipe : recipes) unregister(recipe);
+    }
+    public void unregister(Recipe[] recipes){
         for (Recipe recipe : recipes) unregister(recipe);
     }
 }
