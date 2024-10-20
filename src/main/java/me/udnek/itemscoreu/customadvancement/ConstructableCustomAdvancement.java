@@ -2,12 +2,16 @@ package me.udnek.itemscoreu.customadvancement;
 
 import com.google.common.base.Preconditions;
 import net.kyori.adventure.key.Key;
-import net.minecraft.advancements.*;
+import net.minecraft.advancements.Advancement;
+import net.minecraft.advancements.AdvancementHolder;
+import net.minecraft.advancements.AdvancementRequirements;
+import net.minecraft.advancements.Criterion;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Supplier;
 
 public class ConstructableCustomAdvancement implements CustomAdvancementContainer {

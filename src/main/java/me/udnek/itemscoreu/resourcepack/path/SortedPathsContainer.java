@@ -1,6 +1,6 @@
 package me.udnek.itemscoreu.resourcepack.path;
 
-import me.udnek.itemscoreu.utils.LogUtils;
+import me.udnek.itemscoreu.util.LogUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;

@@ -1,15 +1,9 @@
 package me.udnek.itemscoreu.customadvancement;
 
 import com.google.common.collect.ImmutableMap;
-import jline.internal.Log;
-import me.udnek.itemscoreu.utils.ItemUtils;
-import me.udnek.itemscoreu.utils.LogUtils;
-import me.udnek.itemscoreu.utils.NMS.Reflex;
+import me.udnek.itemscoreu.util.ItemUtils;
+import me.udnek.itemscoreu.util.NMS.Reflex;
 import net.kyori.adventure.key.Key;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.json.JSONComponentSerializer;
-import net.kyori.adventure.text.serializer.plain.PlainComponentSerializer;
-import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.minecraft.advancements.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.ServerAdvancementManager;
@@ -19,7 +13,9 @@ import org.bukkit.craftbukkit.v1_21_R1.CraftServer;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 public class CustomAdvancementUtils {
 

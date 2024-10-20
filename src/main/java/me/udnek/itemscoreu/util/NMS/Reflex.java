@@ -1,4 +1,4 @@
-package me.udnek.itemscoreu.utils.NMS;
+package me.udnek.itemscoreu.util.NMS;
 
 import org.jetbrains.annotations.Nullable;
 

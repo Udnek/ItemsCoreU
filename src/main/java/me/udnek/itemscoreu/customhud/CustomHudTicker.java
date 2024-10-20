@@ -1,6 +1,6 @@
 package me.udnek.itemscoreu.customhud;
 
-import me.udnek.itemscoreu.utils.TickingTask;
+import me.udnek.itemscoreu.util.TickingTask;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;

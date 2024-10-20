@@ -1,7 +1,7 @@
 package me.udnek.itemscoreu.customhelp;
 
 import me.udnek.itemscoreu.ItemsCoreU;
-import me.udnek.itemscoreu.utils.SelfRegisteringListener;
+import me.udnek.itemscoreu.util.SelfRegisteringListener;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.Command;
@@ -9,7 +9,6 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
-import org.bukkit.event.player.PlayerCommandSendEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

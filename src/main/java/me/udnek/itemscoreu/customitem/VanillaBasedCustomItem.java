@@ -3,7 +3,7 @@ package me.udnek.itemscoreu.customitem;
 import com.google.common.base.Preconditions;
 import me.udnek.itemscoreu.customcomponent.AbstractComponentHolder;
 import me.udnek.itemscoreu.customevent.CustomItemGeneratedEvent;
-import me.udnek.itemscoreu.utils.ItemUtils;
+import me.udnek.itemscoreu.util.ItemUtils;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;

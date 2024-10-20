@@ -1,7 +1,7 @@
 package me.udnek.itemscoreu.custominventory;
 
 import me.udnek.itemscoreu.ItemsCoreU;
-import me.udnek.itemscoreu.utils.SelfRegisteringListener;
+import me.udnek.itemscoreu.util.SelfRegisteringListener;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;

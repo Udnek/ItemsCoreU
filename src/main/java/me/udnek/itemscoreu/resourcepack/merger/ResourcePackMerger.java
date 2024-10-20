@@ -7,7 +7,7 @@ import me.udnek.itemscoreu.resourcepack.VirtualResourcePack;
 import me.udnek.itemscoreu.resourcepack.path.RPPath;
 import me.udnek.itemscoreu.resourcepack.path.SamePathsContainer;
 import me.udnek.itemscoreu.resourcepack.path.SortedPathsContainer;
-import me.udnek.itemscoreu.utils.LogUtils;
+import me.udnek.itemscoreu.util.LogUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;

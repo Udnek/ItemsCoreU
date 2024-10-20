@@ -1,4 +1,4 @@
-package me.udnek.itemscoreu.utils;
+package me.udnek.itemscoreu.util;
 
 import com.google.common.base.Preconditions;
 import me.udnek.itemscoreu.ItemsCoreU;

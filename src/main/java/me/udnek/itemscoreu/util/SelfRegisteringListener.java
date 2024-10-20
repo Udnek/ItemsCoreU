@@ -1,4 +1,4 @@
-package me.udnek.itemscoreu.utils;
+package me.udnek.itemscoreu.util;
 
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;

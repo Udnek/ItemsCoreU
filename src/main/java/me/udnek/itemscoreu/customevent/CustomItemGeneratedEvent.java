@@ -1,7 +1,7 @@
 package me.udnek.itemscoreu.customevent;
 
 import me.udnek.itemscoreu.customitem.CustomItem;
-import me.udnek.itemscoreu.utils.LoreBuilder;
+import me.udnek.itemscoreu.util.LoreBuilder;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

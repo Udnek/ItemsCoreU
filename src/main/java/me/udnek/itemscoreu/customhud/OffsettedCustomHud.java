@@ -1,6 +1,6 @@
 package me.udnek.itemscoreu.customhud;
 
-import me.udnek.itemscoreu.utils.ComponentU;
+import me.udnek.itemscoreu.util.ComponentU;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 

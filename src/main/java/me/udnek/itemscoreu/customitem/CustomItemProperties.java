@@ -1,6 +1,6 @@
 package me.udnek.itemscoreu.customitem;
 
-import me.udnek.itemscoreu.utils.LoreBuilder;
+import me.udnek.itemscoreu.util.LoreBuilder;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.MusicInstrument;

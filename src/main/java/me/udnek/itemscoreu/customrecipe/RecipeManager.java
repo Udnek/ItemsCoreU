@@ -1,8 +1,8 @@
 package me.udnek.itemscoreu.customrecipe;
 
 import com.google.common.base.Preconditions;
-import me.udnek.itemscoreu.utils.ItemUtils;
-import me.udnek.itemscoreu.utils.LogUtils;
+import me.udnek.itemscoreu.util.ItemUtils;
+import me.udnek.itemscoreu.util.LogUtils;
 import net.kyori.adventure.key.Keyed;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;

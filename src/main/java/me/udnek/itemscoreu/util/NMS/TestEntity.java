@@ -1,4 +1,4 @@
-package me.udnek.itemscoreu.utils.NMS;
+package me.udnek.itemscoreu.util.NMS;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Display;

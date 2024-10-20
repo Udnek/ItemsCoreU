@@ -1,6 +1,6 @@
 package me.udnek.itemscoreu.customregistry;
 
-import me.udnek.itemscoreu.utils.LogUtils;
+import me.udnek.itemscoreu.util.LogUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;

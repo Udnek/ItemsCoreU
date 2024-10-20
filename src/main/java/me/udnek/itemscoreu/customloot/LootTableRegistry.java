@@ -4,7 +4,7 @@ import com.google.common.base.Preconditions;
 import me.udnek.itemscoreu.customloot.table.CustomLootTable;
 import me.udnek.itemscoreu.customregistry.MappedCustomRegistry;
 import me.udnek.itemscoreu.nms.Nms;
-import me.udnek.itemscoreu.utils.LogUtils;
+import me.udnek.itemscoreu.util.LogUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 import org.bukkit.loot.LootTable;

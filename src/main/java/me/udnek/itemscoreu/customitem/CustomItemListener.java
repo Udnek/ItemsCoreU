@@ -1,7 +1,7 @@
 package me.udnek.itemscoreu.customitem;
 
 import me.udnek.itemscoreu.customcomponent.CustomComponentType;
-import me.udnek.itemscoreu.utils.SelfRegisteringListener;
+import me.udnek.itemscoreu.util.SelfRegisteringListener;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;

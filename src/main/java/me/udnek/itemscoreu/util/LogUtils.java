@@ -1,4 +1,4 @@
-package me.udnek.itemscoreu.utils;
+package me.udnek.itemscoreu.util;
 
 import me.udnek.itemscoreu.ItemsCoreU;
 import net.kyori.adventure.text.Component;

@@ -2,7 +2,7 @@ package me.udnek.itemscoreu.customloot.table;
 
 import me.udnek.itemscoreu.customitem.CustomItem;
 import me.udnek.itemscoreu.customloot.entry.LootTableEntry;
-import me.udnek.itemscoreu.utils.ItemUtils;
+import me.udnek.itemscoreu.util.ItemUtils;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.LivingEntity;

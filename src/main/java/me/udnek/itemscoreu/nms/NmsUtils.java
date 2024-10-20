@@ -1,7 +1,7 @@
 package me.udnek.itemscoreu.nms;
 
 import com.mojang.datafixers.util.Either;
-import me.udnek.itemscoreu.utils.NMS.Reflex;
+import me.udnek.itemscoreu.util.NMS.Reflex;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;

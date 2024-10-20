@@ -3,8 +3,6 @@ package me.udnek.itemscoreu.customrecipe.choice;
 import me.udnek.itemscoreu.customitem.CustomItem;
 import org.bukkit.Material;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.Set;
 
 public class CustomSingleRecipeChoice extends CustomCompatibleRecipeChoice {

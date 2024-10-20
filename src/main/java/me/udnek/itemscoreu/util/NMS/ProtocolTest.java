@@ -1,4 +1,4 @@
-package me.udnek.itemscoreu.utils.NMS;
+package me.udnek.itemscoreu.util.NMS;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;

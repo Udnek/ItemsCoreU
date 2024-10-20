@@ -2,7 +2,7 @@ package me.udnek.itemscoreu.customblock;
 
 import com.destroystokyo.paper.event.block.BlockDestroyEvent;
 import me.udnek.itemscoreu.customcomponent.CustomComponentType;
-import me.udnek.itemscoreu.utils.SelfRegisteringListener;
+import me.udnek.itemscoreu.util.SelfRegisteringListener;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.World;

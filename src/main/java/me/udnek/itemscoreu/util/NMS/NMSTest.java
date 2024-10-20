@@ -1,4 +1,4 @@
-package me.udnek.itemscoreu.utils.NMS;
+package me.udnek.itemscoreu.util.NMS;
 
 import io.papermc.paper.registry.RegistryKey;
 import net.minecraft.core.*;

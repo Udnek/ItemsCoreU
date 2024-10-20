@@ -4,7 +4,7 @@ import me.udnek.itemscoreu.ItemsCoreU;
 import me.udnek.itemscoreu.customcomponent.ComponentHolder;
 import me.udnek.itemscoreu.customregistry.CustomRegistries;
 import me.udnek.itemscoreu.customregistry.Registrable;
-import me.udnek.itemscoreu.utils.VanillaItemManager;
+import me.udnek.itemscoreu.util.VanillaItemManager;
 import org.bukkit.NamespacedKey;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.inventory.ItemStack;
@@ -13,8 +13,6 @@ import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Consumer;
 
 public interface CustomItem extends Registrable, ComponentHolder<CustomItem> {
