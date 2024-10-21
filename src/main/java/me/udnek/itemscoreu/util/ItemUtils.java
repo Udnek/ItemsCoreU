@@ -85,9 +85,11 @@ public class ItemUtils {
             iterateTroughRecipesChoosing(consumer, new Predicate<RecipeChoice>() {
                 @Override
                 public boolean test(RecipeChoice recipeChoice) {
-                    if (!(recipeChoice instanceof RecipeChoice.ExactChoice exactChoice)) return false;
-                    List<ItemStack> choices = exactChoice.getChoices();
-                    return choices.stream().anyMatch(choice -> customItem.isThisItem(choice));
+                    if (recipeChoice instanceof RecipeChoice.MaterialChoice materialChoice)
+                        return materialChoice.getChoices().stream().anyMatch(choice -> customItem.isThisItem(new ItemStack(choice)));
+                    if (recipeChoice instanceof RecipeChoice.ExactChoice exactChoice)
+                        return exactChoice.getChoices().stream().anyMatch(choice -> customItem.isThisItem(choice));
+                    return false;
                 }
             });
         }

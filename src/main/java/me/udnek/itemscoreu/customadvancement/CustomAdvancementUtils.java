@@ -23,8 +23,6 @@ public class CustomAdvancementUtils {
         ConstructableCustomAdvancement advancement = new ConstructableCustomAdvancement(key);
         advancement.addCriterion(AdvancementCriterion.INVENTORY_CHANGE.create(itemStack));
         CustomAdvancementDisplayBuilder display = new CustomAdvancementDisplayBuilder(itemStack);
-        //LogUtils.log(itemStack.displayName());
-        //LogUtils.log(JSONComponentSerializer.json().serialize(ItemUtils.getDisplayName(itemStack)));
         display.title(ItemUtils.getDisplayName(itemStack));
         advancement.display(display);
         return advancement;

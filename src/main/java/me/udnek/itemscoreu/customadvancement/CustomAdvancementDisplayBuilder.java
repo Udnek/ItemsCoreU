@@ -17,8 +17,8 @@ import java.util.Optional;
 public class CustomAdvancementDisplayBuilder {
     @NotNull ItemStack icon;
     @Nullable String background;
-    @Nullable Component title;
-    @Nullable Component description;
+    @Nullable net.kyori.adventure.text.Component title;
+    @Nullable net.kyori.adventure.text.Component description;
     @NotNull AdvancementDisplay.Frame frame = AdvancementDisplay.Frame.TASK;
     boolean showToast = true;
     boolean announceToChat = true;
@@ -46,29 +46,19 @@ public class CustomAdvancementDisplayBuilder {
     public @NotNull CustomAdvancementDisplayBuilder y(@Nullable Float y){
         this.y = y; return this;
     }
-    public @NotNull CustomAdvancementDisplayBuilder title(@Nullable Component component){
-        title = component; return this;
-    }
     public @NotNull CustomAdvancementDisplayBuilder title(@Nullable net.kyori.adventure.text.Component component){
-        if (component == null) title = null;
-        else title = CraftChatMessage.fromJSON(JSONComponentSerializer.json().serialize(component));
-        return this;
+        title = component;return this;
     }
     public @NotNull CustomAdvancementDisplayBuilder title(@Nullable String string){
         if (string == null) return title((net.kyori.adventure.text.Component) null);
-        return title(Component.translatable(string));
-    }
-    public @NotNull CustomAdvancementDisplayBuilder description(@Nullable Component component){
-        description = component; return this;
+        return title(net.kyori.adventure.text.Component.translatable(string));
     }
     public @NotNull CustomAdvancementDisplayBuilder description(@Nullable net.kyori.adventure.text.Component component){
-        if (component == null) description = null;
-        else description = CraftChatMessage.fromJSON(JSONComponentSerializer.json().serialize(component));
-        return this;
+        description = component; return this;
     }
     public @NotNull CustomAdvancementDisplayBuilder description(@Nullable String string){
         if (string == null) return description((net.kyori.adventure.text.Component) null);
-        return description(Component.translatable(string));
+        return description(net.kyori.adventure.text.Component.translatable(string));
     }
     public @NotNull CustomAdvancementDisplayBuilder background(@Nullable String background){
         this.background = background; return this;
@@ -94,8 +84,8 @@ public class CustomAdvancementDisplayBuilder {
         };
         return new DisplayInfo(
                 NmsUtils.toNmsItemStack(icon),
-                title == null ? Component.empty() : title,
-                description == null ? Component.empty() : description,
+                title == null ? Component.empty() : CraftChatMessage.fromJSON(JSONComponentSerializer.json().serialize(title)),
+                description == null ? Component.empty() : CraftChatMessage.fromJSON(JSONComponentSerializer.json().serialize(description)),
                 Optional.ofNullable(background == null ? null : ResourceLocation.parse(background)),
                 type,
                 showToast,
