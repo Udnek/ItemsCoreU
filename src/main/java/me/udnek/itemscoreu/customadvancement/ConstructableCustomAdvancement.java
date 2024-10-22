@@ -42,6 +42,8 @@ public class ConstructableCustomAdvancement implements CustomAdvancementContaine
     public @NotNull ConstructableCustomAdvancement addCriterion(@NotNull String name, @NotNull AdvancementCriterion criterion){
         criteria.put(name, criterion.get()); return this;
     }
+    public void removeCriterion(@NotNull String name){criteria.remove(name);}
+
     public @NotNull ConstructableCustomAdvancement requirementsStrategy(@NotNull RequirementsStrategy strategy){
         this.requirementsStrategy = strategy.get(); return this;
     }
