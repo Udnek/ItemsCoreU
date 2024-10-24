@@ -45,12 +45,7 @@ public abstract class ConstructableCustomItem extends AbstractComponentHolder<Cu
     @Override
     public void afterInitialization() {
         CustomItem.super.afterInitialization();
-        List<Recipe> generatedRecipes = new ArrayList<>();
-        generateRecipes(generatedRecipes::add);
-        if (!generatedRecipes.isEmpty()) recipes = generatedRecipes;
-        for (Recipe recipe : generatedRecipes) {
-            RecipeManager.getInstance().register(recipe);
-        }
+        generateRecipes(this::registerRecipe);
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -142,6 +137,13 @@ public abstract class ConstructableCustomItem extends AbstractComponentHolder<Cu
     public void getRecipes(@NotNull Consumer<@NotNull Recipe> consumer) {
         if (recipes == null) return;
         recipes.forEach(consumer);
+    }
+
+    @Override
+    public void registerRecipe(@NotNull Recipe recipe) {
+        if (recipes == null) recipes = new ArrayList<>();
+        recipes.add(recipe);
+        RecipeManager.getInstance().register(recipe);
     }
 
     protected void generateRecipes(@NotNull Consumer<@NotNull Recipe> consumer){}

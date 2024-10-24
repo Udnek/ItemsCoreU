@@ -3,6 +3,7 @@ package me.udnek.itemscoreu.customitem;
 import com.google.common.base.Preconditions;
 import me.udnek.itemscoreu.customcomponent.AbstractComponentHolder;
 import me.udnek.itemscoreu.customevent.CustomItemGeneratedEvent;
+import me.udnek.itemscoreu.customrecipe.RecipeManager;
 import me.udnek.itemscoreu.util.ItemUtils;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
@@ -46,14 +47,14 @@ public class VanillaBasedCustomItem extends AbstractComponentHolder<CustomItem> 
 
     @Override
     public void getRecipes(@NotNull Consumer<@NotNull Recipe> consumer) {
-        ItemStack item = getItem();
-        List<Recipe> rawRecipes = Bukkit.getRecipesFor(item);
-        for (Recipe recipe : rawRecipes) {
-            if (ItemUtils.isSameIds(recipe.getResult(), item)) {
-                consumer.accept(recipe);
-            }
-        }
+        RecipeManager.getInstance().getRecipesAsResult(this.getItem(), consumer);
     }
+
+    @Override
+    public void registerRecipe(@NotNull Recipe recipe) {
+        RecipeManager.getInstance().register(recipe);
+    }
+
     @Override
     public void initialize(@NotNull Plugin plugin) {
         Preconditions.checkArgument(id == null, "Item already initialized!");

@@ -60,6 +60,7 @@ public interface CustomItem extends Registrable, ComponentHolder<CustomItem> {
     @NotNull String getId();
     @NotNull ItemStack getItem();
     void getRecipes(@NotNull Consumer<@NotNull Recipe> consumer);
+    void registerRecipe(@NotNull Recipe recipe);
 
     ///////////////////////////////////////////////////////////////////////////
     // EVENTS
