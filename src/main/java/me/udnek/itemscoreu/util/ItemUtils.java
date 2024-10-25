@@ -53,32 +53,6 @@ public class ItemUtils {
     }
 
     @Deprecated
-    public static void getRecipesOfItemStack(@NotNull ItemStack itemStack, @NotNull Consumer<Recipe> consumer){
-        if (CustomItem.isCustom(itemStack)){
-            CustomItem customItem = CustomItem.get(itemStack);
-            customItem.getRecipes(consumer);
-        }
-        else {
-            // FIXED DURABILITY BUG
-            if (itemStack.hasItemMeta()){
-                ItemMeta itemMeta = itemStack.getItemMeta();
-                if (itemMeta instanceof Damageable damageable){
-                    damageable.setDamage(0);
-                    itemStack = itemStack.clone();
-                    itemStack.setItemMeta(damageable);
-                }
-            }
-
-            List<Recipe> rawRecipes = Bukkit.getRecipesFor(itemStack);
-            for (Recipe recipe : rawRecipes) {
-                if (!(CustomItem.isCustom(recipe.getResult()))) {
-                    consumer.accept(recipe);
-                }
-            }
-        }
-    }
-
-    @Deprecated
     public static void getItemInRecipesUsages(@NotNull ItemStack itemStack, @NotNull Consumer<Recipe> consumer){
         if (CustomItem.isCustom(itemStack)){
             CustomItem customItem = CustomItem.get(itemStack);

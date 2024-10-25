@@ -1,13 +1,17 @@
 package me.udnek.itemscoreu.customrecipe;
 
 import com.google.common.base.Preconditions;
+import me.udnek.itemscoreu.customitem.CustomItem;
 import me.udnek.itemscoreu.util.ItemUtils;
 import me.udnek.itemscoreu.util.LogUtils;
+import me.udnek.itemscoreu.util.VanillaItemManager;
 import net.kyori.adventure.key.Keyed;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
+import org.bukkit.inventory.meta.Damageable;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -39,8 +43,28 @@ public class RecipeManager {
         }
     }
     public void getRecipesAsResult(@NotNull ItemStack itemStack, @NotNull Consumer<Recipe> consumer){
+        if (CustomItem.isCustom(itemStack) && !VanillaItemManager.isReplaced(itemStack)){
+            CustomItem customItem = CustomItem.get(itemStack);
+            customItem.getRecipes(consumer);
+        }
+        else {
+            // FIXED DURABILITY BUG
+            if (itemStack.hasItemMeta()){
+                if (itemStack.getItemMeta() instanceof Damageable damageable){
+                    damageable.setDamage(0);
+                    itemStack = itemStack.clone();
+                    itemStack.setItemMeta(damageable);
+                }
+            }
+
+            List<Recipe> rawRecipes = Bukkit.getRecipesFor(itemStack);
+            for (Recipe recipe : rawRecipes) {
+                if (!ItemUtils.isSameIds(recipe.getResult(), itemStack)) continue;
+                consumer.accept(recipe);
+            }
+        }
+
         Set<Recipe> recipes = new HashSet<>();
-        ItemUtils.getRecipesOfItemStack(itemStack, recipes::add);
         for (CustomRecipe<?> recipe : customRecipes.values()) {
             if (recipe.isResult(itemStack)) recipes.add(recipe);
         }
