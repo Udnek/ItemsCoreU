@@ -43,9 +43,10 @@ public class RecipeManager {
         }
     }
     public void getRecipesAsResult(@NotNull ItemStack itemStack, @NotNull Consumer<Recipe> consumer){
+        Set<Recipe> recipes = new HashSet<>();
         if (CustomItem.isCustom(itemStack) && !VanillaItemManager.isReplaced(itemStack)){
             CustomItem customItem = CustomItem.get(itemStack);
-            customItem.getRecipes(consumer);
+            customItem.getRecipes(recipes::add);
         }
         else {
             // FIXED DURABILITY BUG
@@ -60,11 +61,11 @@ public class RecipeManager {
             List<Recipe> rawRecipes = Bukkit.getRecipesFor(itemStack);
             for (Recipe recipe : rawRecipes) {
                 if (!ItemUtils.isSameIds(recipe.getResult(), itemStack)) continue;
-                consumer.accept(recipe);
+                recipes.add(recipe);
             }
         }
 
-        Set<Recipe> recipes = new HashSet<>();
+
         for (CustomRecipe<?> recipe : customRecipes.values()) {
             if (recipe.isResult(itemStack)) recipes.add(recipe);
         }
