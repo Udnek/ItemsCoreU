@@ -7,19 +7,19 @@ import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.AdvancementRequirements;
 import net.minecraft.advancements.Criterion;
 import net.minecraft.resources.ResourceLocation;
+import org.bukkit.NamespacedKey;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Supplier;
+import java.util.*;
 
 public class ConstructableCustomAdvancement implements CustomAdvancementContainer {
-    private boolean registered = false;
-    @Nullable CustomAdvancementContainer parent;
-    private AdvancementHolder itself;
-    @NotNull Key key;
-    @Nullable CustomAdvancementDisplayBuilder display;
+    protected boolean registered = false;
+    protected @Nullable CustomAdvancementContainer parent;
+    protected AdvancementHolder itself;
+    protected @NotNull Key key;
+    protected @Nullable CustomAdvancementDisplayBuilder display;
+    protected Set<@NotNull CustomAdvancementContainer> fakes = new HashSet<>();
 
     @NotNull Map<String, Criterion<?>> criteria = new HashMap<>();
     @NotNull AdvancementRequirements.Strategy requirementsStrategy = AdvancementRequirements.Strategy.AND;
@@ -27,30 +27,50 @@ public class ConstructableCustomAdvancement implements CustomAdvancementContaine
     public ConstructableCustomAdvancement(@NotNull Key key){
         this.key = key;
     }
-    public @NotNull ConstructableCustomAdvancement key(@NotNull Key key){
-        this.key = key; return this;
+
+    public ConstructableCustomAdvancement(@NotNull Key key, @NotNull ConstructableCustomAdvancement other){
+        this(key);
+        this.parent = other.parent;
+        this.display= other.display == null ? null : other.display.clone();
+        this.criteria = new HashMap<>(other.criteria);
+        this.requirementsStrategy = other.requirementsStrategy;
     }
-    public @NotNull ConstructableCustomAdvancement display(@Nullable CustomAdvancementDisplayBuilder display){
-        this.display = display; return this;
+
+    @Override
+    public @NotNull CustomAdvancementContainer copy(@NotNull Key key) {
+        return new ConstructableCustomAdvancement(key, this);
     }
-    public @NotNull ConstructableCustomAdvancement parent(@Nullable CustomAdvancementContainer parent){
-        this.parent = parent; return this;
+
+    public void key(@NotNull Key key){
+        this.key = key;
     }
-    public @NotNull ConstructableCustomAdvancement addCriterion(@NotNull AdvancementCriterion criterion){
-        return addCriterion(Integer.toString(criteria.size()), criterion);
+    public void display(@Nullable CustomAdvancementDisplayBuilder display){
+        this.display = display;
     }
-    public @NotNull ConstructableCustomAdvancement addCriterion(@NotNull String name, @NotNull AdvancementCriterion criterion){
-        criteria.put(name, criterion.get()); return this;
+    @Override
+    public void setParent(@Nullable CustomAdvancementContainer parent){
+        this.parent = parent;
+    }
+
+    public void addFakeParent(@NotNull CustomAdvancementContainer parent){
+        CustomAdvancementContainer fake = this.copy(NamespacedKey.fromString(key.asString() + "_fake"));
+        fake.setParent(parent);
+        fake.getDisplay().showToast(false).announceToChat(false);
+        fakes.add(fake);
+    }
+    public void addCriterion(@NotNull AdvancementCriterion criterion){
+        addCriterion(Integer.toString(criteria.size()), criterion);
+    }
+    public void addCriterion(@NotNull String name, @NotNull AdvancementCriterion criterion){
+        criteria.put(name, criterion.get());
     }
     public void removeCriterion(@NotNull String name){criteria.remove(name);}
 
-    public @NotNull ConstructableCustomAdvancement requirementsStrategy(@NotNull RequirementsStrategy strategy){
-        this.requirementsStrategy = strategy.get(); return this;
-    }
+    public void requirementsStrategy(@NotNull RequirementsStrategy strategy){requirementsStrategy = strategy.get();}
     @Override
-    public @Nullable CustomAdvancementDisplayBuilder getDisplay() {
-        return display;
-    }
+    public @Nullable CustomAdvancementDisplayBuilder getDisplay() {return display;}
+    @Override
+    public @NotNull Set<@NotNull CustomAdvancementContainer> getFakes() {return fakes;}
 
     @Override
     public @NotNull AdvancementHolder get(){
@@ -73,19 +93,5 @@ public class ConstructableCustomAdvancement implements CustomAdvancementContaine
         Preconditions.checkArgument(!registered, "Advancement already registered!");
         CustomAdvancementUtils.register(this);
         registered = true;
-    }
-
-    public enum RequirementsStrategy implements Supplier<AdvancementRequirements.Strategy> {
-        AND(AdvancementRequirements.Strategy.AND),
-        OR(AdvancementRequirements.Strategy.OR);
-
-        private final AdvancementRequirements.Strategy strategy;
-        RequirementsStrategy(AdvancementRequirements.Strategy strategy){
-            this.strategy = strategy;
-        }
-        @Override
-        public AdvancementRequirements.Strategy get() {
-            return strategy;
-        }
     }
 }

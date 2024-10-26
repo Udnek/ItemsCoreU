@@ -30,6 +30,20 @@ public class CustomAdvancementDisplayBuilder {
         this.icon = icon;
     }
 
+    public @NotNull CustomAdvancementDisplayBuilder clone(){
+        CustomAdvancementDisplayBuilder displayBuilder = new CustomAdvancementDisplayBuilder(icon.clone());
+        displayBuilder.background = this.background;
+        displayBuilder.title = this.title;
+        displayBuilder.description = this.description;
+        displayBuilder.frame = this.frame;
+        displayBuilder.showToast = this.showToast;
+        displayBuilder.announceToChat = this.announceToChat;
+        displayBuilder.hidden=  this.hidden;
+        displayBuilder.x = this.x;
+        displayBuilder.y = this.y;
+        return displayBuilder;
+    }
+
     public @NotNull CustomAdvancementDisplayBuilder defaultSettings(){
         return hidden(false).showToast(true).announceToChat(true).background(null);
     }

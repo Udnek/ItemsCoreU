@@ -128,9 +128,9 @@ public abstract class ConstructableCustomItem extends AbstractComponentHolder<Cu
         return itemStack.clone();
     }
 
-    protected @NotNull NamespacedKey getRecipeNamespace(int recipeNumber) {
-        NamespacedKey id = NamespacedKey.fromString(getId());
-        return new NamespacedKey(id.getNamespace(), getRawId() + "_" + recipeNumber);
+    @Override
+    public @NotNull NamespacedKey getNewRecipeKey() {
+        return NamespacedKey.fromString(getId() + "_" + (recipes != null ? Integer.toString(recipes.size()) : "0"));
     }
 
     @Override
