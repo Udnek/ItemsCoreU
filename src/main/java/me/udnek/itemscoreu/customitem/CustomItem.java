@@ -14,6 +14,7 @@ import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.security.Key;
 import java.util.function.Consumer;
 
 public interface CustomItem extends Registrable, ComponentHolder<CustomItem> {
@@ -52,7 +53,7 @@ public interface CustomItem extends Registrable, ComponentHolder<CustomItem> {
     default boolean isThisItem(@Nullable ItemStack itemStack){
         return get(itemStack) == this;
     }
-
+    @NotNull NamespacedKey getNewRecipeKey();
     ///////////////////////////////////////////////////////////////////////////
     // PROPERTIES
     ///////////////////////////////////////////////////////////////////////////

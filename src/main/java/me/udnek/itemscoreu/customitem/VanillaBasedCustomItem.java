@@ -14,6 +14,7 @@ import org.bukkit.inventory.Recipe;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -43,6 +44,13 @@ public class VanillaBasedCustomItem extends AbstractComponentHolder<CustomItem> 
         // TODO: 8/19/2024 MAKE ITEM MODIFICATORS
         Preconditions.checkArgument(itemStack.getType() == material, "Can not create from different material!");
         return getItem();
+    }
+
+    @Override
+    public @NotNull NamespacedKey getNewRecipeKey() {
+        List<Recipe> recipes = new ArrayList<>();
+        getRecipes(recipes::add);
+        return NamespacedKey.fromString(getId() + "_" + recipes.size());
     }
 
     @Override
