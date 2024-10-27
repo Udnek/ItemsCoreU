@@ -9,6 +9,9 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 public class MappedCustomRegistry<T extends Registrable> implements CustomRegistry<T>{
 
@@ -39,11 +42,16 @@ public class MappedCustomRegistry<T extends Registrable> implements CustomRegist
     public @NotNull Collection<String> getIds() {
         return map.keySet();
     }
+    protected void logRegistered(T custom){
+        LogUtils.pluginLog("("+category+") " + custom.getId());
+    }
+
+    @Override
+    public void getAll(@NotNull Consumer<T> consumer) {
+        map.forEach((s, t) -> consumer.accept(t));
+    }
     @Override
     public @NotNull Collection<T> getAll() {
         return map.values();
-    }
-    protected void logRegistered(T custom){
-        LogUtils.pluginLog("("+category+") " + custom.getId());
     }
 }

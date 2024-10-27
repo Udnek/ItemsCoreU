@@ -98,8 +98,8 @@ public class CustomAdvancementUtils {
             CustomAdvancementDisplayBuilder fakeDisplay = fake.getDisplay();
             if (fakeDisplay != null){
                 System.out.println("settingFake: " + displayInfo.getX() + " "  + displayInfo.getY());
-                fakeDisplay.x(displayInfo.getX());
-                fakeDisplay.y(displayInfo.getY());
+                //fakeDisplay.x(displayInfo.getX());
+                //fakeDisplay.y(displayInfo.getY());
             }
             register(fake);
         }
