@@ -2,8 +2,6 @@ package me.udnek.itemscoreu.customadvancement;
 
 import com.google.common.collect.ImmutableMap;
 import it.unimi.dsi.fastutil.Pair;
-import it.unimi.dsi.fastutil.ints.IntIntMutablePair;
-import it.unimi.dsi.fastutil.objects.ObjectObjectImmutablePair;
 import it.unimi.dsi.fastutil.objects.ObjectObjectMutablePair;
 import me.udnek.itemscoreu.util.ItemUtils;
 import me.udnek.itemscoreu.util.NMS.Reflex;
@@ -16,10 +14,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v1_21_R1.CraftServer;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
-import org.joml.Vector2i;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -77,6 +73,7 @@ public class CustomAdvancementUtils {
             }
         }
         putToPositions(advancementContainer);
+
 
         for (AdvancementHolder advancement : advancements.values()) {
             DisplayInfo displayInfo = (DisplayInfo) Reflex.getFieldValue(advancement.value(), "display", Optional.class).orElse(null);
