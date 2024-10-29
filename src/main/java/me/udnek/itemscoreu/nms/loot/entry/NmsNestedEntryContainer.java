@@ -5,7 +5,7 @@ import me.udnek.itemscoreu.nms.NmsUtils;
 import me.udnek.itemscoreu.nms.loot.table.NmsDefaultLootTableContainer;
 import me.udnek.itemscoreu.nms.loot.table.NmsLootTableContainer;
 import me.udnek.itemscoreu.nms.loot.util.NmsFields;
-import me.udnek.itemscoreu.util.NMS.Reflex;
+import me.udnek.itemscoreu.util.Reflex;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.entries.LootPoolSingletonContainer;

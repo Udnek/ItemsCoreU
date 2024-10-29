@@ -4,8 +4,10 @@ import me.udnek.itemscoreu.customequipmentslot.AbstractCustomEquipmentSlot;
 import me.udnek.itemscoreu.customequipmentslot.SingleSlot;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.EquipmentSlotGroup;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
 
@@ -29,17 +31,19 @@ public class MainHandSlot extends AbstractCustomEquipmentSlot implements SingleS
     }
 
     @Override
-    public EquipmentSlotGroup getVanillaAlternative() {return EquipmentSlotGroup.MAINHAND;}
+    public EquipmentSlotGroup getVanillaGroup() {return EquipmentSlotGroup.MAINHAND;}
 
     @Override
-    public void getAllSlots(@NotNull Entity entity, @NotNull Consumer<@NotNull Integer> consumer) {}
+    public @Nullable EquipmentSlot getVanillaSlot() {return EquipmentSlot.HAND;}
+
+    @Override
+    public void getAllSlots(@NotNull Entity entity, @NotNull Consumer<@NotNull Integer> consumer) {
+        consumer.accept(getSlot(entity));
+    }
 
     @Override
     public @NotNull Integer getSlot(@NotNull Entity entity) {
-        if (entity instanceof Player player){
-            return player.getInventory().getHeldItemSlot();
-        } else {
-            return 98;
-        }
+        if (entity instanceof Player player) return player.getInventory().getHeldItemSlot();
+        else return 98;
     }
 }

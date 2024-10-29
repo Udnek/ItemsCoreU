@@ -1,11 +1,14 @@
 package me.udnek.itemscoreu.nms;
 
 import com.mojang.datafixers.util.Either;
-import me.udnek.itemscoreu.util.NMS.Reflex;
+import me.udnek.itemscoreu.util.Reflex;
+import net.kyori.adventure.key.Key;
+import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.ReloadableServerRegistries;
+import net.minecraft.server.dedicated.DedicatedServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -18,6 +21,7 @@ import net.minecraft.world.level.storage.loot.entries.LootPoolSingletonContainer
 import net.minecraft.world.level.storage.loot.entries.NestedLootTable;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_21_R1.CraftLootTable;
 import org.bukkit.craftbukkit.v1_21_R1.CraftServer;
@@ -37,6 +41,15 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public class NmsUtils {
+
+    // REGISTRY
+    public static <T> Registry<T> getRegistry(ResourceKey<Registry<T>> registry){
+        DedicatedServer server = ((CraftServer) Bukkit.getServer()).getServer();
+        return server.registryAccess().registry(registry).orElse(null);
+    }
+    public static ResourceLocation getResourceLocation(Key key){
+        return ResourceLocation.parse(key.asString());
+    }
 
     // ITEM
     public static net.minecraft.world.item.ItemStack toNmsItemStack(ItemStack itemStack){
@@ -61,6 +74,11 @@ public class NmsUtils {
     }
 
     ///////////////////////////////////////////////////////////////////////////
+    // ENCHANTMENT
+    ///////////////////////////////////////////////////////////////////////////
+
+
+    ///////////////////////////////////////////////////////////////////////////
     // LOOT
     ///////////////////////////////////////////////////////////////////////////
     public static LootTable toNmsLootTable(org.bukkit.loot.LootTable lootTable){
@@ -76,9 +94,6 @@ public class NmsUtils {
         }
         return entries;
     }
-/*    public static LootPoolEntryContainer getEntries(LootPool pool){
-        return (LootPoolEntryContainer) Reflex.getFieldValue(pool, "entries");
-    }*/
     public static LootPoolEntry getEntry(LootPoolSingletonContainer container){
         return ((LootPoolEntry) Reflex.getFieldValue(container, "entry"));
     }
@@ -122,7 +137,7 @@ public class NmsUtils {
         getPossibleLoot(getEntry(container), consumer);
     }
     public static void getPossibleLoot(LootPoolEntry entry, Consumer<net.minecraft.world.item.ItemStack> consumer){
-        ItemConsumer localConsumer = new ItemConsumer();
+        NmsItemConsumer localConsumer = new NmsItemConsumer();
         try {entry.createItemStack(localConsumer, Nms.GENERIC_LOOT_CONTEXT);
         } catch (Exception ignored) {}
 

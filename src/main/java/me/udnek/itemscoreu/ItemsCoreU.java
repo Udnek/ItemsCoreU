@@ -1,5 +1,6 @@
 package me.udnek.itemscoreu;
 
+import me.udnek.itemscoreu.customattribute.CustomAttributeCommand;
 import me.udnek.itemscoreu.customblock.CustomBlock;
 import me.udnek.itemscoreu.customblock.CustomBlockListener;
 import me.udnek.itemscoreu.customentity.CustomEntityCommand;
@@ -22,6 +23,7 @@ import me.udnek.itemscoreu.serializabledata.SerializableDataManager;
 import me.udnek.itemscoreu.util.InitializationProcess;
 import me.udnek.itemscoreu.util.NMS.NMSTest;
 import me.udnek.itemscoreu.util.VanillaItemManager;
+import net.minecraft.world.item.enchantment.Enchantment;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -49,11 +51,13 @@ public final class ItemsCoreU extends JavaPlugin implements ResourcePackablePlug
         Bukkit.getPluginManager().registerEvents(new LootTableUtils(), this);
         RecipeManager.getInstance();
 
+
         // COMMANDS
         getCommand("giveu").setExecutor(new CustomItemCommand());
         getCommand("summonu").setExecutor(new CustomEntityCommand());
         getCommand("resourcepacku").setExecutor(new ResourcePackCommand());
         getCommand("helpu").setExecutor(CustomHelpCommand.getInstance());
+        getCommand("attributeu").setExecutor(new CustomAttributeCommand());
 
         // TICKERS
         CustomEntityManager.getInstance().start(this);
@@ -61,8 +65,9 @@ public final class ItemsCoreU extends JavaPlugin implements ResourcePackablePlug
         customHudTicker.start(this);
 
 
-        NMSTest.editItem();
-        NMSTest.testEnchantment();
+        //NMSTest.editItem();
+        //NMSTest.testEnchantment();
+        //NMSTest.editEnchantment();
         
         // TODO: 8/19/2024 REMOVE
         //NMSTest.registerAttribute("test", 0, 0, 8);

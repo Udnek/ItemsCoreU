@@ -1,7 +1,7 @@
 package me.udnek.itemscoreu.customattribute;
 
 import me.udnek.itemscoreu.customregistry.AbstractRegistrable;
-import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.jetbrains.annotations.NotNull;
 
 public class ConstructableCustomAttribute extends AbstractRegistrable implements CustomAttribute{
@@ -31,7 +31,7 @@ public class ConstructableCustomAttribute extends AbstractRegistrable implements
     public double getMaximum() {return maxValue;}
 
     @Override
-    public double calculate(Entity entity){
+    public double calculate(@NotNull LivingEntity entity){
         return CustomAttributeUtils.calculate(this, entity);
     }
 

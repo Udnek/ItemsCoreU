@@ -9,8 +9,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public class MappedCustomRegistry<T extends Registrable> implements CustomRegistry<T>{

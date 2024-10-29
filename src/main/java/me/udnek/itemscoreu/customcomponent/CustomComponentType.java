@@ -5,6 +5,7 @@ import me.udnek.itemscoreu.customblock.CustomBlock;
 import me.udnek.itemscoreu.customcomponent.instance.CustomItemAttributesComponent;
 import me.udnek.itemscoreu.customcomponent.instance.RightClickableBlock;
 import me.udnek.itemscoreu.customcomponent.instance.RightClickableItem;
+import me.udnek.itemscoreu.customcomponent.instance.VanillaAttributesComponent;
 import me.udnek.itemscoreu.customitem.CustomItem;
 import me.udnek.itemscoreu.customregistry.CustomRegistries;
 import me.udnek.itemscoreu.customregistry.Registrable;
@@ -20,6 +21,9 @@ public interface CustomComponentType<HolderType, Component extends CustomCompone
 
     CustomComponentType<CustomBlock, RightClickableBlock>
             RIGHT_CLICKABLE_BLOCK = register(new ConstructableComponentType("right_clickable_block", RightClickableBlock.EMPTY));
+
+    CustomComponentType<CustomItem, VanillaAttributesComponent>
+            VANILLA_ATTRIBUTES_ITEM = register(new ConstructableComponentType("vanilla_attributes_item", VanillaAttributesComponent.DEFAULT));
 
     @NotNull Component getDefault();
 

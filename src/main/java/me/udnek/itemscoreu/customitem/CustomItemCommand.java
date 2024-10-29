@@ -1,6 +1,8 @@
 package me.udnek.itemscoreu.customitem;
 
 import me.udnek.itemscoreu.customregistry.CustomRegistries;
+import me.udnek.itemscoreu.customregistry.Registrable;
+import net.minecraft.core.registries.Registries;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -40,14 +42,8 @@ public class CustomItemCommand implements CommandExecutor, TabExecutor {
 
         if (args.length > 1) return new ArrayList<>();
 
-        Collection<String> allIds = CustomRegistries.ITEM.getIds();
-        ArrayList<String> ids = new ArrayList<>();
-
-        for (String id : allIds) {
-            if (id.contains(args[0])){
-                ids.add(id);
-            }
-        }
+        List<String> ids = new ArrayList<>(CustomRegistries.ITEM.getIds());
+        ids.removeIf(id -> !id.contains(args[0]));
 
         return ids;
     }

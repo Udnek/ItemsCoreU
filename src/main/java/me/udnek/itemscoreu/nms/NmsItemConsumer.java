@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class ItemConsumer implements Consumer<ItemStack> {
+public class NmsItemConsumer implements Consumer<ItemStack> {
 
     protected List<ItemStack> itemStacks = new ArrayList<>();
     @Override

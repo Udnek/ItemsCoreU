@@ -1,4 +1,4 @@
-package me.udnek.itemscoreu.nms.loot.util;
+package me.udnek.itemscoreu.nms;
 
 import org.jetbrains.annotations.NotNull;
 

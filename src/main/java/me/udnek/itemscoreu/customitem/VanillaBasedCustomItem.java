@@ -4,18 +4,19 @@ import com.google.common.base.Preconditions;
 import me.udnek.itemscoreu.customcomponent.AbstractComponentHolder;
 import me.udnek.itemscoreu.customevent.CustomItemGeneratedEvent;
 import me.udnek.itemscoreu.customrecipe.RecipeManager;
-import me.udnek.itemscoreu.util.ItemUtils;
 import net.kyori.adventure.text.Component;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
+import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 public class VanillaBasedCustomItem extends AbstractComponentHolder<CustomItem> implements CustomItem{
@@ -43,6 +44,11 @@ public class VanillaBasedCustomItem extends AbstractComponentHolder<CustomItem> 
     public ItemStack getFrom(@NotNull ItemStack itemStack){
         // TODO: 8/19/2024 MAKE ITEM MODIFICATORS
         Preconditions.checkArgument(itemStack.getType() == material, "Can not create from different material!");
+        getItem().editMeta(itemMeta -> {
+            for (Map.Entry<Enchantment, Integer> entry : itemStack.getEnchantments().entrySet()) {
+                itemMeta.addEnchant(entry.getKey(), entry.getValue(), false);
+            }
+        });
         return getItem();
     }
 

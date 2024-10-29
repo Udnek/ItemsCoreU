@@ -1,6 +1,8 @@
 package me.udnek.itemscoreu.util.NMS;
 
 import io.papermc.paper.registry.RegistryKey;
+import me.udnek.itemscoreu.nms.NmsUtils;
+import me.udnek.itemscoreu.util.Reflex;
 import net.minecraft.core.*;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.particles.ParticleOptions;
@@ -22,6 +24,10 @@ import net.minecraft.world.entity.ai.attributes.RangedAttribute;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentEffectComponents;
+import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.item.enchantment.LevelBasedValue;
+import net.minecraft.world.item.enchantment.effects.EnchantmentAttributeEffect;
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v1_21_R1.CraftEquipmentSlot;
 import org.bukkit.craftbukkit.v1_21_R1.CraftServer;
@@ -33,7 +39,9 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.sql.Ref;
 import java.util.IdentityHashMap;
+import java.util.List;
 
 public class NMSTest {
 
@@ -73,11 +81,57 @@ public class NMSTest {
     }
 
 
+
+
+    public static void editEnchantment(){
+        Registry<Enchantment> registry = NmsUtils.getRegistry(Registries.ENCHANTMENT);
+        Enchantment enchantment;
+        DataComponentMap.Builder builder;
+
+        // EFFECT
+        builder = DataComponentMap.builder();
+        EnchantmentAttributeEffect armor = new EnchantmentAttributeEffect(ResourceLocation.withDefaultNamespace("enchantment.protection.armor"), Attributes.ARMOR, LevelBasedValue.perLevel(1, 1), AttributeModifier.Operation.ADD_VALUE);
+        EnchantmentAttributeEffect hp = new EnchantmentAttributeEffect(ResourceLocation.withDefaultNamespace("enchantment.protection.hp"), Attributes.MAX_HEALTH, LevelBasedValue.perLevel(2, 2), AttributeModifier.Operation.ADD_VALUE);
+        builder.set(EnchantmentEffectComponents.ATTRIBUTES, List.of(armor, hp));
+        // ENCHANTMENT
+        enchantment = registry.get(Enchantments.PROTECTION);
+        Reflex.setRecordFieldValue(enchantment, "effects", builder.build());
+
+                // EFFECT
+         builder = DataComponentMap.builder();
+        EnchantmentAttributeEffect damage = new EnchantmentAttributeEffect(ResourceLocation.withDefaultNamespace("enchantment.sharpness.damage"), Attributes.ATTACK_DAMAGE, LevelBasedValue.perLevel(1, 0.5f), AttributeModifier.Operation.ADD_VALUE);
+        builder.set(EnchantmentEffectComponents.ATTRIBUTES, List.of(damage));
+        // ENCHANTMENT
+
+        enchantment = registry.get(Enchantments.SHARPNESS);
+         Reflex.setRecordFieldValue(enchantment, "effects", builder.build());
+
+/*        register(
+                var0,
+                BLAST_PROTECTION,
+                Enchantment.enchantment(
+                        Enchantment.definition(
+                                var3.getOrThrow(ItemTags.ARMOR_ENCHANTABLE),
+                                2, 4, Enchantment.dynamicCost(5, 8),
+                                Enchantment.dynamicCost(13, 8), 4,
+                                new EquipmentSlotGroup[]{EquipmentSlotGroup.ARMOR}))
+                        .exclusiveWith(var2.getOrThrow(EnchantmentTags.ARMOR_EXCLUSIVE))
+                        .withEffect(
+                                EnchantmentEffectComponents.DAMAGE_PROTECTION,
+                                new AddValue(LevelBasedValue.perLevel(2.0F)),
+                                DamageSourceCondition.hasDamageSource(DamageSourcePredicate.Builder.damageType().tag(TagPredicate.is(DamageTypeTags.IS_EXPLOSION)).tag(TagPredicate.isNot(DamageTypeTags.BYPASSES_INVULNERABILITY)))
+                        ).withEffect(
+                                EnchantmentEffectComponents.ATTRIBUTES,
+                                new EnchantmentAttributeEffect(
+                                        ResourceLocation.withDefaultNamespace("enchantment.blast_protection"),
+                                        Attributes.EXPLOSION_KNOCKBACK_RESISTANCE, LevelBasedValue.perLevel(0.15F),
+                                        AttributeModifier.Operation.ADD_VALUE)));*/
+    }
+
     // TODO: 8/18/2024 WRAP
     public static void testEnchantment(){
-
-        DedicatedServer server = ((CraftServer) Bukkit.getServer()).getServer();
-        Registry<Enchantment> registry = server.registryAccess().registry(Registries.ENCHANTMENT).orElse(null);
+        
+        Registry<Enchantment> registry = NmsUtils.getRegistry(Registries.ENCHANTMENT);
         // unfreeze
         Reflex.setFieldValue(registry, "frozen", false);
         Reflex.setFieldValue(registry, "unregisteredIntrusiveHolders", new IdentityHashMap<>());
@@ -89,7 +143,7 @@ public class NMSTest {
         HolderSet<Enchantment> exclusiveSet = HolderSet.direct();
         DataComponentMap effects = DataComponentMap.builder().build();
 
-        Registry<Item> items = server.registryAccess().registry(Registries.ITEM).orElseThrow();
+        Registry<Item> items = NmsUtils.getRegistry(Registries.ITEM);
         HolderSet.Named<Item> supportedItems = items.getTag(ItemTags.SWORD_ENCHANTABLE).orElse(null);
         HolderSet.Named<Item> primaryItems = items.getTag(ItemTags.SWORD_ENCHANTABLE).orElse(null);
 

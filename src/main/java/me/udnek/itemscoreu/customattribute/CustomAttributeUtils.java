@@ -3,25 +3,26 @@ package me.udnek.itemscoreu.customattribute;
 import it.unimi.dsi.fastutil.ints.IntArraySet;
 import me.udnek.itemscoreu.customcomponent.CustomComponentType;
 import me.udnek.itemscoreu.customequipmentslot.CustomEquipmentSlot;
+import me.udnek.itemscoreu.customequipmentslot.SingleSlot;
 import me.udnek.itemscoreu.customitem.CustomItem;
 import me.udnek.itemscoreu.customregistry.CustomRegistries;
-import org.bukkit.entity.Entity;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryHolder;
+import org.bukkit.Material;
+import org.bukkit.block.data.Waterlogged;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Mob;
+import org.bukkit.inventory.*;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class CustomAttributeUtils {
 
     private final CustomAttribute attribute;
     private final Collection<CustomEquipmentSlot> searchTroughSlots;
-    private final Entity entity;
+    private final LivingEntity entity;
     private double amount;
 
-    private CustomAttributeUtils(CustomAttribute attribute, Collection<CustomEquipmentSlot> searchTroughSlots, Entity entity){
+    private CustomAttributeUtils(CustomAttribute attribute, Collection<CustomEquipmentSlot> searchTroughSlots, LivingEntity entity){
         this.attribute = attribute;
         this.searchTroughSlots = searchTroughSlots;
         this.amount = attribute.getDefaultValue();
@@ -29,19 +30,39 @@ public class CustomAttributeUtils {
     }
 
     private void calculate(){
-        if (!(entity instanceof InventoryHolder inventoryHolder)) return;
-        Inventory inventory = inventoryHolder.getInventory();
+
+        Map<@NotNull Integer, @NotNull ItemStack> slots = new HashMap<>();
+
+        if (entity instanceof InventoryHolder inventoryHolder){
+            Inventory inventory = inventoryHolder.getInventory();
+            for (CustomEquipmentSlot equipmentSlot : searchTroughSlots) {
+                equipmentSlot.getAllSlots(entity, integer ->
+                {
+                    ItemStack item = inventory.getItem(integer);
+                    if (item == null) return;
+                    slots.put(integer, item);
+                });
+            }
+        } else if (entity instanceof Mob mob){
+            EntityEquipment equipment = mob.getEquipment();
+            for (CustomEquipmentSlot equipmentSlot : searchTroughSlots) {
+                if (!(equipmentSlot instanceof SingleSlot singleSlot)) continue;
+                EquipmentSlot vanillaSlot = singleSlot.getVanillaSlot();
+                if (vanillaSlot == null) continue;
+                ItemStack item = equipment.getItem(vanillaSlot);
+                Integer slot = singleSlot.getSlot(entity);
+                if (slot == null || item.getType() == Material.AIR) continue;
+                slots.put(slot, item);
+                // TODO REPLACE WHEN API IS READY
+                
+            }
+        } else {return;}
 
         double multiplyBase = 1;
         double multiply = 1;
 
-        Set<Integer> allSlots = new IntArraySet();
-        for (CustomEquipmentSlot equipmentSlot : searchTroughSlots) {
-            equipmentSlot.getAllSlots(entity, allSlots::add);
-        }
-
-        for (int slot : allSlots) {
-            CustomItem customItem = CustomItem.get(inventory.getItem(slot));
+        for (Map.Entry<@NotNull Integer, @NotNull ItemStack> slotEntry : slots.entrySet()) {
+            CustomItem customItem = CustomItem.get(slotEntry.getValue());
             if (customItem == null) continue;
             CustomAttributesContainer container = customItem.getComponentOrDefault(CustomComponentType.CUSTOM_ITEM_ATTRIBUTES).getAttributes(customItem);
             if (container.isEmpty()) continue;
@@ -50,7 +71,7 @@ public class CustomAttributeUtils {
                 if (entry.getKey() != attribute) continue;
 
                 for (CustomAttributeModifier modifier : entry.getValue()) {
-                    if (!modifier.getEquipmentSlot().isAppropriateSlot(entity, slot)) continue;
+                    if (!modifier.getEquipmentSlot().isAppropriateSlot(entity, slotEntry.getKey())) continue;
 
                     switch (modifier.getOperation()){
                         case ADD_NUMBER: amount += modifier.getAmount(); break;
@@ -64,17 +85,16 @@ public class CustomAttributeUtils {
         amount *= multiplyBase;
         amount *= multiply;
 
-        amount = Math.max(amount, attribute.getMinimum());
-        amount = Math.min(amount, attribute.getMaximum());
+        amount = Math.clamp(amount, attribute.getMinimum(), attribute.getMaximum());
     }
 
-    public static double calculate(CustomAttribute attribute, Collection<CustomEquipmentSlot> slots, Entity entity){
+    public static double calculate(@NotNull CustomAttribute attribute, @NotNull Collection<CustomEquipmentSlot> slots, @NotNull LivingEntity entity){
         CustomAttributeUtils attributeUtils = new CustomAttributeUtils(attribute, slots, entity);
         attributeUtils.calculate();
         return attributeUtils.amount;
     }
 
-    public static double calculate(CustomAttribute attribute, Entity entity){
+    public static double calculate(@NotNull CustomAttribute attribute, @NotNull LivingEntity entity){
         return calculate(attribute, CustomRegistries.EQUIPMENT_SLOT.getAll(), entity);
     }
 }

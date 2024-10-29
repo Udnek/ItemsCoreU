@@ -2,14 +2,16 @@ package me.udnek.itemscoreu.nms;
 
 import com.mojang.datafixers.util.Pair;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import me.udnek.itemscoreu.customenchantment.NmsEnchantmentContainer;
 import me.udnek.itemscoreu.nms.loot.entry.NmsCustomLootEntryBuilder;
 import me.udnek.itemscoreu.nms.loot.table.NmsDefaultLootTableContainer;
 import me.udnek.itemscoreu.nms.loot.table.NmsLootTableContainer;
 import me.udnek.itemscoreu.util.LogUtils;
-import me.udnek.itemscoreu.util.NMS.Reflex;
+import me.udnek.itemscoreu.util.Reflex;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
+import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
 import net.minecraft.network.protocol.common.custom.GameTestAddMarkerDebugPayload;
@@ -55,6 +57,7 @@ import org.bukkit.craftbukkit.v1_21_R1.generator.structure.CraftStructure;
 import org.bukkit.craftbukkit.v1_21_R1.inventory.CraftItemStack;
 import org.bukkit.craftbukkit.v1_21_R1.map.CraftMapCursor;
 import org.bukkit.craftbukkit.v1_21_R1.util.CraftLocation;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -105,6 +108,15 @@ public class Nms {
     public ItemStack getSpawnEggByType(EntityType type){
         net.minecraft.world.entity.EntityType<?> aClass = CraftEntityType.bukkitToMinecraft(type);
         return CraftItemStack.asNewCraftStack(SpawnEggItem.byId(aClass));
+    }
+    ///////////////////////////////////////////////////////////////////////////
+    // ENCHANTMENT
+    ///////////////////////////////////////////////////////////////////////////
+
+    public @NotNull NmsEnchantmentContainer getEnchantment(@NotNull Enchantment bukkitEnchantment){
+        Registry<net.minecraft.world.item.enchantment.Enchantment> registry = NmsUtils.getRegistry(Registries.ENCHANTMENT);
+        net.minecraft.world.item.enchantment.Enchantment enchantment = registry.get(NmsUtils.getResourceLocation(bukkitEnchantment.getKey()));
+        return new NmsEnchantmentContainer(enchantment);
     }
 
     ///////////////////////////////////////////////////////////////////////////

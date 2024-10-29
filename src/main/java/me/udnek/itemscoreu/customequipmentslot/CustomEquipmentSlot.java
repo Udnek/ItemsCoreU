@@ -8,6 +8,7 @@ import me.udnek.itemscoreu.customregistry.CustomRegistries;
 import me.udnek.itemscoreu.customregistry.Registrable;
 import net.kyori.adventure.translation.Translatable;
 import org.bukkit.entity.Entity;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.EquipmentSlotGroup;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -19,28 +20,34 @@ import java.util.function.Predicate;
 public interface CustomEquipmentSlot extends Translatable, Registrable, Predicate<CustomEquipmentSlot> {
 
     SingleSlot MAIN_HAND = (SingleSlot) register(new MainHandSlot());
-    SingleSlot OFF_HAND = (SingleSlot) register(new ConstructableSingleSlot("offhand", 40, EquipmentSlotGroup.OFFHAND, "item.modifiers.offhand"));
+    SingleSlot OFF_HAND = (SingleSlot) register(new ConstructableSingleSlot("offhand", 40, EquipmentSlotGroup.OFFHAND, EquipmentSlot.OFF_HAND, "item.modifiers.offhand"));
     GroupSlot HAND = (GroupSlot) register(new ConstructableGroupSlot("hand", Set.of(
             MAIN_HAND,
             OFF_HAND),
-            EquipmentSlotGroup.HAND, "item.modifiers.hand"));
+            EquipmentSlotGroup.HAND,
+            null,
+            "item.modifiers.hand"));
 
-    SingleSlot HEAD = (SingleSlot) register(new ConstructableSingleSlot("head", 39, EquipmentSlotGroup.HEAD, "item.modifiers.head"));
-    SingleSlot CHEST = (SingleSlot) register(new ConstructableSingleSlot("chest", 38, EquipmentSlotGroup.CHEST, "item.modifiers.chest"));
-    SingleSlot LEGS = (SingleSlot) register(new ConstructableSingleSlot("legs", 37, EquipmentSlotGroup.LEGS, "item.modifiers.legs"));
-    SingleSlot FEET = (SingleSlot) register(new ConstructableSingleSlot("feet", 36, EquipmentSlotGroup.FEET, "item.modifiers.feet"));
+    SingleSlot HEAD = (SingleSlot) register(new ConstructableSingleSlot("head", 39, EquipmentSlotGroup.HEAD, EquipmentSlot.HEAD, "item.modifiers.head"));
+    SingleSlot CHEST = (SingleSlot) register(new ConstructableSingleSlot("chest", 38, EquipmentSlotGroup.CHEST, EquipmentSlot.CHEST, "item.modifiers.chest"));
+    SingleSlot LEGS = (SingleSlot) register(new ConstructableSingleSlot("legs", 37, EquipmentSlotGroup.LEGS, EquipmentSlot.LEGS, "item.modifiers.legs"));
+    SingleSlot FEET = (SingleSlot) register(new ConstructableSingleSlot("feet", 36, EquipmentSlotGroup.FEET, EquipmentSlot.FEET, "item.modifiers.feet"));
 
     GroupSlot ARMOR = (GroupSlot) register(new ConstructableGroupSlot("armor", Set.of(
             HEAD,
             CHEST,
             LEGS,
             FEET),
-    EquipmentSlotGroup.ARMOR, "item.modifiers.armor"));
+            EquipmentSlotGroup.ARMOR,
+            null,
+            "item.modifiers.armor"));
 
     @Override
     boolean test(@NotNull CustomEquipmentSlot slot);
     boolean isAppropriateSlot(@NotNull Entity entity, int slot);
-    @Nullable EquipmentSlotGroup getVanillaAlternative();
+    @Nullable EquipmentSlotGroup getVanillaGroup();
+    @Deprecated
+    @Nullable EquipmentSlot getVanillaSlot();
     void getAllSlots(@NotNull Entity entity, @NotNull Consumer<@NotNull Integer> consumer);
 
     private static CustomEquipmentSlot register(CustomEquipmentSlot slot){

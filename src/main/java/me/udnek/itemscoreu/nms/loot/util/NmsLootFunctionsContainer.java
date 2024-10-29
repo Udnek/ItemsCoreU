@@ -1,5 +1,6 @@
 package me.udnek.itemscoreu.nms.loot.util;
 
+import me.udnek.itemscoreu.nms.NmsContainer;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
 import org.jetbrains.annotations.NotNull;
 

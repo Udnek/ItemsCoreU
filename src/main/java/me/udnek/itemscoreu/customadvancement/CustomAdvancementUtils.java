@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.objects.ObjectObjectMutablePair;
 import me.udnek.itemscoreu.util.ItemUtils;
-import me.udnek.itemscoreu.util.NMS.Reflex;
+import me.udnek.itemscoreu.util.Reflex;
 import net.kyori.adventure.key.Key;
 import net.minecraft.advancements.*;
 import net.minecraft.resources.ResourceLocation;

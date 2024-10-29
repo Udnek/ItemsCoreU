@@ -1,6 +1,8 @@
-package me.udnek.itemscoreu.util.NMS;
+package me.udnek.itemscoreu.util;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import sun.misc.Unsafe;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -38,7 +40,7 @@ public class Reflex {
     }
 
 
-    public static void setFieldValue(Object source, String name, @Nullable Object value) {
+    public static void setFieldValue(Object source, @NotNull String name, @Nullable Object value) {
         try {
             boolean isStatic = source instanceof Class;
             Class<?> clazz = isStatic ? (Class<?>) source : source.getClass();
@@ -50,6 +52,28 @@ public class Reflex {
             throw new RuntimeException(e);
         }
     }
+
+    public static void setRecordFieldValue(Object instance, @NotNull String fieldName, @Nullable Object value) {
+        try {
+            Field f = instance.getClass().getDeclaredField(fieldName);
+
+            Field unsafeField = Unsafe.class.getDeclaredField("theUnsafe");
+            unsafeField.setAccessible(true);
+            Unsafe unsafe = (Unsafe) unsafeField.get(null);
+
+            Field theInternalUnsafeField = Unsafe.class.getDeclaredField("theInternalUnsafe");
+            theInternalUnsafeField.setAccessible(true);
+            Object theInternalUnsafe = theInternalUnsafeField.get(null);
+
+            Method offset = Class.forName("jdk.internal.misc.Unsafe").getMethod("objectFieldOffset", Field.class);
+            unsafe.putBoolean(offset, 12, true);
+
+            unsafe.putObject(instance, (long) offset.invoke(theInternalUnsafe, f), value);
+        } catch (IllegalAccessException | NoSuchFieldException | ClassNotFoundException | NoSuchMethodException | InvocationTargetException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     public static Method getMethod(Class<?> clazz, String name, Class<?>... parameterTypes){
         try {

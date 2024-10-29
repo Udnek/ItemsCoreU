@@ -28,3 +28,9 @@ commands:
     aliases: [ itemscoreuresourcepack ]
     permission: itemscoreu.admin
     permission-message: "You do not have permission to use this command"
+  attributeu:
+      description: "attributeu"
+      usage: "/attributeu <attribute>"
+      aliases: [ itemscoreuattributeu ]
+      permission: itemscoreu.admin
+      permission-message: "You do not have permission to use this command"

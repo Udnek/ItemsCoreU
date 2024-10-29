@@ -2,10 +2,10 @@ package me.udnek.itemscoreu.nms.loot.table;
 
 import me.udnek.itemscoreu.nms.loot.pool.NmsDefaultLootPoolContainer;
 import me.udnek.itemscoreu.nms.loot.pool.NmsLootPoolContainer;
-import me.udnek.itemscoreu.nms.loot.util.NmsContainer;
+import me.udnek.itemscoreu.nms.NmsContainer;
 import me.udnek.itemscoreu.nms.loot.util.NmsFields;
 import me.udnek.itemscoreu.nms.loot.util.NmsLootFunctionsContainer;
-import me.udnek.itemscoreu.util.NMS.Reflex;
+import me.udnek.itemscoreu.util.Reflex;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunction;

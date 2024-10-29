@@ -5,7 +5,7 @@ import me.udnek.itemscoreu.nms.loot.util.ItemStackCreator;
 import me.udnek.itemscoreu.nms.loot.util.NmsFunctioned;
 import me.udnek.itemscoreu.nms.loot.util.NmsLootConditionsContainer;
 import me.udnek.itemscoreu.nms.loot.util.NmsLootFunctionsContainer;
-import me.udnek.itemscoreu.util.NMS.Reflex;
+import me.udnek.itemscoreu.util.Reflex;
 import net.minecraft.world.level.storage.loot.entries.LootPoolEntryContainer;
 import net.minecraft.world.level.storage.loot.entries.LootPoolSingletonContainer;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
