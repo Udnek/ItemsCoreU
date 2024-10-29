@@ -54,7 +54,6 @@ public class CustomAttributeUtils {
                 if (slot == null || item.getType() == Material.AIR) continue;
                 slots.put(slot, item);
                 // TODO REPLACE WHEN API IS READY
-                
             }
         } else {return;}
 

@@ -42,6 +42,8 @@ public abstract class ConstructableCustomItem extends AbstractComponentHolder<Cu
         id = new NamespacedKey(plugin, getRawId()).asString();
     }
 
+    public void initializeComponents(){}
+
     @Override
     public void afterInitialization() {
         CustomItem.super.afterInitialization();
@@ -118,6 +120,7 @@ public abstract class ConstructableCustomItem extends AbstractComponentHolder<Cu
     @Override
     public @NotNull ItemStack getItem(){
         if (itemStack == null){
+            initializeComponents();
             ItemStack newItem = this.getMainItemStack();
             modifyFinalItemStack(newItem);
             CustomItemGeneratedEvent event = new CustomItemGeneratedEvent(this, newItem, getLoreBuilder());
