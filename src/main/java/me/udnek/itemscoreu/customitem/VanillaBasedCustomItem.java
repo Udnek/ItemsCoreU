@@ -10,7 +10,6 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
-import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
@@ -41,15 +40,16 @@ public class VanillaBasedCustomItem extends AbstractComponentHolder<CustomItem> 
         event.getLoreBuilder().buildAndApply(event.getItemStack());
         return event.getItemStack();
     }
-    public ItemStack getFrom(@NotNull ItemStack itemStack){
+    public @NotNull ItemStack getFrom(@NotNull ItemStack itemStack){
         // TODO: 8/19/2024 MAKE ITEM MODIFICATORS
         Preconditions.checkArgument(itemStack.getType() == material, "Can not create from different material!");
-        getItem().editMeta(itemMeta -> {
+        ItemStack newItem = getItem();
+        newItem.editMeta(itemMeta -> {
             for (Map.Entry<Enchantment, Integer> entry : itemStack.getEnchantments().entrySet()) {
                 itemMeta.addEnchant(entry.getKey(), entry.getValue(), false);
             }
         });
-        return getItem();
+        return newItem;
     }
 
     @Override

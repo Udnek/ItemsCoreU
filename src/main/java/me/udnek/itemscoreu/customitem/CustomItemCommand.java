@@ -1,8 +1,6 @@
 package me.udnek.itemscoreu.customitem;
 
 import me.udnek.itemscoreu.customregistry.CustomRegistries;
-import me.udnek.itemscoreu.customregistry.Registrable;
-import net.minecraft.core.registries.Registries;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -13,7 +11,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 public class CustomItemCommand implements CommandExecutor, TabExecutor {

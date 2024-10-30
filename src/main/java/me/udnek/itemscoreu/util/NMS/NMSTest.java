@@ -12,7 +12,6 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.dedicated.DedicatedServer;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
@@ -28,9 +27,7 @@ import net.minecraft.world.item.enchantment.EnchantmentEffectComponents;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.item.enchantment.LevelBasedValue;
 import net.minecraft.world.item.enchantment.effects.EnchantmentAttributeEffect;
-import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v1_21_R1.CraftEquipmentSlot;
-import org.bukkit.craftbukkit.v1_21_R1.CraftServer;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.meta.trim.TrimPattern;
 
@@ -39,7 +36,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.sql.Ref;
 import java.util.IdentityHashMap;
 import java.util.List;
 

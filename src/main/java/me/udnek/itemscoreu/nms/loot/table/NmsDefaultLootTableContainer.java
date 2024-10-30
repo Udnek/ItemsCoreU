@@ -1,8 +1,8 @@
 package me.udnek.itemscoreu.nms.loot.table;
 
+import me.udnek.itemscoreu.nms.NmsContainer;
 import me.udnek.itemscoreu.nms.loot.pool.NmsDefaultLootPoolContainer;
 import me.udnek.itemscoreu.nms.loot.pool.NmsLootPoolContainer;
-import me.udnek.itemscoreu.nms.NmsContainer;
 import me.udnek.itemscoreu.nms.loot.util.NmsFields;
 import me.udnek.itemscoreu.nms.loot.util.NmsLootFunctionsContainer;
 import me.udnek.itemscoreu.util.Reflex;

@@ -24,6 +24,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.npc.VillagerTrades;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.MapItem;
 import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.item.trading.MerchantOffer;
@@ -52,11 +53,13 @@ import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_21_R1.CraftChunk;
 import org.bukkit.craftbukkit.v1_21_R1.CraftLootTable;
 import org.bukkit.craftbukkit.v1_21_R1.CraftServer;
+import org.bukkit.craftbukkit.v1_21_R1.damage.CraftDamageSource;
 import org.bukkit.craftbukkit.v1_21_R1.entity.*;
 import org.bukkit.craftbukkit.v1_21_R1.generator.structure.CraftStructure;
 import org.bukkit.craftbukkit.v1_21_R1.inventory.CraftItemStack;
 import org.bukkit.craftbukkit.v1_21_R1.map.CraftMapCursor;
 import org.bukkit.craftbukkit.v1_21_R1.util.CraftLocation;
+import org.bukkit.damage.DamageSource;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -97,18 +100,26 @@ public class Nms {
     // USAGES
     ///////////////////////////////////////////////////////////////////////////
 
-    public float getCompostableChance(Material material){
+    public float getCompostableChance(@NotNull Material material){
         return ComposterBlock.COMPOSTABLES.getOrDefault(NmsUtils.toNmsMaterial(material), 0);
     }
 
-    public int getFuelTime(Material material){
+    public int getFuelTime(@NotNull Material material){
         return AbstractFurnaceBlockEntity.getFuel().getOrDefault(NmsUtils.toNmsMaterial(material), 0);
     }
 
-    public ItemStack getSpawnEggByType(EntityType type){
+    public @NotNull ItemStack getSpawnEggByType(@NotNull EntityType type){
         net.minecraft.world.entity.EntityType<?> aClass = CraftEntityType.bukkitToMinecraft(type);
         return CraftItemStack.asNewCraftStack(SpawnEggItem.byId(aClass));
     }
+
+    public float getMaceBonusDamage(@NotNull org.bukkit.entity.Entity attacker, @NotNull DamageSource bukkitSource){
+        net.minecraft.world.damagesource.DamageSource damageSource = ((CraftDamageSource) bukkitSource).getHandle();
+        // TODO CHECK IF SECOND ARGUMENT DO ANYTHING
+        return Items.MACE.getAttackDamageBonus(NmsUtils.toNmsEntity(attacker), 0, damageSource);
+    }
+
+
     ///////////////////////////////////////////////////////////////////////////
     // ENCHANTMENT
     ///////////////////////////////////////////////////////////////////////////
@@ -251,13 +262,13 @@ public class Nms {
     }
     public @NotNull org.bukkit.loot.LootTable getLootTable(String id){
         ResourceLocation resourceLocation = ResourceLocation.parse(id);
-        ResourceKey<net.minecraft.world.level.storage.loot.LootTable> key = ResourceKey.create(Registries.LOOT_TABLE, resourceLocation);
+        ResourceKey<LootTable> key = ResourceKey.create(Registries.LOOT_TABLE, resourceLocation);
         return NmsUtils.getLootTable(key).craftLootTable;
     }
 
     public List<ItemStack> getPossibleLoot(org.bukkit.loot.LootTable lootTable) {
         List<ItemStack> result = new ArrayList<>();
-        net.minecraft.world.level.storage.loot.LootTable nmsLootTable = ((CraftLootTable) lootTable).getHandle();
+        LootTable nmsLootTable = ((CraftLootTable) lootTable).getHandle();
         List<LootPoolEntry> entries = NmsUtils.getAllEntries(NmsUtils.getAllSingletonContainers(nmsLootTable));
 
         for (LootPoolEntry entry : entries) {
@@ -269,7 +280,7 @@ public class Nms {
     }
     public @NotNull org.bukkit.loot.LootTable getDeathLootTable(@NotNull org.bukkit.entity.LivingEntity bukkitEntity){
         LivingEntity entity = ((CraftLivingEntity) bukkitEntity).getHandle();
-        ResourceKey<net.minecraft.world.level.storage.loot.LootTable> lootTable = entity.getLootTable();
+        ResourceKey<LootTable> lootTable = entity.getLootTable();
         return NmsUtils.getLootTable(lootTable).craftLootTable;
     }
 

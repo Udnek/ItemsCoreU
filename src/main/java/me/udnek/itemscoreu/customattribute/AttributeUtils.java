@@ -10,6 +10,7 @@ import org.bukkit.inventory.EquipmentSlotGroup;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.UnknownNullability;
 
 import java.util.Collection;
 import java.util.Map;
@@ -23,8 +24,11 @@ public class AttributeUtils {
         itemMeta.setAttributeModifiers(attributeModifiers);
     }
 
-    public static void addAttribute(ItemMeta itemMeta, Attribute attribute, NamespacedKey id, double amount, AttributeModifier.Operation operation, @NotNull EquipmentSlotGroup slot){
+    public static void addAttribute(@NotNull ItemMeta itemMeta, @NotNull Attribute attribute, @NotNull NamespacedKey id, double amount, @NotNull AttributeModifier.Operation operation, @NotNull EquipmentSlotGroup slot){
         itemMeta.addAttributeModifier(attribute, new AttributeModifier(id, amount, operation, slot));
+    }
+    public static void addAttribute(@NotNull ItemStack itemStack, @NotNull Attribute attribute, @NotNull NamespacedKey id, double amount, @NotNull AttributeModifier.Operation operation, @NotNull EquipmentSlotGroup slot){
+        itemStack.editMeta(itemMeta -> addAttribute(itemMeta, attribute, id, amount, operation, slot));
     }
 
     public static @NotNull Multimap<Attribute, AttributeModifier> getAttributes(@NotNull ItemStack itemStack){
@@ -35,11 +39,11 @@ public class AttributeUtils {
         return vanillaAttributes;
     }
 
-    public static void appendAttribute(ItemStack itemStack, Attribute attribute, NamespacedKey id, double amount, AttributeModifier.Operation operation, @NotNull EquipmentSlotGroup slot){
+    public static void appendAttribute(@NotNull ItemStack itemStack, @NotNull Attribute attribute, @UnknownNullability("can be null if item has attribute") NamespacedKey id, double amount, @NotNull AttributeModifier.Operation operation, @NotNull EquipmentSlotGroup slot){
         itemStack.editMeta(itemMeta -> appendAttribute(itemMeta, attribute, id, amount, operation, slot));
     }
 
-    public static void appendAttribute(ItemMeta itemMeta, Attribute attribute, NamespacedKey id,  double amount, AttributeModifier.Operation operation, @NotNull EquipmentSlotGroup slot) {
+    public static void appendAttribute(@NotNull ItemMeta itemMeta, @NotNull Attribute attribute, @UnknownNullability("can be null if item has attribute") NamespacedKey id,  double amount, @NotNull AttributeModifier.Operation operation, @NotNull EquipmentSlotGroup slot) {
         if (!itemMeta.hasAttributeModifiers()) {
             addAttribute(itemMeta, attribute, id, amount, operation, slot);
             return;
