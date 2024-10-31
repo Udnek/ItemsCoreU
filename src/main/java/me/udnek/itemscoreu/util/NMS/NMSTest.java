@@ -1,21 +1,20 @@
 package me.udnek.itemscoreu.util.NMS;
 
-import io.papermc.paper.registry.RegistryKey;
 import me.udnek.itemscoreu.nms.NmsUtils;
 import me.udnek.itemscoreu.util.Reflex;
-import net.minecraft.core.*;
+import net.minecraft.core.DefaultedMappedRegistry;
+import net.minecraft.core.DefaultedRegistry;
+import net.minecraft.core.MappedRegistry;
+import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.ItemTags;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
-import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -27,9 +26,8 @@ import net.minecraft.world.item.enchantment.EnchantmentEffectComponents;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.item.enchantment.LevelBasedValue;
 import net.minecraft.world.item.enchantment.effects.EnchantmentAttributeEffect;
-import org.bukkit.craftbukkit.v1_21_R1.CraftEquipmentSlot;
+import org.bukkit.craftbukkit.v1_21_R2.CraftEquipmentSlot;
 import org.bukkit.inventory.EquipmentSlot;
-import org.bukkit.inventory.meta.trim.TrimPattern;
 
 import java.awt.*;
 import java.lang.reflect.Constructor;
@@ -65,12 +63,12 @@ public class NMSTest {
         BuiltInRegistries.ATTRIBUTE.freeze();
     }
 
-    public static void registerTrimPattern(){
+/*    public static void registerTrimPattern(){
         org.bukkit.Registry<TrimPattern> trimPattern = org.bukkit.Registry.TRIM_PATTERN;
         RegistryKey<TrimPattern> trimPattern1 = RegistryKey.TRIM_PATTERN;
         Registries.TRIM_PATTERN.registryKey();
 
-    }
+    }*/
 
     private static ResourceKey<Enchantment> key(String name) {
         return ResourceKey.create(Registries.ENCHANTMENT, ResourceLocation.fromNamespaceAndPath("icu", name));
@@ -90,7 +88,7 @@ public class NMSTest {
         EnchantmentAttributeEffect hp = new EnchantmentAttributeEffect(ResourceLocation.withDefaultNamespace("enchantment.protection.hp"), Attributes.MAX_HEALTH, LevelBasedValue.perLevel(2, 2), AttributeModifier.Operation.ADD_VALUE);
         builder.set(EnchantmentEffectComponents.ATTRIBUTES, List.of(armor, hp));
         // ENCHANTMENT
-        enchantment = registry.get(Enchantments.PROTECTION);
+        enchantment = registry.getValue(Enchantments.PROTECTION);
         Reflex.setRecordFieldValue(enchantment, "effects", builder.build());
 
                 // EFFECT
@@ -99,7 +97,7 @@ public class NMSTest {
         builder.set(EnchantmentEffectComponents.ATTRIBUTES, List.of(damage));
         // ENCHANTMENT
 
-        enchantment = registry.get(Enchantments.SHARPNESS);
+        enchantment = registry.getValue(Enchantments.SHARPNESS);
          Reflex.setRecordFieldValue(enchantment, "effects", builder.build());
 
 /*        register(
@@ -125,7 +123,7 @@ public class NMSTest {
     }
 
     // TODO: 8/18/2024 WRAP
-    public static void testEnchantment(){
+/*    public static void testEnchantment(){
         
         Registry<Enchantment> registry = NmsUtils.getRegistry(Registries.ENCHANTMENT);
         // unfreeze
@@ -158,7 +156,7 @@ public class NMSTest {
         Registry.register(registry, key, enchantment);
 
         registry.freeze();
-    }
+    }*/
 
     public static net.minecraft.world.entity.EquipmentSlotGroup[] nmsSlots(EquipmentSlot[] slots) {
         net.minecraft.world.entity.EquipmentSlotGroup[] nmsSlots = new net.minecraft.world.entity.EquipmentSlotGroup[slots.length];

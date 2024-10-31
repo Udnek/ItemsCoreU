@@ -11,7 +11,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.ServerAdvancementManager;
 import net.minecraft.server.dedicated.DedicatedServer;
 import org.bukkit.Bukkit;
-import org.bukkit.craftbukkit.v1_21_R1.CraftServer;
+import org.bukkit.craftbukkit.v1_21_R2.CraftServer;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 

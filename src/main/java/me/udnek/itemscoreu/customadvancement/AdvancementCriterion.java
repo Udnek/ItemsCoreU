@@ -11,6 +11,7 @@ import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.advancements.critereon.PlayerTrigger;
 import net.minecraft.core.component.DataComponentPredicate;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.Registries;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
@@ -45,7 +46,7 @@ public interface AdvancementCriterion extends Supplier<Criterion<?>>{
             ItemPredicate.Builder predicate;
             if (CustomItem.isCustom(itemStack)){
                 predicate = ItemPredicate.Builder.item()
-                        .of(nmsItemStack.getItem())
+                        .of(NmsUtils.getRegistry(Registries.ITEM), nmsItemStack.getItem())
                         .hasComponents(
                                 DataComponentPredicate.builder().expect(
                                         DataComponents.CUSTOM_DATA,
@@ -54,7 +55,7 @@ public interface AdvancementCriterion extends Supplier<Criterion<?>>{
                         );
             } else {
                 predicate = ItemPredicate.Builder.item()
-                        .of(nmsItemStack.getItem())
+                        .of(NmsUtils.getRegistry(Registries.ITEM), nmsItemStack.getItem())
                         .hasComponents(DataComponentPredicate.allOf(nmsItemStack.getComponents()));
             }
 

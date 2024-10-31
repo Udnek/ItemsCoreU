@@ -4,6 +4,7 @@ import me.udnek.itemscoreu.nms.NmsContainer;
 import me.udnek.itemscoreu.nms.NmsUtils;
 import me.udnek.itemscoreu.util.Reflex;
 import net.kyori.adventure.key.Key;
+import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
@@ -12,12 +13,14 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentEffectComponents;
 import net.minecraft.world.item.enchantment.LevelBasedValue;
 import net.minecraft.world.item.enchantment.effects.EnchantmentAttributeEffect;
+import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class NmsEnchantmentContainer extends NmsContainer<Enchantment> {
     public NmsEnchantmentContainer(@NotNull Enchantment supply) {
@@ -44,15 +47,16 @@ public class NmsEnchantmentContainer extends NmsContainer<Enchantment> {
         setEffects(builder.build());
     }
 
-    public void addEffect(@NotNull Key id, @NotNull Attribute bukkitAttribute, float baseValue, float valueAboveFirst, @NotNull org.bukkit.attribute.AttributeModifier.Operation bukkitOperation){
+    public void addEffect(@NotNull NamespacedKey id, @NotNull Attribute bukkitAttribute, float baseValue, float valueAboveFirst, @NotNull org.bukkit.attribute.AttributeModifier.Operation bukkitOperation){
         AttributeModifier.Operation operation = switch (bukkitOperation){
             case ADD_NUMBER -> AttributeModifier.Operation.ADD_VALUE;
             case MULTIPLY_SCALAR_1 -> AttributeModifier.Operation.ADD_MULTIPLIED_BASE;
             case ADD_SCALAR -> AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL;
         };
+        net.minecraft.world.entity.ai.attributes.Attribute attribute = NmsUtils.getRegistry(Registries.ATTRIBUTE).getValue(NmsUtils.getResourceLocation(bukkitAttribute.getKey()));
         EnchantmentAttributeEffect effect = new EnchantmentAttributeEffect(
                 NmsUtils.getResourceLocation(id),
-                NmsUtils.getRegistry(Registries.ATTRIBUTE).getHolder(NmsUtils.getResourceLocation(bukkitAttribute.getKey())).get(),
+                NmsUtils.getRegistry(Registries.ATTRIBUTE).wrapAsHolder(attribute),
                 LevelBasedValue.perLevel(baseValue, valueAboveFirst),
                 operation
         );

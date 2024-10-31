@@ -19,18 +19,17 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.ReloadableServerRegistries;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.context.ContextKeySet;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.npc.VillagerTrades;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.item.MapItem;
 import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.item.trading.MerchantOffer;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.ComposterBlock;
-import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.chunk.status.ChunkStatus;
@@ -46,20 +45,17 @@ import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.entries.LootPoolEntry;
 import net.minecraft.world.level.storage.loot.entries.LootPoolEntryContainer;
 import net.minecraft.world.level.storage.loot.entries.LootPoolSingletonContainer;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.Vec3;
 import org.bukkit.*;
-import org.bukkit.craftbukkit.v1_21_R1.CraftChunk;
-import org.bukkit.craftbukkit.v1_21_R1.CraftLootTable;
-import org.bukkit.craftbukkit.v1_21_R1.CraftServer;
-import org.bukkit.craftbukkit.v1_21_R1.damage.CraftDamageSource;
-import org.bukkit.craftbukkit.v1_21_R1.entity.*;
-import org.bukkit.craftbukkit.v1_21_R1.generator.structure.CraftStructure;
-import org.bukkit.craftbukkit.v1_21_R1.inventory.CraftItemStack;
-import org.bukkit.craftbukkit.v1_21_R1.map.CraftMapCursor;
-import org.bukkit.craftbukkit.v1_21_R1.util.CraftLocation;
-import org.bukkit.damage.DamageSource;
+import org.bukkit.craftbukkit.v1_21_R2.CraftChunk;
+import org.bukkit.craftbukkit.v1_21_R2.CraftLootTable;
+import org.bukkit.craftbukkit.v1_21_R2.CraftServer;
+import org.bukkit.craftbukkit.v1_21_R2.entity.*;
+import org.bukkit.craftbukkit.v1_21_R2.generator.structure.CraftStructure;
+import org.bukkit.craftbukkit.v1_21_R2.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_21_R2.map.CraftMapCursor;
+import org.bukkit.craftbukkit.v1_21_R2.util.CraftLocation;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -80,13 +76,15 @@ public class Nms {
 
     static {
         ServerLevel serverLevel = NmsUtils.toNmsWorld(Bukkit.getWorld("world"));
+
         LootParams.Builder paramsBuilder = new LootParams.Builder(serverLevel);
-        LootContextParamSet.Builder builder = new LootContextParamSet.Builder();
-        builder.required(LootContextParams.ORIGIN);
-        LootContextParamSet contextParamSet = builder.build();
+        ContextKeySet.Builder keyBuilder = new ContextKeySet.Builder();
+
+        keyBuilder.required(LootContextParams.ORIGIN);
         paramsBuilder.withParameter(LootContextParams.ORIGIN, new Vec3(0, 0, 0));
         paramsBuilder.withLuck(1);
-        LootContext.Builder contextBuilder = new LootContext.Builder(paramsBuilder.create(contextParamSet));
+
+        LootContext.Builder contextBuilder = new LootContext.Builder(paramsBuilder.create(keyBuilder.build()));
         GENERIC_LOOT_CONTEXT = contextBuilder.create(Optional.empty());
     }
 
@@ -104,9 +102,6 @@ public class Nms {
         return ComposterBlock.COMPOSTABLES.getOrDefault(NmsUtils.toNmsMaterial(material), 0);
     }
 
-    public int getFuelTime(@NotNull Material material){
-        return AbstractFurnaceBlockEntity.getFuel().getOrDefault(NmsUtils.toNmsMaterial(material), 0);
-    }
 
     public @NotNull ItemStack getSpawnEggByType(@NotNull EntityType type){
         net.minecraft.world.entity.EntityType<?> aClass = CraftEntityType.bukkitToMinecraft(type);
@@ -121,7 +116,7 @@ public class Nms {
 
     public @NotNull NmsEnchantmentContainer getEnchantment(@NotNull Enchantment bukkitEnchantment){
         Registry<net.minecraft.world.item.enchantment.Enchantment> registry = NmsUtils.getRegistry(Registries.ENCHANTMENT);
-        net.minecraft.world.item.enchantment.Enchantment enchantment = registry.get(NmsUtils.getResourceLocation(bukkitEnchantment.getKey()));
+        net.minecraft.world.item.enchantment.Enchantment enchantment = registry.getValue(NmsUtils.getResourceLocation(bukkitEnchantment.getKey()));
         return new NmsEnchantmentContainer(enchantment);
     }
 
@@ -209,7 +204,7 @@ public class Nms {
 
             }
             if (changed){
-                LogUtils.pluginLog("Changed loot entry container from: " + lootTable.craftLootTable.getKey().asString());
+                LogUtils.pluginLog("Changed loot entry container from: " + lootTable.craftLootTable.getKey().toString());
                 Reflex.setFieldValue(pool, "entries", newContainers);
             }
         }
@@ -273,18 +268,19 @@ public class Nms {
         }
         return result;
     }
-    public @NotNull org.bukkit.loot.LootTable getDeathLootTable(@NotNull org.bukkit.entity.LivingEntity bukkitEntity){
+    public @Nullable org.bukkit.loot.LootTable getDeathLootTable(@NotNull org.bukkit.entity.LivingEntity bukkitEntity){
         LivingEntity entity = ((CraftLivingEntity) bukkitEntity).getHandle();
-        ResourceKey<LootTable> lootTable = entity.getLootTable();
-        return NmsUtils.getLootTable(lootTable).craftLootTable;
+        Optional<ResourceKey<LootTable>> lootTable = entity.getLootTable();
+        if (lootTable.isEmpty()) return null;
+        return NmsUtils.getLootTable(lootTable.get()).craftLootTable;
     }
 
     public void setDeathLootTable(@NotNull org.bukkit.entity.Mob bukkitMob, @Nullable org.bukkit.loot.LootTable lootTable){
         Mob mob = ((CraftMob) bukkitMob).getHandle();
         if (lootTable == null){
-            mob.lootTable = NmsUtils.getResourceKeyLootTable("minecraft:empty");
+            mob.lootTable = Optional.empty();
         } else {
-            mob.lootTable = NmsUtils.getResourceKeyLootTable(lootTable.getKey().asString());
+            mob.lootTable = Optional.of(NmsUtils.getResourceKeyLootTable(lootTable.getKey().toString()));
         }
     }
 
@@ -400,7 +396,7 @@ public class Nms {
     ///////////////////////////////////////////////////////////////////////////
     public DownfallType getDownfallType(Location location){
         BlockPos blockPosition = CraftLocation.toBlockPosition(location);
-        Biome.Precipitation precipitation = NmsUtils.toNmsWorld(location.getWorld()).getBiome(blockPosition).value().getPrecipitationAt(blockPosition);
+        Biome.Precipitation precipitation = NmsUtils.toNmsWorld(location.getWorld()).getBiome(blockPosition).value().getPrecipitationAt(blockPosition, location.getWorld().getSeaLevel());
         return DownfallType.fromNMS(precipitation);
     }
 

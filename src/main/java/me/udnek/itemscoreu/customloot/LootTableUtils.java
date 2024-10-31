@@ -31,14 +31,13 @@ public class LootTableUtils implements Listener {
     private static final LootTableRegistry registry = CustomRegistries.LOOT_TABLE;
 
     public static @Nullable LootTable getLootTable(@NotNull NamespacedKey key){
-        return getLootTable(key.asString());
+        return getLootTable(key.toString());
     }
     public static @Nullable LootTable getLootTable(@NotNull String key){
         LootTable lootTable = registry.get(key);
         if (lootTable != null) return lootTable;
         lootTable = Nms.get().getLootTable(key);
-        if (lootTable != LootTables.EMPTY.getLootTable()) return lootTable;
-        return null;
+        return lootTable;
     }
 
     public static List<LootTable> getAll(){
@@ -109,7 +108,7 @@ public class LootTableUtils implements Listener {
             container.remove(CUSTOM_LOOT_TABLE);
             return;
         }
-        container.set(CUSTOM_LOOT_TABLE, PersistentDataType.STRING, lootTable.getKey().asString());
+        container.set(CUSTOM_LOOT_TABLE, PersistentDataType.STRING, lootTable.getKey().toString());
     }
     private static @Nullable CustomLootTable getCustomLootTable(@NotNull Mob mob){
         String id = mob.getPersistentDataContainer().get(CUSTOM_LOOT_TABLE, PersistentDataType.STRING);
@@ -126,7 +125,7 @@ public class LootTableUtils implements Listener {
         LootTable lootTable = getLootTable(id);
         Preconditions.checkArgument(
                 lootTable != null,
-                "LootTable at "+ event.getLootContext().getLocation().getBlock() + " is null: " + event.getLootTable().getKey().asString());
+                "LootTable at "+ event.getLootContext().getLocation().getBlock() + " is null: " + event.getLootTable().getKey());
         if (lootTable instanceof CustomLootTable customLootTable) {
             customLootTable.onContainerLootGeneratesEvent(event);
         }

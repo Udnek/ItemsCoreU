@@ -21,14 +21,15 @@ import net.minecraft.world.level.storage.loot.entries.LootPoolSingletonContainer
 import net.minecraft.world.level.storage.loot.entries.NestedLootTable;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.World;
-import org.bukkit.craftbukkit.v1_21_R1.CraftLootTable;
-import org.bukkit.craftbukkit.v1_21_R1.CraftServer;
-import org.bukkit.craftbukkit.v1_21_R1.CraftWorld;
-import org.bukkit.craftbukkit.v1_21_R1.entity.CraftEntity;
-import org.bukkit.craftbukkit.v1_21_R1.entity.CraftLivingEntity;
-import org.bukkit.craftbukkit.v1_21_R1.inventory.CraftItemStack;
-import org.bukkit.craftbukkit.v1_21_R1.util.CraftMagicNumbers;
+import org.bukkit.craftbukkit.v1_21_R2.CraftLootTable;
+import org.bukkit.craftbukkit.v1_21_R2.CraftServer;
+import org.bukkit.craftbukkit.v1_21_R2.CraftWorld;
+import org.bukkit.craftbukkit.v1_21_R2.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_21_R2.entity.CraftLivingEntity;
+import org.bukkit.craftbukkit.v1_21_R2.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_21_R2.util.CraftMagicNumbers;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -44,10 +45,10 @@ public class NmsUtils {
     // REGISTRY
     public static <T> Registry<T> getRegistry(ResourceKey<Registry<T>> registry){
         DedicatedServer server = ((CraftServer) Bukkit.getServer()).getServer();
-        return server.registryAccess().registry(registry).orElse(null);
+        return server.registryAccess().lookup(registry).orElse(null);
     }
-    public static ResourceLocation getResourceLocation(Key key){
-        return ResourceLocation.parse(key.asString());
+    public static ResourceLocation getResourceLocation(NamespacedKey key){
+        return ResourceLocation.parse(key.toString());
     }
 
     // ITEM
