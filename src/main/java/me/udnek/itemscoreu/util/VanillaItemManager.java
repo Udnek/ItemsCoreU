@@ -139,6 +139,9 @@ public class VanillaItemManager extends SelfRegisteringListener{
     public static boolean isReplaced(@NotNull ItemStack itemStack){
         CustomItem customItem = CustomItem.get(itemStack);
         if (customItem == null) return false;
+        return isReplaced(customItem);
+    }
+    public static boolean isReplaced(@NotNull CustomItem customItem){
         return getInstance().replacedItems.contains(customItem);
     }
     public static boolean isReplaced(@NotNull Material material){
