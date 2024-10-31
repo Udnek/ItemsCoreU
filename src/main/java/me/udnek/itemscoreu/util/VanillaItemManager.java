@@ -176,11 +176,11 @@ public class VanillaItemManager extends SelfRegisteringListener{
         ItemStack item = event.getCursor();
         if (isDisabled(item)){
             event.setCancelled(true);
-            event.getViewers().get(0).sendMessage(
+            event.getViewers().getFirst().sendMessage(
                     Component.text("Item is disabled!").color(NamedTextColor.RED));
 
         } else if (isReplaced(item)){
-            event.getViewers().get(0).sendMessage(
+            event.getViewers().getFirst().sendMessage(
                     Component.text("Item is replaced!").color(NamedTextColor.GREEN));
             event.setCursor(replace(item));
         }

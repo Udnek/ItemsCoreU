@@ -113,11 +113,6 @@ public class Nms {
         return CraftItemStack.asNewCraftStack(SpawnEggItem.byId(aClass));
     }
 
-    public float getMaceBonusDamage(@NotNull org.bukkit.entity.Entity attacker, @NotNull DamageSource bukkitSource){
-        net.minecraft.world.damagesource.DamageSource damageSource = ((CraftDamageSource) bukkitSource).getHandle();
-        // TODO CHECK IF SECOND ARGUMENT DO ANYTHING
-        return Items.MACE.getAttackDamageBonus(NmsUtils.toNmsEntity(attacker), 0, damageSource);
-    }
 
 
     ///////////////////////////////////////////////////////////////////////////
