@@ -70,15 +70,15 @@ public abstract class ConstructableCustomItem extends AbstractComponentHolder<Cu
         if (lore.isEmpty()) itemMeta.lore(null);
         else itemMeta.lore(lore);
 
-        itemMeta.setRarity(getItemRarity());
+        itemMeta.setRarity(getRarity());
         itemMeta.setHideTooltip(getHideTooltip());
-        itemMeta.setFood(getFoodComponent());
-        itemMeta.setTool(getToolComponent());
-        itemMeta.displayName(getCustomDisplayName());
+        itemMeta.setFood(getFood());
+        itemMeta.setTool(getTool());
+        itemMeta.displayName(getDisplayName());
         itemMeta.setUnbreakable(getUnbreakable());
         itemMeta.setEnchantmentGlintOverride(getEnchantmentGlintOverride());
         itemMeta.setCustomModelData(getCustomModelData());
-        if (getFireResistant() != null) itemMeta.setFireResistant(getFireResistant());
+        if (getDamageResistant() != null) itemMeta.setDamageResistant(getDamageResistant());
         itemMeta.setMaxStackSize(getMaxStackSize());
         if (itemMeta instanceof Damageable damageable){
             if (getMaxDamage() != null){
@@ -86,7 +86,7 @@ public abstract class ConstructableCustomItem extends AbstractComponentHolder<Cu
                 damageable.setMaxDamage(getMaxDamage());
             }
         }
-        if (itemMeta instanceof ArmorMeta armorMeta) armorMeta.setTrim(getArmorTrim());
+        if (itemMeta instanceof ArmorMeta armorMeta) armorMeta.setTrim(getTrim());
         if (itemMeta instanceof MusicInstrumentMeta instrumentMeta) instrumentMeta.setInstrument(getMusicInstrument());
         if (getAddDefaultAttributes()) AttributeUtils.addDefaultAttributes(itemMeta, getMaterial());
         if (getAttributes() != null){
@@ -102,6 +102,13 @@ public abstract class ConstructableCustomItem extends AbstractComponentHolder<Cu
         }
         ItemFlag[] tooltipHides = getTooltipHides();
         if (tooltipHides != null) itemMeta.addItemFlags(tooltipHides);
+
+        // 1.21.3
+        if (getItemModel() != null) itemMeta.setItemModel(getItemModel());
+        if (getUseRemainder() != null) itemMeta.setUseRemainder(getUseRemainder());
+        if (getUseRemainderCustom() != null) itemMeta.setUseRemainder(getUseRemainderCustom().getItem());
+        if (getEquippable() != null) itemMeta.setEquippable(getEquippable());
+
         return itemMeta;
     }
 
