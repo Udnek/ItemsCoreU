@@ -17,6 +17,7 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,6 +54,10 @@ public abstract class ConstructableCustomItem extends AbstractComponentHolder<Cu
     ///////////////////////////////////////////////////////////////////////////
     // CREATING
     ///////////////////////////////////////////////////////////////////////////
+
+
+    @Override
+    public @Nullable NamespacedKey getItemModel() {return NamespacedKey.fromString(getId());}
 
     protected void setPersistentData(ItemMeta itemMeta){
         PersistentDataContainer dataContainer = itemMeta.getPersistentDataContainer();

@@ -27,9 +27,9 @@ import java.util.function.Consumer;
 
 public interface CustomItemProperties {
     @NotNull Material getMaterial();
-
     // OPTIONAL
     @Nullable default String getRawItemName(){return null;}
+
     default @Nullable LoreBuilder getLoreBuilder(){
         ArrayList<Component> lore = new ArrayList<>();
         getLore(lore::add);
