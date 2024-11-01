@@ -74,7 +74,7 @@ public interface CustomItemProperties {
     // 2.29 firework_explosion
     // 2.30 fireworks
     @Nullable default FoodComponent getFood(){return null;} // 2.31 food
-    // todo 2.32 glider
+    @Nullable default Boolean getGlider(){return null;} // 2.32 glider
     @Nullable default ItemFlag[] getTooltipHides(){return null;} // 2.33 hide_additional_tooltip
     default boolean getHideTooltip(){return false;} // 2.34 hide_tooltip
     @Nullable default MusicInstrument getMusicInstrument(){return null;} // 2.35 instrument

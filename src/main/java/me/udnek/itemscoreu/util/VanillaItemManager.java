@@ -76,17 +76,17 @@ public class VanillaItemManager extends SelfRegisteringListener{
 
             for (Recipe recipe : recipes) {
                 recipeManager.unregister(recipe);
-                LogUtils.pluginLog("Unregistered recipe: " + (recipe instanceof Keyed keyed ? keyed.key().asString() : recipe));
+                //LogUtils.pluginLog("Unregistered recipe: " + (recipe instanceof Keyed keyed ? keyed.key().asString() : recipe));
             }
 
             // loot table removal
             for (LootTable lootTable : LootTableUtils.getWhereItemOccurs(toRemoveItem)) {
                 if (lootTable instanceof CustomLootTable customLootTable) {
                     customLootTable.removeItem(toRemoveItem);
-                    LogUtils.pluginLog("Custom lootTable was edited: " + customLootTable.getKey().asString());
+                    //LogUtils.pluginLog("Custom lootTable was edited: " + customLootTable.getKey().asString());
                 } else {
                     Nms.get().removeAllEntriesContains(lootTable, VanillaItemManager::isDisabled);
-                    LogUtils.pluginLog("Removed entries from vanilla lootTable: " + lootTable.getKey().asString());
+                    //LogUtils.pluginLog("Removed entries from vanilla lootTable: " + lootTable.getKey().asString());
                 }
             }
 
@@ -108,23 +108,28 @@ public class VanillaItemManager extends SelfRegisteringListener{
 
             ReplaceHelper replaceHelper = new ReplaceHelper(oldItem, vanillaBasedItem);
             for (Recipe oldRecipe : recipes) {
-                Recipe newRecipe = replaceHelper.copyRecipeWithReplacedIngredient(oldRecipe);
-                recipeManager.unregister(oldRecipe);
-                recipeManager.register(newRecipe);
-                LogUtils.pluginLog("Replaced recipe: " + (newRecipe instanceof Keyed keyed ? keyed.key().asString() : newRecipe));
+                if (oldRecipe instanceof CustomRecipe<?> customRecipe){
+                    customRecipe.replaceItem(oldItem, vanillaBasedItem.getItem());
+                } else {
+                    Recipe newRecipe = replaceHelper.copyRecipeWithReplacedIngredient(oldRecipe);
+                    recipeManager.unregister(oldRecipe);
+                    recipeManager.register(newRecipe);
+                }
+
+                //LogUtils.pluginLog("Replaced recipe: " + (newRecipe instanceof Keyed keyed ? keyed.key().asString() : newRecipe));
             }
 
             // loot table replace
             for (LootTable lootTable : LootTableUtils.getWhereItemOccurs(oldItem)) {
                 if (lootTable instanceof CustomLootTable customLootTable) {
                     customLootTable.replaceItem(oldItem, vanillaBasedItem.getItem());
-                    LogUtils.pluginLog("Custom lootTable was edited: " + customLootTable.getKey().asString());
+                    //LogUtils.pluginLog("Custom lootTable was edited: " + customLootTable.getKey().asString());
                 } else {
                     Predicate<ItemStack> predicate = itemStack -> CustomItem.get(itemStack) == vanillaBasedItem;
                     Pair<Integer, Integer> weightAndQuality = Nms.get().getWeightAndQuality(lootTable, predicate);
                     if (weightAndQuality == null) continue;
                     Nms.get().replaceAllEntriesContains(lootTable, predicate, NmsCustomLootEntryBuilder.fromVanilla(lootTable, predicate, new ItemStackCreator.Custom(vanillaBasedItem)));
-                    LogUtils.pluginLog("Vanilla lootTable was replaced!: " + lootTable.getKey().asString());
+                    //LogUtils.pluginLog("Vanilla lootTable was replaced!: " + lootTable.getKey().asString());
                 }
             }
 

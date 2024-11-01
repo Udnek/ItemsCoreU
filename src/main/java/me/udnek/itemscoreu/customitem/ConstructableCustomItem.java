@@ -51,13 +51,14 @@ public abstract class ConstructableCustomItem extends AbstractComponentHolder<Cu
         generateRecipes(this::registerRecipe);
     }
 
+    @Override
+    public @Nullable NamespacedKey getItemModel() {return NamespacedKey.fromString(getId());}
+    @Override
+    public @Nullable String getRawItemName() {return "item."+NamespacedKey.fromString(getId()).getNamespace()+"."+getRawId();}
+
     ///////////////////////////////////////////////////////////////////////////
     // CREATING
     ///////////////////////////////////////////////////////////////////////////
-
-
-    @Override
-    public @Nullable NamespacedKey getItemModel() {return NamespacedKey.fromString(getId());}
 
     protected void setPersistentData(ItemMeta itemMeta){
         PersistentDataContainer dataContainer = itemMeta.getPersistentDataContainer();
@@ -113,6 +114,7 @@ public abstract class ConstructableCustomItem extends AbstractComponentHolder<Cu
         if (getUseRemainder() != null) itemMeta.setUseRemainder(getUseRemainder());
         if (getUseRemainderCustom() != null) itemMeta.setUseRemainder(getUseRemainderCustom().getItem());
         if (getEquippable() != null) itemMeta.setEquippable(getEquippable());
+        if (getGlider() != null) itemMeta.setGlider(getGlider());
 
         return itemMeta;
     }

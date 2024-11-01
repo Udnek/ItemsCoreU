@@ -106,11 +106,11 @@ public class RecipeManager {
     public void unregister(@NotNull Recipe recipe){
         if (recipe instanceof CustomRecipe<?> customRecipe){
             customRecipes.remove(customRecipe.key().asString());
-            LogUtils.pluginLog("Custom recipe was unregistered: " + customRecipe.key().asString());
+            //LogUtils.pluginLog("Custom recipe was unregistered: " + customRecipe.key().asString());
         } else {
             if (!(recipe instanceof Keyed keyed)) return;
             Bukkit.removeRecipe((NamespacedKey) keyed.key());
-            LogUtils.pluginLog("Vanilla recipe was unregistered: " + keyed.key().asString());
+            //LogUtils.pluginLog("Vanilla recipe was unregistered: " + keyed.key().asString());
         }
     }
     public void unregister(@NotNull NamespacedKey key){
