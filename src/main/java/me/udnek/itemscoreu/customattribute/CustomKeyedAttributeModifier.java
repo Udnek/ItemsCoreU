@@ -19,7 +19,7 @@ public class CustomKeyedAttributeModifier extends CustomAttributeModifier implem
     }
 
     public @NotNull AttributeModifier toVanillaWitAdjustedKey(@NotNull String string){
-        return toVanilla(new NamespacedKey(key.getNamespace(), key + string));
+        return toVanilla(new NamespacedKey(key.getNamespace(), key.getKey() + string));
     }
 
     @Override
