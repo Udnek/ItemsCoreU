@@ -15,12 +15,12 @@ public class CustomKeyedAttributeModifier extends CustomAttributeModifier implem
     }
 
     public @NotNull AttributeModifier toVanilla(){
-        EquipmentSlotGroup equipmentSlot = this.equipmentSlot.getVanillaGroup();
-        if (equipmentSlot == null) equipmentSlot = EquipmentSlotGroup.ANY;
-
-        return new AttributeModifier(key, amount, operation, equipmentSlot);
+        return toVanilla(key);
     }
 
+    public @NotNull AttributeModifier toVanillaWitAdjustedKey(@NotNull String string){
+        return toVanilla(new NamespacedKey(key.getNamespace(), key + string));
+    }
 
     @Override
     public @NotNull NamespacedKey getKey() {

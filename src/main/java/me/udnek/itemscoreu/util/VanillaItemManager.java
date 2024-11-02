@@ -198,7 +198,6 @@ public class VanillaItemManager extends SelfRegisteringListener{
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onNewTrade(VillagerAcquireTradeEvent event){
-        System.out.println("CALLED");
         MerchantRecipe recipe = event.getRecipe();
 
         ItemStack result = recipe.getResult();
