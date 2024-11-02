@@ -2,19 +2,19 @@ package me.udnek.itemscoreu.util.NMS;
 
 import me.udnek.itemscoreu.nms.NmsUtils;
 import me.udnek.itemscoreu.util.Reflex;
-import net.minecraft.core.DefaultedMappedRegistry;
-import net.minecraft.core.DefaultedRegistry;
-import net.minecraft.core.MappedRegistry;
-import net.minecraft.core.Registry;
+import net.minecraft.core.*;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
+import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -39,36 +39,24 @@ import java.util.List;
 
 public class NMSTest {
 
-    public static void registerAttribute(String attributeName, double defaultValue, double minValue, double maxValue) {
+    public static void registerAttribute() {
 
         Registry<Attribute> registry = BuiltInRegistries.ATTRIBUTE;
-        for (Field field : registry.getClass().getDeclaredFields()) {
-            if (field.getType() == boolean.class){
-                field.setAccessible(true);
-                try { field.setBoolean(registry, false); } catch (IllegalAccessException e) {throw new RuntimeException(e);}
-            }
-        }
+        // unfreeze
+        Reflex.setFieldValue(registry, "frozen", false);
+        Reflex.setFieldValue(registry, "unregisteredIntrusiveHolders", new IdentityHashMap<>());
+        // resource key
 
-        Attribute attribute = (Attribute) net.minecraft.core.Registry.register(
-                BuiltInRegistries.ATTRIBUTE,
-                "generic." + attributeName,
-                new RangedAttribute(
-                        "attribute.name.generic." + attributeName,
-                        defaultValue,
-                        minValue,
-                        maxValue
-                )
-        ).setSyncable(false);
+        RangedAttribute attribute = new RangedAttribute("test.name", 1, 0, 1024);
 
-        BuiltInRegistries.ATTRIBUTE.freeze();
+        registry.createIntrusiveHolder(attribute);
+
+        Registry.register(registry, ResourceKey.create(Registries.ATTRIBUTE, ResourceLocation.fromNamespaceAndPath("icu", "test")), attribute);
+
+        Object allTags = Reflex.getFieldValue(registry, "allTags");
+
+        registry.freeze();
     }
-
-/*    public static void registerTrimPattern(){
-        org.bukkit.Registry<TrimPattern> trimPattern = org.bukkit.Registry.TRIM_PATTERN;
-        RegistryKey<TrimPattern> trimPattern1 = RegistryKey.TRIM_PATTERN;
-        Registries.TRIM_PATTERN.registryKey();
-
-    }*/
 
     private static ResourceKey<Enchantment> key(String name) {
         return ResourceKey.create(Registries.ENCHANTMENT, ResourceLocation.fromNamespaceAndPath("icu", name));
@@ -123,7 +111,7 @@ public class NMSTest {
     }
 
     // TODO: 8/18/2024 WRAP
-/*    public static void testEnchantment(){
+    public static void testEnchantment(){
         
         Registry<Enchantment> registry = NmsUtils.getRegistry(Registries.ENCHANTMENT);
         // unfreeze
@@ -133,13 +121,15 @@ public class NMSTest {
         String enchantId = "test";
         ResourceKey<Enchantment> key = key(enchantId);
         // properties
-        Component description = Component.literal("test desc");
+        Component description = net.minecraft.network.chat.Component.literal("test desc");
         HolderSet<Enchantment> exclusiveSet = HolderSet.direct();
         DataComponentMap effects = DataComponentMap.builder().build();
 
-        Registry<Item> items = NmsUtils.getRegistry(Registries.ITEM);
-        HolderSet.Named<Item> supportedItems = items.getTag(ItemTags.SWORD_ENCHANTABLE).orElse(null);
-        HolderSet.Named<Item> primaryItems = items.getTag(ItemTags.SWORD_ENCHANTABLE).orElse(null);
+        Registry<Item> itemRegistry = NmsUtils.getRegistry(Registries.ITEM);
+        HolderSet<Item> supportedItems = itemRegistry.getOrThrow(ItemTags.SWORD_ENCHANTABLE);
+        HolderSet<Item> primaryItems = itemRegistry.getOrThrow(ItemTags.SWORD_ENCHANTABLE);
+
+
 
         EquipmentSlotGroup[] slots = nmsSlots(new EquipmentSlot[]{ EquipmentSlot.HAND});
 
@@ -156,7 +146,7 @@ public class NMSTest {
         Registry.register(registry, key, enchantment);
 
         registry.freeze();
-    }*/
+    }
 
     public static net.minecraft.world.entity.EquipmentSlotGroup[] nmsSlots(EquipmentSlot[] slots) {
         net.minecraft.world.entity.EquipmentSlotGroup[] nmsSlots = new net.minecraft.world.entity.EquipmentSlotGroup[slots.length];

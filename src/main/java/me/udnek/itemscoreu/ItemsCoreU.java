@@ -21,8 +21,10 @@ import me.udnek.itemscoreu.resourcepack.ResourcePackCommand;
 import me.udnek.itemscoreu.resourcepack.ResourcePackablePlugin;
 import me.udnek.itemscoreu.serializabledata.SerializableDataManager;
 import me.udnek.itemscoreu.util.InitializationProcess;
+import me.udnek.itemscoreu.util.NMS.NMSTest;
 import me.udnek.itemscoreu.util.VanillaItemManager;
 import org.bukkit.Bukkit;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class ItemsCoreU extends JavaPlugin implements ResourcePackablePlugin {
@@ -71,8 +73,6 @@ public final class ItemsCoreU extends JavaPlugin implements ResourcePackablePlug
         //NMSTest.registerAttribute("test", 0, 0, 8);
         //MobEffect mobEffect = NMSTest.registerEffect();
         //ProtocolTest.kek();
-
-
         SerializableDataManager.loadConfig();
         this.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable(){
             public void run(){

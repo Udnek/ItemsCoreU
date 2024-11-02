@@ -10,12 +10,15 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.damage.DamageType;
+import org.bukkit.entity.AbstractVillager;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemRarity;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.components.EquippableComponent;
 import org.bukkit.inventory.meta.components.FoodComponent;
 import org.bukkit.inventory.meta.components.ToolComponent;
+import org.bukkit.inventory.meta.components.UseCooldownComponent;
 import org.bukkit.inventory.meta.trim.ArmorTrim;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -28,7 +31,6 @@ import java.util.function.Consumer;
 public interface CustomItemProperties {
     @NotNull Material getMaterial();
     // OPTIONAL
-    @Nullable default String getRawItemName(){return null;}
 
     default @Nullable LoreBuilder getLoreBuilder(){
         ArrayList<Component> lore = new ArrayList<>();
@@ -80,10 +82,7 @@ public interface CustomItemProperties {
     @Nullable default MusicInstrument getMusicInstrument(){return null;} // 2.35 instrument
     // 2.36 intangible_projectile
     @Nullable default NamespacedKey getItemModel(){return null;} // 2.37 item_model
-    @Nullable default Component getItemName(){
-        if (getRawItemName() == null) return null;
-        return Component.translatable(getRawItemName());
-    } // 2.38 item_name
+    @Nullable default Component getItemName(){return null;}// 2.38 item_name
     // todo 2.39 jukebox_playable
     // 2.40 lock
     // 2.41 lodestone_tracker
@@ -108,7 +107,7 @@ public interface CustomItemProperties {
     // todo 2.60 tooltip_style
     @Nullable default ArmorTrim getTrim(){return null;} // 2.61 trim
     default boolean getUnbreakable(){return false;} // 2.62 unbreakable
-    // todo 2.63 use_cooldown
+    @Nullable default UseCooldownComponent getUseCooldown(){return null;} // 2.63 use_cooldown
     @Nullable default ItemStack getUseRemainder(){return null;} // 2.64 use_remainder
     @Nullable default CustomItem getUseRemainderCustom(){return null;} // 2.64 use_remainder
     // 2.65 writable_book_content

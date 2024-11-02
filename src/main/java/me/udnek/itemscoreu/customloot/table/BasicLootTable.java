@@ -102,7 +102,7 @@ public abstract class BasicLootTable implements CustomLootTable{
         LootContext.Builder builder = new LootContext.Builder(entity.getLocation());
         builder.lootedEntity(entity);
         builder.killer(entity.getKiller());
-        builder.luck((float) entity.getKiller().getAttribute(Attribute.GENERIC_LUCK).getValue());
+        builder.luck((float) entity.getKiller().getAttribute(Attribute.LUCK).getValue());
         drops.addAll(populateLoot(new Random(), builder.build()));
     }
 }

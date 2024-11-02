@@ -74,10 +74,6 @@ public class LootTableUtils implements Listener {
             List<ItemStack> itemStacks = nms.getPossibleLoot(lootTable);
 
             for (ItemStack loot : itemStacks) {
-                if (loot.getType() == Material.LEATHER_CHESTPLATE && target.getType() == Material.LEATHER_CHESTPLATE){
-                    System.out.println(CustomItem.isCustom(loot) + " " + CustomItem.get(loot));
-                    System.out.println(CustomItem.isCustom(target) + " " + CustomItem.get(target));
-                }
                 if (ItemUtils.isSameIds(loot, target)){
                     lootTables.add(lootTable);
                     break;

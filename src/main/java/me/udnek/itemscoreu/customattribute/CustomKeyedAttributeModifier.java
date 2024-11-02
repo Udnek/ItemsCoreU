@@ -21,6 +21,7 @@ public class CustomKeyedAttributeModifier extends CustomAttributeModifier implem
         return new AttributeModifier(key, amount, operation, equipmentSlot);
     }
 
+
     @Override
     public @NotNull NamespacedKey getKey() {
         return key;

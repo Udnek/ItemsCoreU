@@ -15,13 +15,19 @@ import me.udnek.itemscoreu.nms.loot.util.ItemStackCreator;
 import net.kyori.adventure.key.Keyed;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.minecraft.core.component.DataComponentType;
+import net.minecraft.core.component.DataComponents;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bukkit.Material;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntitySpawnEvent;
+import org.bukkit.event.entity.VillagerAcquireTradeEvent;
 import org.bukkit.event.inventory.InventoryCreativeEvent;
 import org.bukkit.inventory.*;
+import org.bukkit.inventory.meta.components.FoodComponent;
 import org.bukkit.loot.LootTable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -164,6 +170,8 @@ public class VanillaItemManager extends SelfRegisteringListener{
         return getInstance().replacedByMaterial.get(material);
     }
 
+    // EVENTS
+
     @EventHandler
     public void onSpawn(EntitySpawnEvent event){
         if (!(event.getEntity() instanceof LivingEntity livingEntity)) return;
@@ -181,15 +189,45 @@ public class VanillaItemManager extends SelfRegisteringListener{
         ItemStack item = event.getCursor();
         if (isDisabled(item)){
             event.setCancelled(true);
-            event.getViewers().getFirst().sendMessage(
-                    Component.text("Item is disabled!").color(NamedTextColor.RED));
-
+            event.getViewers().getFirst().sendMessage(Component.text("Item is disabled!").color(NamedTextColor.RED));
         } else if (isReplaced(item)){
-            event.getViewers().getFirst().sendMessage(
-                    Component.text("Item is replaced!").color(NamedTextColor.GREEN));
+            event.getViewers().getFirst().sendMessage(Component.text("Item is replaced!").color(NamedTextColor.GREEN));
             event.setCursor(replace(item));
         }
+    }
 
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onNewTrade(VillagerAcquireTradeEvent event){
+        System.out.println("CALLED");
+        MerchantRecipe recipe = event.getRecipe();
+
+        ItemStack result = recipe.getResult();
+        if (isDisabled(result)) {event.setCancelled(true); return;}
+        if (isReplaced(result)){
+            recipe = new MerchantRecipe(
+                    replace(result),
+                    recipe.getUses(),
+                    recipe.getMaxUses(),
+                    recipe.hasExperienceReward(),
+                    recipe.getVillagerExperience(),
+                    recipe.getPriceMultiplier(),
+                    recipe.getDemand(),
+                    recipe.getSpecialPrice(),
+                    recipe.shouldIgnoreDiscounts()
+            );
+            recipe.setIngredients(event.getRecipe().getIngredients());
+        }
+
+        List<ItemStack> newIngredients = new ArrayList<>();
+        for (ItemStack ingredient : recipe.getIngredients()) {
+            if (isReplaced(ingredient)) newIngredients.add(replace(ingredient));
+            else if (!isDisabled(ingredient)) newIngredients.add(ingredient);
+        }
+
+        if (newIngredients.isEmpty()){event.setCancelled(true);return;}
+
+        recipe.setIngredients(newIngredients);
+        event.setRecipe(recipe);
     }
 
     public static class ReplaceHelper{

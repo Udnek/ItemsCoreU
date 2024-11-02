@@ -6,13 +6,16 @@ import me.udnek.itemscoreu.customcomponent.AbstractComponentHolder;
 import me.udnek.itemscoreu.customevent.CustomItemGeneratedEvent;
 import me.udnek.itemscoreu.customrecipe.RecipeManager;
 import net.kyori.adventure.text.Component;
+import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.meta.*;
+import org.bukkit.inventory.meta.components.UseCooldownComponent;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.Plugin;
@@ -53,8 +56,24 @@ public abstract class ConstructableCustomItem extends AbstractComponentHolder<Cu
 
     @Override
     public @Nullable NamespacedKey getItemModel() {return NamespacedKey.fromString(getId());}
+    public @Nullable String getRawItemName(){return "item."+NamespacedKey.fromString(getId()).getNamespace()+"."+getRawId();}
     @Override
-    public @Nullable String getRawItemName() {return "item."+NamespacedKey.fromString(getId()).getNamespace()+"."+getRawId();}
+    public @Nullable Component getItemName() {
+        if (getRawItemName() == null) return null;
+        return Component.translatable(getRawItemName());
+    }
+    @Override
+    public @Nullable UseCooldownComponent getUseCooldown() {
+        UseCooldownComponent useCooldown = new ItemStack(Material.WHEAT).getItemMeta().getUseCooldown();
+        useCooldown.setCooldownGroup(NamespacedKey.fromString(getId()));
+        useCooldown.setCooldownSeconds(1);
+        return useCooldown;
+    }
+
+    @Override
+    public void setCooldown(@NotNull Player player, int ticks) {
+        player.setCooldown(itemStack, ticks);
+    }
 
     ///////////////////////////////////////////////////////////////////////////
     // CREATING
@@ -115,6 +134,7 @@ public abstract class ConstructableCustomItem extends AbstractComponentHolder<Cu
         if (getUseRemainderCustom() != null) itemMeta.setUseRemainder(getUseRemainderCustom().getItem());
         if (getEquippable() != null) itemMeta.setEquippable(getEquippable());
         if (getGlider() != null) itemMeta.setGlider(getGlider());
+        if (getUseCooldown() != null) itemMeta.setUseCooldown(getUseCooldown());
 
         return itemMeta;
     }
