@@ -22,7 +22,10 @@ public class AttributeUtils {
     public static void addDefaultAttributes(@NotNull ItemMeta itemMeta, @NotNull Material material){
         Multimap<Attribute, AttributeModifier> attributeModifiers = material.getDefaultAttributeModifiers();
         for (Map.Entry<Attribute, AttributeModifier> entry : attributeModifiers.entries()) {
-            itemMeta.addAttributeModifier(entry.getKey(), entry.getValue());
+            // todo remove when fixed
+            AttributeModifier oldModifier = entry.getValue();
+            NamespacedKey namespacedKey = new NamespacedKey(oldModifier.getKey().getNamespace(), oldModifier.getKey().getKey() + "_crutch");
+            itemMeta.addAttributeModifier(entry.getKey(), new AttributeModifier(namespacedKey, oldModifier.getAmount(), oldModifier.getOperation(), oldModifier.getSlotGroup()));
         }
     }
 

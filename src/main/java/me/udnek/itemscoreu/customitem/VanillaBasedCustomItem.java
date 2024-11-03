@@ -67,6 +67,9 @@ public class VanillaBasedCustomItem extends AbstractComponentHolder<CustomItem> 
     }
 
     @Override
+    public int getCooldown(@NotNull Player player) {return player.getCooldown(getItem());}
+
+    @Override
     public void getRecipes(@NotNull Consumer<@NotNull Recipe> consumer) {
         RecipeManager.getInstance().getRecipesAsResult(this.getItem(), consumer);
     }

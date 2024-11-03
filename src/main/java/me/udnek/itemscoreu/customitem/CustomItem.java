@@ -36,6 +36,10 @@ public interface CustomItem extends Registrable, ComponentHolder<CustomItem> {
         return get(getId(itemStack));
     }
     static @Nullable CustomItem get(@Nullable String id){return CustomRegistries.ITEM.get(id);}
+    static void consumeIfCustom(@Nullable ItemStack itemStack, @NotNull Consumer<@NotNull CustomItem> consumer){
+        CustomItem customItem = get(itemStack);
+        if (customItem != null) consumer.accept(customItem);
+    }
     static boolean idExists(String id){return CustomRegistries.ITEM.get(id) != null;}
     static boolean isCustom(@NotNull ItemStack itemStack) {
         if (itemStack.hasItemMeta()){
@@ -58,6 +62,8 @@ public interface CustomItem extends Registrable, ComponentHolder<CustomItem> {
     ///////////////////////////////////////////////////////////////////////////
     void setCooldown(@NotNull Player player, int ticks);
     default void setCooldownSeconds(@NotNull Player player, float seconds){setCooldown(player, (int) (seconds * 20));}
+    int getCooldown(@NotNull Player player);
+    default boolean hasCooldown(@NotNull Player player){return getCooldown(player) != 0;}
     @NotNull String getRawId();
     @NotNull ItemStack getItem();
     void getRecipes(@NotNull Consumer<@NotNull Recipe> consumer);

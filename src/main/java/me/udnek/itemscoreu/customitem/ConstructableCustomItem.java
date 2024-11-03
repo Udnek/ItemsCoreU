@@ -75,6 +75,8 @@ public abstract class ConstructableCustomItem extends AbstractComponentHolder<Cu
     public void setCooldown(@NotNull Player player, int ticks) {
         player.setCooldown(itemStack, ticks);
     }
+    @Override
+    public int getCooldown(@NotNull Player player) {return player.getCooldown(itemStack);}
 
     ///////////////////////////////////////////////////////////////////////////
     // CREATING
