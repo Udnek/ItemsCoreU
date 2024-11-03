@@ -23,14 +23,13 @@ public class CustomAttributeUtils {
     private final LivingEntity entity;
     private double amount;
 
-    private CustomAttributeUtils(CustomAttribute attribute, Collection<CustomEquipmentSlot> searchTroughSlots, LivingEntity entity){
+    public CustomAttributeUtils(@NotNull CustomAttribute attribute, @NotNull Collection<CustomEquipmentSlot> searchTroughSlots, @NotNull LivingEntity entity, double base){
         this.attribute = attribute;
         this.searchTroughSlots = searchTroughSlots;
-        this.amount = attribute.getDefaultValue();
         this.entity = entity;
+        this.amount = base;
     }
-
-    private void calculate(){
+    protected void calculate(){
 
         Map<@NotNull Integer, @NotNull ItemStack> slots = new HashMap<>();
 
@@ -88,14 +87,14 @@ public class CustomAttributeUtils {
         amount = Math.clamp(amount, attribute.getMinimum(), attribute.getMaximum());
     }
 
-    public static double calculate(@NotNull CustomAttribute attribute, @NotNull Collection<CustomEquipmentSlot> slots, @NotNull LivingEntity entity){
-        CustomAttributeUtils attributeUtils = new CustomAttributeUtils(attribute, slots, entity);
+    public static double calculate(@NotNull CustomAttribute attribute, @NotNull Collection<CustomEquipmentSlot> slots, @NotNull LivingEntity entity, double base){
+        CustomAttributeUtils attributeUtils = new CustomAttributeUtils(attribute, slots, entity, base);
         attributeUtils.calculate();
         return attributeUtils.amount;
     }
 
-    public static double calculate(@NotNull CustomAttribute attribute, @NotNull LivingEntity entity){
-        return calculate(attribute, CustomRegistries.EQUIPMENT_SLOT.getAll(), entity);
+    public static double calculate(@NotNull CustomAttribute attribute, @NotNull LivingEntity entity, double base){
+        return calculate(attribute, CustomRegistries.EQUIPMENT_SLOT.getAll(), entity, base);
     }
 }
 

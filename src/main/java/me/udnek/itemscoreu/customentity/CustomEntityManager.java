@@ -2,6 +2,7 @@ package me.udnek.itemscoreu.customentity;
 
 import com.google.common.base.Preconditions;
 import me.udnek.itemscoreu.ItemsCoreU;
+import me.udnek.itemscoreu.customitem.CustomItem;
 import me.udnek.itemscoreu.util.TickingTask;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
@@ -31,9 +32,8 @@ public class CustomEntityManager extends TickingTask implements Listener {
     }
 
     public void add(Entity entity, CustomEntity customEntity){
-        Preconditions.checkArgument(
-                !isLoaded(entity),
-                "Entity " + entity + " is already loaded!");
+        if (isLoaded(entity)) return;
+        //Preconditions.checkArgument(!isLoaded(entity), "Entity " + entity + " is already loaded!");
         loadedEntities.add(new CustomEntityHolder(entity, customEntity));
     }
 
@@ -83,7 +83,7 @@ public class CustomEntityManager extends TickingTask implements Listener {
     public void loadEntitiesInChunk(Chunk chunk){
         @NotNull Entity[] entities = chunk.getEntities();
         for (Entity entity : entities) {
-            CustomEntityType entityType = CustomEntity.getType(entity);
+            CustomEntityType<?> entityType = CustomEntity.getType(entity);
             if (entityType != null) entityType.load(entity);
         }
     }

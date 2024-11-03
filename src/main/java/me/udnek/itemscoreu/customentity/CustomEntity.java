@@ -13,32 +13,31 @@ import java.util.List;
 
 public interface CustomEntity {
 
-    static @Nullable CustomEntityType getType(Entity entity) {
+    static @Nullable CustomEntityType<?> getType(@NotNull Entity entity) {
         PersistentDataContainer dataContainer = entity.getPersistentDataContainer();
         if (!dataContainer.has(CustomEntityType.NAMESPACED_KEY)) return null;
         String id = dataContainer.get(CustomEntityType.NAMESPACED_KEY, PersistentDataType.STRING);
+        if (id == null) return null;
         return getType(id);
     }
-    static @Nullable CustomEntityType getType(String id){
+    static @Nullable CustomEntityType<?> getType(@NotNull String id){
         return CustomRegistries.ENTITY_TYPE.get(id);
     }
-    static @Nullable CustomEntity get(Entity entity){
+    static @Nullable CustomEntity get(@NotNull Entity entity){
         return CustomEntityManager.getInstance().get(entity);
     }
-    static boolean isCustom(Entity entity) {
+    static boolean isCustom(@NotNull Entity entity) {
         PersistentDataContainer dataContainer = entity.getPersistentDataContainer();
         return dataContainer.has(CustomEntityType.NAMESPACED_KEY);
-    }
-    static List<String> getAllIds(){
-        return new ArrayList<>(CustomRegistries.ENTITY_TYPE.getIds());
     }
     static boolean idExists(String id){
         return getType(id) != null;
     }
 
-    @NotNull Entity getNewEntity(Location location);
+    @NotNull Entity spawnNewEntity(Location location);
     void onSpawn();
-    void load(Entity entity);
+    void load(@NotNull Entity entity);
     void unload();
     void tick();
+    void remove();
 }

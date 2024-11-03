@@ -1,13 +1,28 @@
 package me.udnek.itemscoreu.customattribute;
 
 import me.udnek.itemscoreu.customregistry.Registrable;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.translation.Translatable;
+import org.bukkit.Tag;
+import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.LivingEntity;
 import org.jetbrains.annotations.NotNull;
 
 public interface CustomAttribute extends Translatable, Registrable {
+
+    TextColor EQUALS_COLOR = NamedTextColor.DARK_GREEN;
+    TextColor TAKE_COLOR = NamedTextColor.RED;
+    TextColor PLUS_COLOR = NamedTextColor.BLUE;
+
     double getDefaultValue();
     double getMinimum();
     double getMaximum();
-    double calculate(@NotNull LivingEntity entity);
+    @NotNull Component getLoreLine(double amount, @NotNull AttributeModifier.Operation operation);
+    @NotNull Component getLoreLineWithBase(double base);
+    default double calculate(@NotNull LivingEntity entity){
+        return calculateWithBase(entity, getDefaultValue());
+    }
+    double calculateWithBase(@NotNull LivingEntity entity, double base);
 }

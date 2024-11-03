@@ -21,7 +21,9 @@ public class AttributeUtils {
     }
     public static void addDefaultAttributes(@NotNull ItemMeta itemMeta, @NotNull Material material){
         Multimap<Attribute, AttributeModifier> attributeModifiers = material.getDefaultAttributeModifiers();
-        itemMeta.setAttributeModifiers(attributeModifiers);
+        for (Map.Entry<Attribute, AttributeModifier> entry : attributeModifiers.entries()) {
+            itemMeta.addAttributeModifier(entry.getKey(), entry.getValue());
+        }
     }
 
     public static void addAttribute(@NotNull ItemMeta itemMeta, @NotNull Attribute attribute, @NotNull NamespacedKey id, double amount, @NotNull AttributeModifier.Operation operation, @NotNull EquipmentSlotGroup slot){

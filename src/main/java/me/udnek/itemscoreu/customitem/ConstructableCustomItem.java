@@ -44,6 +44,7 @@ public abstract class ConstructableCustomItem extends AbstractComponentHolder<Cu
     public void initialize(@NotNull Plugin plugin){
         Preconditions.checkArgument(id == null, "Item already initialized!");
         id = new NamespacedKey(plugin, getRawId()).asString();
+        initializeComponents();
     }
 
     public void initializeComponents(){}
@@ -66,7 +67,7 @@ public abstract class ConstructableCustomItem extends AbstractComponentHolder<Cu
     public @Nullable UseCooldownComponent getUseCooldown() {
         UseCooldownComponent useCooldown = new ItemStack(Material.WHEAT).getItemMeta().getUseCooldown();
         useCooldown.setCooldownGroup(NamespacedKey.fromString(getId()));
-        useCooldown.setCooldownSeconds(1);
+        useCooldown.setCooldownSeconds(0.0000001f);
         return useCooldown;
     }
 
@@ -154,7 +155,6 @@ public abstract class ConstructableCustomItem extends AbstractComponentHolder<Cu
     @Override
     public @NotNull ItemStack getItem(){
         if (itemStack == null){
-            initializeComponents();
             ItemStack newItem = this.getMainItemStack();
             modifyFinalItemStack(newItem);
             CustomItemGeneratedEvent event = new CustomItemGeneratedEvent(this, newItem, getLoreBuilder());

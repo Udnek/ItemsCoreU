@@ -1,5 +1,8 @@
 package me.udnek.itemscoreu.customentity;
 
+import me.udnek.itemscoreu.customrecipe.CustomRecipe;
+import me.udnek.itemscoreu.customregistry.CustomRegistries;
+import me.udnek.itemscoreu.customregistry.CustomRegistry;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -25,7 +28,7 @@ public class CustomEntityCommand implements CommandExecutor, TabExecutor {
         if (!CustomEntity.idExists(id)) {
             return false;
         }
-        CustomEntityType entityType = CustomEntity.getType(id);
+        CustomEntityType<?> entityType = CustomEntity.getType(id);
         entityType.spawn(player.getLocation());
         return true;
     }
@@ -33,6 +36,6 @@ public class CustomEntityCommand implements CommandExecutor, TabExecutor {
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         if (args.length > 1) return new ArrayList<>();
-        return CustomEntity.getAllIds();
+        return new ArrayList<>(CustomRegistries.ENTITY_TYPE.getIds());
     }
 }

@@ -9,7 +9,7 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 
-public abstract class CustomEntityType extends AbstractRegistrable {
+public abstract class CustomEntityType<CEntity extends CustomEntity> extends AbstractRegistrable {
     public static final NamespacedKey NAMESPACED_KEY = new NamespacedKey(ItemsCoreU.getInstance(), "custom_entity_type");
     protected final String rawId;
 
@@ -19,18 +19,20 @@ public abstract class CustomEntityType extends AbstractRegistrable {
 
     public @NotNull String getRawId() {return rawId;}
 
-    protected abstract CustomEntity getNewCustomEntityClass();
-    public void spawn(Location location) {
-        CustomEntity customEntity = getNewCustomEntityClass();
-        Entity entity = customEntity.getNewEntity(location);
+    protected abstract CEntity getNewCustomEntityClass();
+    public CEntity spawn(@NotNull Location location) {
+        CEntity customEntity = getNewCustomEntityClass();
+        Entity entity = customEntity.spawnNewEntity(location);
 
         PersistentDataContainer persistentDataContainer = entity.getPersistentDataContainer();
         persistentDataContainer.set(NAMESPACED_KEY, PersistentDataType.STRING, getId());
 
         CustomEntityManager.getInstance().add(entity, customEntity);
         customEntity.onSpawn();
+
+        return customEntity;
     }
-    public void load(Entity entity) {
+    public void load(@NotNull Entity entity) {
         CustomEntity customEntity = getNewCustomEntityClass();
         CustomEntityManager.getInstance().add(entity, customEntity);
         customEntity.load(entity);

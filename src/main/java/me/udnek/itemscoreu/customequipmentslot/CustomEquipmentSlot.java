@@ -42,6 +42,39 @@ public interface CustomEquipmentSlot extends Translatable, Registrable, Predicat
             null,
             "item.modifiers.armor"));
 
+    GroupSlot ANY = (GroupSlot) register(new ConstructableGroupSlot("any", Set.of(
+            MAIN_HAND,
+            OFF_HAND,
+            HEAD,
+            CHEST,
+            LEGS,
+            FEET
+    ), EquipmentSlotGroup.ANY, null, "item.modifiers.any"));
+
+    static @NotNull CustomEquipmentSlot getFromVanilla(@NotNull EquipmentSlot slot){
+        return switch (slot){
+            case HEAD -> HEAD;
+            case CHEST -> CHEST;
+            case LEGS -> LEGS;
+            case FEET -> FEET;
+            case HAND -> HAND;
+            case BODY -> ARMOR;
+            case OFF_HAND -> OFF_HAND;
+        };
+    }
+    static @NotNull CustomEquipmentSlot getFromVanilla(@NotNull EquipmentSlotGroup slot){
+        if (slot == EquipmentSlotGroup.HEAD) return HEAD;
+        if (slot == EquipmentSlotGroup.CHEST) return CHEST;
+        if (slot == EquipmentSlotGroup.LEGS) return LEGS;
+        if (slot == EquipmentSlotGroup.FEET) return FEET;
+
+        if (slot == EquipmentSlotGroup.HAND) return HAND;
+        if (slot == EquipmentSlotGroup.OFFHAND) return OFF_HAND;
+        if (slot == EquipmentSlotGroup.ARMOR) return ARMOR;
+        if (slot == EquipmentSlotGroup.BODY) return ARMOR;
+        return ANY;
+    }
+
     @Override
     boolean test(@NotNull CustomEquipmentSlot slot);
     boolean isAppropriateSlot(@NotNull Entity entity, int slot);
