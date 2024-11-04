@@ -55,23 +55,23 @@ public class NmsLootPoolBuilder implements NmsLootPoolContainer{
     @Override
     public void removeEntry(int n) {entries.remove(n);}
 
-    protected LootPoolSingletonContainer getContainerByPredicate(@NotNull LootTable lootTable, Predicate<ItemStack> predicate){
-        LootPoolSingletonContainer foundContainer = NmsUtils.getSingletonContainerByItems(
+    protected LootPool getPoolByPredicate(@NotNull LootTable lootTable, Predicate<ItemStack> predicate){
+        LootPool found = NmsUtils.getLootPoolByPredicate(
                 NmsUtils.toNmsLootTable(lootTable),
                 itemStack -> predicate.test(NmsUtils.toBukkitItemStack(itemStack)));
 
-        return foundContainer;
+        return found;
     }
     public @NotNull NmsLootPoolBuilder copyConditionsFrom(@NotNull LootTable lootTable, Predicate<ItemStack> predicate){
-        LootPoolSingletonContainer foundContainer = getContainerByPredicate(lootTable, predicate);
-        Preconditions.checkArgument(foundContainer != null, "Container not found!");
-        this.conditions = (List<LootItemCondition>) Reflex.getFieldValue(foundContainer, NmsFields.CONDITIONS);
+        LootPool found = getPoolByPredicate(lootTable, predicate);
+        Preconditions.checkArgument(found != null, "Pool not found!");
+        this.conditions = (List<LootItemCondition>) Reflex.getFieldValue(found, NmsFields.CONDITIONS);
         return this;
     }
     public @NotNull NmsLootPoolBuilder copyFunctionsFrom(@NotNull LootTable lootTable, Predicate<ItemStack> predicate){
-        LootPoolSingletonContainer foundContainer = getContainerByPredicate(lootTable, predicate);
-        Preconditions.checkArgument(foundContainer != null, "Container not found!");
-        this.functions = (List<LootItemFunction>) Reflex.getFieldValue(foundContainer, NmsFields.FUNCTIONS);
+        LootPool found = getPoolByPredicate(lootTable, predicate);
+        Preconditions.checkArgument(found != null, "Pool not found!");
+        this.functions = (List<LootItemFunction>) Reflex.getFieldValue(found, NmsFields.FUNCTIONS);
         return this;
     }
 

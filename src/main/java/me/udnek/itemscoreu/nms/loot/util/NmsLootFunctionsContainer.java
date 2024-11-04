@@ -14,6 +14,7 @@ public class NmsLootFunctionsContainer extends NmsContainer<List<LootItemFunctio
 
     @Override
     public List<LootItemFunction> get() {
+        if (supply == null) return List.of();
         return new ArrayList<>(supply);
     }
 }

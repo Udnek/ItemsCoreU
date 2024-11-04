@@ -48,7 +48,7 @@ public class VanillaBasedCustomItem extends AbstractComponentHolder<CustomItem> 
         newItem.setAmount(original.getAmount());
         newItem.editMeta(itemMeta -> {
             for (Map.Entry<Enchantment, Integer> entry : original.getEnchantments().entrySet()) {
-                itemMeta.addEnchant(entry.getKey(), entry.getValue(), false);
+                itemMeta.addEnchant(entry.getKey(), entry.getValue(), true);
             }
         });
         return newItem;

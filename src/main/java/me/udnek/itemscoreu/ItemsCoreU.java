@@ -17,6 +17,10 @@ import me.udnek.itemscoreu.customloot.LootTableUtils;
 import me.udnek.itemscoreu.customrecipe.RecipeManager;
 import me.udnek.itemscoreu.customregistry.CustomRegistries;
 import me.udnek.itemscoreu.customregistry.CustomRegistry;
+import me.udnek.itemscoreu.nms.Nms;
+import me.udnek.itemscoreu.nms.loot.entry.NmsCustomLootEntryBuilder;
+import me.udnek.itemscoreu.nms.loot.pool.NmsLootPoolBuilder;
+import me.udnek.itemscoreu.nms.loot.util.ItemStackCreator;
 import me.udnek.itemscoreu.resourcepack.ResourcePackCommand;
 import me.udnek.itemscoreu.resourcepack.ResourcePackablePlugin;
 import me.udnek.itemscoreu.serializabledata.SerializableDataManager;
@@ -24,7 +28,9 @@ import me.udnek.itemscoreu.util.InitializationProcess;
 import me.udnek.itemscoreu.util.NMS.NMSTest;
 import me.udnek.itemscoreu.util.VanillaItemManager;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.loot.LootTables;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class ItemsCoreU extends JavaPlugin implements ResourcePackablePlugin {
@@ -73,9 +79,10 @@ public final class ItemsCoreU extends JavaPlugin implements ResourcePackablePlug
         //NMSTest.registerAttribute("test", 0, 0, 8);
         //MobEffect mobEffect = NMSTest.registerEffect();
         //ProtocolTest.kek();
+
         SerializableDataManager.loadConfig();
         this.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable(){
-            public void run(){
+            public void run() {
                 InitializationProcess.start();
             }
         });

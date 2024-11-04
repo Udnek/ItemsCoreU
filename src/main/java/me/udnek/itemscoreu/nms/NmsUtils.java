@@ -1,8 +1,8 @@
 package me.udnek.itemscoreu.nms;
 
 import com.mojang.datafixers.util.Either;
+import me.udnek.itemscoreu.nms.loot.util.NmsFields;
 import me.udnek.itemscoreu.util.Reflex;
-import net.kyori.adventure.key.Key;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
@@ -85,7 +85,7 @@ public class NmsUtils {
         return ((CraftLootTable) lootTable).getHandle();
     }
     public static List<LootPool> getPools(LootTable lootTable){
-        return (List<LootPool>) Reflex.getFieldValue(lootTable, "pools");
+        return (List<LootPool>) Reflex.getFieldValue(lootTable, NmsFields.POOLS);
     }
     public static List<LootPoolEntry> getAllEntries(List<LootPoolSingletonContainer> containers){
         List<LootPoolEntry> entries = new ArrayList<>();
@@ -98,7 +98,7 @@ public class NmsUtils {
         return ((LootPoolEntry) Reflex.getFieldValue(container, "entry"));
     }
     public static List<LootPoolEntryContainer> getEntries(LootPool lootPool){
-        return (List<LootPoolEntryContainer>) Reflex.getFieldValue(lootPool, "entries");
+        return (List<LootPoolEntryContainer>) Reflex.getFieldValue(lootPool, NmsFields.ENTRIES);
     }
     public static List<LootPoolSingletonContainer> getAllSingletonContainers(List<LootPoolEntryContainer> containers){
         List<LootPoolSingletonContainer> result = new ArrayList<>();
@@ -110,7 +110,7 @@ public class NmsUtils {
     public static List<LootPoolSingletonContainer> getAllSingletonContainers(LootPoolEntryContainer container){
         if (container instanceof NestedLootTable){
             LootTable lootTable;
-            Either<ResourceKey<LootTable>, LootTable> either = (Either<ResourceKey<LootTable>, LootTable>) Reflex.getFieldValue(container, "contents");
+            Either<ResourceKey<LootTable>, LootTable> either = (Either<ResourceKey<LootTable>, LootTable>) Reflex.getFieldValue(container, NmsFields.CONTENTS);
             if (either.left() != null && either.left().isPresent()){
                 lootTable = getLootTable(either.left().get());
             } else lootTable = either.right().get();
@@ -120,18 +120,27 @@ public class NmsUtils {
         else if (container instanceof LootPoolSingletonContainer singletonContainer) {
             return List.of(singletonContainer);
         } else {
-            List<LootPoolEntryContainer> childrenContainers = (List<LootPoolEntryContainer>) Reflex.getFieldValue(container, "children");
+            List<LootPoolEntryContainer> childrenContainers = (List<LootPoolEntryContainer>) Reflex.getFieldValue(container, NmsFields.CHILDREN);
             return getAllSingletonContainers(childrenContainers);
         }
     }
+    public static List<LootPoolSingletonContainer> getAllSingletonContainers(LootPool lootPool){
+        List<LootPoolSingletonContainer> singletonContainers = new ArrayList<>();
+        List<LootPoolEntryContainer> containers = (List<LootPoolEntryContainer>) Reflex.getFieldValue(lootPool, NmsFields.ENTRIES);
+        singletonContainers.addAll(getAllSingletonContainers(containers));
+        return singletonContainers;
+    }
+
     public static List<LootPoolSingletonContainer> getAllSingletonContainers(LootTable lootTable){
-        List<LootPool> lootPools = (List<LootPool>) Reflex.getFieldValue(lootTable, "pools");
+        List<LootPool> lootPools = (List<LootPool>) Reflex.getFieldValue(lootTable, NmsFields.POOLS);
         List<LootPoolSingletonContainer> singletonContainers = new ArrayList<>();
         for (LootPool lootPool : lootPools) {
-            List<LootPoolEntryContainer> containers = (List<LootPoolEntryContainer>) Reflex.getFieldValue(lootPool, "entries");
-            singletonContainers.addAll(getAllSingletonContainers(containers));
+            singletonContainers.addAll(getAllSingletonContainers(lootPool));
         }
         return singletonContainers;
+    }
+    public static void getPossibleLoot(List<LootPoolSingletonContainer> containers, Consumer<net.minecraft.world.item.ItemStack> consumer){
+        containers.forEach(container -> getPossibleLoot(getEntry(container), consumer));
     }
     public static void getPossibleLoot(LootPoolSingletonContainer container, Consumer<net.minecraft.world.item.ItemStack> consumer){
         getPossibleLoot(getEntry(container), consumer);
@@ -146,21 +155,27 @@ public class NmsUtils {
             consumer.accept(itemStack);
         }
     }
-    public static @Nullable LootPoolSingletonContainer getSingletonContainerByItems(LootTable lootTable, Predicate<net.minecraft.world.item.ItemStack> predicate){
+
+    public static @Nullable LootPool getLootPoolByPredicate(LootTable lootTable, Predicate<net.minecraft.world.item.ItemStack> predicate){
+        List<LootPool> pools = (List<LootPool>) Reflex.getFieldValue(lootTable, NmsFields.POOLS);
+        for (LootPool pool : pools) {
+            AtomicBoolean found = new AtomicBoolean(false);
+            getPossibleLoot(getAllSingletonContainers(pool), itemStack -> {
+                if (predicate.test(itemStack)) found.set(true);
+            });
+            if (found.get()) return pool;
+        }
+        return null;
+    }
+
+    public static @Nullable LootPoolSingletonContainer getSingletonContainerByPredicate(LootTable lootTable, Predicate<net.minecraft.world.item.ItemStack> predicate){
         List<LootPoolSingletonContainer> containers = getAllSingletonContainers(lootTable);
         AtomicBoolean found = new AtomicBoolean(false);
         for (LootPoolSingletonContainer container : containers) {
-            getPossibleLoot(container, new Consumer<net.minecraft.world.item.ItemStack>() {
-                @Override
-                public void accept(net.minecraft.world.item.ItemStack itemStack) {
-                    if (predicate.test(itemStack)){
-                        found.set(true);
-                    }
-                }
+            getPossibleLoot(container, itemStack -> {
+                if (predicate.test(itemStack)) found.set(true);
             });
-            if (found.get()){
-                return container;
-            }
+            if (found.get()) return container;
         }
         return null;
     }

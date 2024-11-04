@@ -8,6 +8,7 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.LivingEntity;
 import org.jetbrains.annotations.NotNull;
+import oshi.util.tuples.Pair;
 
 public class ConstructableCustomAttribute extends AbstractRegistrable implements CustomAttribute{
 
@@ -15,13 +16,19 @@ public class ConstructableCustomAttribute extends AbstractRegistrable implements
     protected final double defaultValue;
     protected final double minValue;
     protected final double maxValue;
+    protected final boolean beneficial;
 
-    public ConstructableCustomAttribute(@NotNull String rawId, double defaultValue, double min, double max){
+    public ConstructableCustomAttribute(@NotNull String rawId, double defaultValue, double min, double max, boolean beneficial){
         this.rawId = rawId;
         this.defaultValue = defaultValue;
         this.minValue = min;
         this.maxValue = max;
+        this.beneficial = beneficial;
     }
+    public ConstructableCustomAttribute(@NotNull String rawId, double defaultValue, double min, double max){
+        this(rawId,defaultValue, min, max, true);
+    }
+
     public ConstructableCustomAttribute(@NotNull String rawId, double min, double max){
         this(rawId,0, min, max);
     }
@@ -40,13 +47,18 @@ public class ConstructableCustomAttribute extends AbstractRegistrable implements
 
 
     public @NotNull Component getLoreLine(double amount, @NotNull AttributeModifier.Operation operation) {
-        String key;
         TextColor color;
-        if (amount < 0) {
-            key = "attribute.modifier.take."; color = TAKE_COLOR;
+        String key;
+        if (amount >= 0) {
+            key = "attribute.modifier.plus.";
+            if (beneficial) color = PLUS_COLOR;
+            else color = TAKE_COLOR;
         } else {
-            key = "attribute.modifier.plus."; color = PLUS_COLOR;
+            key = "attribute.modifier.take.";
+            if (beneficial) color = TAKE_COLOR;
+            else color = PLUS_COLOR;
         }
+
         key += switch (operation){
             case ADD_NUMBER -> "0";
             case ADD_SCALAR -> "1";
@@ -55,7 +67,7 @@ public class ConstructableCustomAttribute extends AbstractRegistrable implements
 
         if (operation != AttributeModifier.Operation.ADD_NUMBER) amount*=100d;
 
-        return Component.translatable(key, Component.text(Utils.roundToTwoDigits(amount)), Component.translatable(translationKey())).color(color);
+        return Component.translatable(key, Component.text(Utils.roundToTwoDigits(Math.abs(amount))), Component.translatable(translationKey())).color(color);
     }
 
     @Override

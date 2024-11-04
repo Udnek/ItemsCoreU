@@ -14,6 +14,7 @@ public class NmsLootConditionsContainer extends NmsContainer<List<LootItemCondit
 
     @Override
     public List<LootItemCondition> get() {
+        if (supply == null) return List.of();
         return new ArrayList<>(supply);
     }
 }

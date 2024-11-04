@@ -1,11 +1,9 @@
 package me.udnek.itemscoreu.nms.loot.entry;
 
 import me.udnek.itemscoreu.nms.NmsUtils;
-import me.udnek.itemscoreu.nms.loot.util.ItemStackCreator;
-import me.udnek.itemscoreu.nms.loot.util.NmsFunctioned;
-import me.udnek.itemscoreu.nms.loot.util.NmsLootConditionsContainer;
-import me.udnek.itemscoreu.nms.loot.util.NmsLootFunctionsContainer;
+import me.udnek.itemscoreu.nms.loot.util.*;
 import me.udnek.itemscoreu.util.Reflex;
+import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.entries.LootPoolEntryContainer;
 import net.minecraft.world.level.storage.loot.entries.LootPoolSingletonContainer;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
@@ -35,20 +33,36 @@ public class NmsCustomLootEntryBuilder implements NmsLootEntryContainer, NmsFunc
     }
 
     public @NotNull NmsCustomLootEntryBuilder copyConditionsFrom(@NotNull LootTable lootTable, @NotNull Predicate<org.bukkit.inventory.ItemStack> predicate){
-        LootPoolSingletonContainer foundContainer = NmsUtils.getSingletonContainerByItems(
+        LootPoolSingletonContainer foundContainer = NmsUtils.getSingletonContainerByPredicate(
                 NmsUtils.toNmsLootTable(lootTable),
                 itemStack -> predicate.test(NmsUtils.toBukkitItemStack(itemStack)));
-        if (foundContainer == null) return this;
-        List<LootItemCondition> conditions = (List<LootItemCondition>) Reflex.getFieldValue(foundContainer, "conditions");
-        return conditions(conditions);
+        LootPool foundPool = NmsUtils.getLootPoolByPredicate(
+                NmsUtils.toNmsLootTable(lootTable),
+                itemStack -> predicate.test(NmsUtils.toBukkitItemStack(itemStack)));
+        if (foundContainer != null){
+            List<LootItemCondition> conditions = (List<LootItemCondition>) Reflex.getFieldValue(foundContainer, NmsFields.CONDITIONS);
+            if (!conditions.isEmpty()) return conditions(conditions);
+        } if (foundPool != null) {
+            List<LootItemCondition> conditions = (List<LootItemCondition>) Reflex.getFieldValue(foundPool, NmsFields.CONDITIONS);
+            if (!conditions.isEmpty()) return conditions(conditions);
+        }
+        return this;
     }
     public @NotNull NmsCustomLootEntryBuilder copyFunctionsFrom(@NotNull LootTable lootTable, @NotNull Predicate<org.bukkit.inventory.ItemStack> predicate){
-        LootPoolSingletonContainer foundContainer = NmsUtils.getSingletonContainerByItems(
+        LootPoolSingletonContainer foundContainer = NmsUtils.getSingletonContainerByPredicate(
                 NmsUtils.toNmsLootTable(lootTable),
                 itemStack -> predicate.test(NmsUtils.toBukkitItemStack(itemStack)));
-        if (foundContainer == null) return this;
-        List<LootItemFunction> functions = (List<LootItemFunction>) Reflex.getFieldValue(foundContainer, "functions");
-        return functions(functions);
+        LootPool foundPool = NmsUtils.getLootPoolByPredicate(
+                NmsUtils.toNmsLootTable(lootTable),
+                itemStack -> predicate.test(NmsUtils.toBukkitItemStack(itemStack)));
+        if (foundContainer != null){
+            List<LootItemFunction> functions = (List<LootItemFunction>) Reflex.getFieldValue(foundContainer, NmsFields.FUNCTIONS);
+            if (!functions.isEmpty()) return functions(functions);
+        } if (foundPool != null) {
+            List<LootItemFunction> conditions = (List<LootItemFunction>) Reflex.getFieldValue(foundPool, NmsFields.FUNCTIONS);
+            if (!conditions.isEmpty()) return functions(functions);
+        }
+        return this;
     }
 
 
