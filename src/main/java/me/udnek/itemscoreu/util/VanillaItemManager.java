@@ -196,7 +196,7 @@ public class VanillaItemManager extends SelfRegisteringListener{
         }
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onNewTrade(VillagerAcquireTradeEvent event){
         MerchantRecipe recipe = event.getRecipe();
 

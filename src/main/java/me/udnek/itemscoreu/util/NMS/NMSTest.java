@@ -11,7 +11,9 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.ItemTags;
+import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.entity.EquipmentSlotGroup;
@@ -19,6 +21,7 @@ import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.attributes.RangedAttribute;
+import net.minecraft.world.entity.player.Input;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantment;
@@ -31,7 +34,6 @@ import org.bukkit.inventory.EquipmentSlot;
 
 import java.awt.*;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.IdentityHashMap;
@@ -197,6 +199,14 @@ public class NMSTest {
         //Registry.register(BuiltInRegistries.ITEM,ResourceKey.create(BuiltInRegistries.ITEM.key(), ResourceLocation.fromNamespaceAndPath("icu", "test")), new Item(new Item.Properties()));
         registry.freeze();
     }
+
+    // todo MOVE TO NMS
+    public static PlayerInput test(ServerPlayer player){
+        Input input = player.getLastClientInput();
+        return new PlayerInput(input.forward(), input.backward(), input.left(), input.right(), input.jump(), input.shift(), input.sprint());
+    }
+
+    public record PlayerInput(boolean forward, boolean backward, boolean left, boolean right, boolean jump, boolean sneak, boolean sprint){}
 
     public static void editItem(){
         final MappedRegistry<Item> registry = (DefaultedMappedRegistry<Item>) BuiltInRegistries.ITEM;

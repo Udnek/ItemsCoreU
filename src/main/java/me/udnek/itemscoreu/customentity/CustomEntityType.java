@@ -19,6 +19,11 @@ public abstract class CustomEntityType<CEntity extends CustomEntity> extends Abs
 
     public @NotNull String getRawId() {return rawId;}
 
+    public boolean isThisEntity(@NotNull Entity entity){
+        return CustomEntity.getType(entity) == this;
+    }
+
+
     protected abstract CEntity getNewCustomEntityClass();
     public CEntity spawn(@NotNull Location location) {
         CEntity customEntity = getNewCustomEntityClass();

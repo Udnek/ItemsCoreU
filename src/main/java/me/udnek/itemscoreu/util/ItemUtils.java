@@ -19,6 +19,10 @@ import java.util.function.Predicate;
 
 public class ItemUtils {
 
+    public static boolean isVanillaMaterial(@NotNull ItemStack itemStack, @NotNull Material material){
+        return !CustomItem.isCustom(itemStack) && itemStack.getType() == material;
+    }
+
     public static boolean isSameIds(@NotNull ItemStack itemA, @NotNull ItemStack itemB){
         CustomItem customA = CustomItem.get(itemA);
         CustomItem customB = CustomItem.get(itemB);

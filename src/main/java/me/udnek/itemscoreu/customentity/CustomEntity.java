@@ -34,10 +34,12 @@ public interface CustomEntity {
         return getType(id) != null;
     }
 
+
     @NotNull Entity spawnNewEntity(Location location);
     void onSpawn();
     void load(@NotNull Entity entity);
     void unload();
     void tick();
     void remove();
+    @NotNull CustomEntityType<?> getType();
 }

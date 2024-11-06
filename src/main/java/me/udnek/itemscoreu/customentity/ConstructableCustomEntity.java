@@ -1,5 +1,7 @@
 package me.udnek.itemscoreu.customentity;
 
+import net.minecraft.advancements.critereon.InputPredicate;
+import net.minecraft.world.entity.player.Player;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
