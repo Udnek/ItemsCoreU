@@ -2,6 +2,7 @@ package me.udnek.itemscoreu.customattribute;
 
 import me.udnek.itemscoreu.customequipmentslot.CustomEquipmentSlot;
 import org.bukkit.attribute.AttributeModifier;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -52,12 +53,12 @@ public class CustomAttributesContainer{
         public Builder(){
             container = new CustomAttributesContainer();
         }
-        public Builder add(CustomAttribute customAttribute, double amount, AttributeModifier.Operation operation, CustomEquipmentSlot slot){
+        public Builder add(@NotNull CustomAttribute customAttribute, double amount, @NotNull AttributeModifier.Operation operation, @NotNull CustomEquipmentSlot slot){
             CustomAttributeModifier attributeModifier = new CustomAttributeModifier(amount, operation, slot);
             return add(customAttribute, attributeModifier);
         }
 
-        public Builder add(CustomAttribute customAttribute, CustomAttributeModifier attributeModifier){
+        public Builder add(@NotNull CustomAttribute customAttribute, @NotNull CustomAttributeModifier attributeModifier){
             container.add(customAttribute, attributeModifier);
             return this;
         }

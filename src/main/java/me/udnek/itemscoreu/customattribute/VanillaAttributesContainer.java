@@ -4,6 +4,7 @@ import me.udnek.itemscoreu.customequipmentslot.CustomEquipmentSlot;
 import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -53,12 +54,12 @@ public class VanillaAttributesContainer {
         public Builder(){
             container = new VanillaAttributesContainer();
         }
-        public VanillaAttributesContainer.Builder add(Attribute attribute, NamespacedKey key, double amount, AttributeModifier.Operation operation, CustomEquipmentSlot slot){
+        public VanillaAttributesContainer.Builder add(@NotNull Attribute attribute, @NotNull NamespacedKey key, double amount, @NotNull AttributeModifier.Operation operation, @NotNull CustomEquipmentSlot slot){
             CustomKeyedAttributeModifier attributeModifier = new CustomKeyedAttributeModifier(key, amount, operation, slot);
             return add(attribute, attributeModifier);
         }
 
-        public VanillaAttributesContainer.Builder add(Attribute attribute, CustomKeyedAttributeModifier attributeModifier){
+        public VanillaAttributesContainer.Builder add(@NotNull Attribute attribute, @NotNull CustomKeyedAttributeModifier attributeModifier){
             container.add(attribute, attributeModifier);
             return this;
         }

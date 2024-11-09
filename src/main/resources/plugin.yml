@@ -34,3 +34,9 @@ commands:
       aliases: [ itemscoreuattributeu ]
       permission: itemscoreu.admin
       permission-message: "You do not have permission to use this command"
+  clear_attribute_modifiers:
+      description: "cleat_attribute_modifiers"
+      usage: "/cleat_attribute_modifiers"
+      aliases: []
+      permission: itemscoreu.admin
+      permission-message: "You do not have permission to use this command"

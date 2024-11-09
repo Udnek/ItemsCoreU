@@ -1,5 +1,6 @@
 package me.udnek.itemscoreu;
 
+import me.udnek.itemscoreu.customattribute.ClearAttributeCommand;
 import me.udnek.itemscoreu.customattribute.CustomAttributeCommand;
 import me.udnek.itemscoreu.customblock.CustomBlock;
 import me.udnek.itemscoreu.customblock.CustomBlockListener;
@@ -64,6 +65,7 @@ public final class ItemsCoreU extends JavaPlugin implements ResourcePackablePlug
         getCommand("resourcepacku").setExecutor(new ResourcePackCommand());
         getCommand("helpu").setExecutor(CustomHelpCommand.getInstance());
         getCommand("attributeu").setExecutor(new CustomAttributeCommand());
+        getCommand("clear_attribute_modifiers").setExecutor(new ClearAttributeCommand());
 
         // TICKERS
         CustomEntityManager.getInstance().start(this);
