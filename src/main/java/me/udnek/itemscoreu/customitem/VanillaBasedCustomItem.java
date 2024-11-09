@@ -7,6 +7,7 @@ import me.udnek.itemscoreu.customrecipe.RecipeManager;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.Tag;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -22,7 +23,8 @@ import java.util.function.Consumer;
 public class VanillaBasedCustomItem extends AbstractComponentHolder<CustomItem> implements CustomItem{
 
     protected final Material material;
-    protected String id;
+    private String id;
+
     public VanillaBasedCustomItem(@NotNull Material material){
         Preconditions.checkArgument(material != null, "Material can not be null!");
         this.material = material;
@@ -68,6 +70,9 @@ public class VanillaBasedCustomItem extends AbstractComponentHolder<CustomItem> 
 
     @Override
     public int getCooldown(@NotNull Player player) {return player.getCooldown(getItem());}
+
+    @Override
+    public boolean isTagged(@NotNull Tag<Material> tag) {return tag.isTagged(material);}
 
     @Override
     public void getRecipes(@NotNull Consumer<@NotNull Recipe> consumer) {

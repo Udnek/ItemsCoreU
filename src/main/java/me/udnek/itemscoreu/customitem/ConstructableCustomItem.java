@@ -10,6 +10,7 @@ import me.udnek.itemscoreu.nms.Nms;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.Tag;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.Player;
@@ -79,6 +80,11 @@ public abstract class ConstructableCustomItem extends AbstractComponentHolder<Cu
     }
     @Override
     public int getCooldown(@NotNull Player player) {return player.getCooldown(getItemNoClone());}
+
+    @Override
+    public boolean isTagged(@NotNull Tag<Material> tag) {
+        return tag.isTagged(getMaterial());
+    }
 
     ///////////////////////////////////////////////////////////////////////////
     // CREATING
