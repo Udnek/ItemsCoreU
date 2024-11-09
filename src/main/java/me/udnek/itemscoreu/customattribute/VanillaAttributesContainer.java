@@ -24,8 +24,7 @@ public class VanillaAttributesContainer {
         for (Map.Entry<Attribute, List<CustomKeyedAttributeModifier>> entry : attributes.entrySet()) {
             Attribute attribute = entry.getKey();
             for (CustomKeyedAttributeModifier modifier : entry.getValue()) {
-                if (modifier.getEquipmentSlot() != slot) continue;
-                newContainer.add(attribute, modifier);
+                if (modifier.getEquipmentSlot().test(slot)) newContainer.add(attribute, modifier);
             }
 
         }

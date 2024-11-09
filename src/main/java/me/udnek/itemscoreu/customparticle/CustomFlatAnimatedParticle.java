@@ -1,27 +1,26 @@
 package me.udnek.itemscoreu.customparticle;
 
 import org.bukkit.Location;
+import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
+import org.jetbrains.annotations.NotNull;
 
 public abstract class CustomFlatAnimatedParticle extends CustomFlatParticle{
 
-    protected ItemStack itemStack = this.getItemStack();
+    protected ItemStack icon = this.getItemStack();
 
-    public CustomFlatAnimatedParticle(Location location) {
+    public CustomFlatAnimatedParticle(@NotNull Location location) {
         super(location);
     }
 
-    protected void updateCustomModelData(int customModelData){
-        ItemMeta itemMeta = itemStack.getItemMeta();
-        itemMeta.setCustomModelData(customModelData);
-        itemStack.setItemMeta(itemMeta);
+    protected abstract @NotNull NamespacedKey getCurrentModelPath();
+
+    protected void updateModel(){
+        icon.editMeta(itemMeta -> itemMeta.setItemModel(getCurrentModelPath()));
     }
 
-    protected abstract int currentModelData();
-
     protected void nextFrame(){
-        updateCustomModelData(currentModelData());
-        entity.setItemStack(itemStack);
+        updateModel();
+        display.setItemStack(icon);
     }
 }

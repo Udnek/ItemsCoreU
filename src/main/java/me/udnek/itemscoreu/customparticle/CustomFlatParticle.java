@@ -13,7 +13,7 @@ public abstract class CustomFlatParticle extends CustomParticle{
 
     @Override
     public Transformation getTransformation() {
-        Transformation transformation = entity.getTransformation();
+        Transformation transformation = display.getTransformation();
         transformation.getScale().set(getXScale(), getYScale(), 0);
         return transformation;
     }
@@ -25,7 +25,7 @@ public abstract class CustomFlatParticle extends CustomParticle{
 
     @Override
     protected void afterSpawned() {
-        entity.setBillboard(Display.Billboard.CENTER);
-        entity.setItemStack(getItemStack());
+        display.setBillboard(Display.Billboard.CENTER);
+        display.setItemStack(getItemStack());
     }
 }

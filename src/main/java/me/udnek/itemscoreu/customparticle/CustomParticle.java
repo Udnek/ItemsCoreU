@@ -8,15 +8,16 @@ import org.bukkit.entity.ItemDisplay;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Transformation;
+import org.jetbrains.annotations.NotNull;
 
 public abstract class CustomParticle {
 
     Location location;
     public final int framesAmount = this.getDuration() / this.frameTime();
     public int frameNumber = 0;
-    protected ItemDisplay entity;
+    protected ItemDisplay display;
 
-    public CustomParticle(Location location){
+    public CustomParticle(@NotNull Location location){
         this.location = location;
     }
 
@@ -31,7 +32,7 @@ public abstract class CustomParticle {
         new BukkitRunnable() {
             @Override
             public void run() {
-                entity.remove();
+                display.remove();
             }
         }.runTaskLater(ItemsCoreU.getInstance(), this.getDuration());
 
@@ -39,7 +40,7 @@ public abstract class CustomParticle {
             @Override
             public void run() {
                 if (frameNumber == framesAmount) {
-                    entity.remove();
+                    display.remove();
                     this.cancel();
                 }
                 CustomParticle.this.nextFrame();
@@ -53,7 +54,7 @@ public abstract class CustomParticle {
 
     protected void spawn(){
         ItemDisplay entity = (ItemDisplay) location.getWorld().spawnEntity(location, EntityType.ITEM_DISPLAY);
-        this.entity = entity;
+        this.display = entity;
         entity.setItemStack(new ItemStack(Material.BARRIER));
         entity.setTransformation(this.getTransformation());
         this.afterSpawned();

@@ -23,8 +23,7 @@ public class CustomAttributesContainer{
         for (Map.Entry<CustomAttribute, List<CustomAttributeModifier>> entry : attributes.entrySet()) {
             CustomAttribute attribute = entry.getKey();
             for (CustomAttributeModifier modifier : entry.getValue()) {
-                if (modifier.getEquipmentSlot() != slot) continue;
-                newContainer.add(attribute, modifier);
+                if (modifier.getEquipmentSlot().test(slot)) newContainer.add(attribute, modifier);
             }
 
         }
