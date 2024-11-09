@@ -5,6 +5,8 @@ import me.udnek.itemscoreu.customattribute.AttributeUtils;
 import me.udnek.itemscoreu.customcomponent.AbstractComponentHolder;
 import me.udnek.itemscoreu.customevent.CustomItemGeneratedEvent;
 import me.udnek.itemscoreu.customrecipe.RecipeManager;
+import me.udnek.itemscoreu.nms.ConsumableComponent;
+import me.udnek.itemscoreu.nms.Nms;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -73,21 +75,21 @@ public abstract class ConstructableCustomItem extends AbstractComponentHolder<Cu
 
     @Override
     public void setCooldown(@NotNull Player player, int ticks) {
-        player.setCooldown(itemStack, ticks);
+        player.setCooldown(getItemNoClone(), ticks);
     }
     @Override
-    public int getCooldown(@NotNull Player player) {return player.getCooldown(itemStack);}
+    public int getCooldown(@NotNull Player player) {return player.getCooldown(getItemNoClone());}
 
     ///////////////////////////////////////////////////////////////////////////
     // CREATING
     ///////////////////////////////////////////////////////////////////////////
 
-    protected void setPersistentData(ItemMeta itemMeta){
+    protected void setPersistentData(@NotNull ItemMeta itemMeta){
         PersistentDataContainer dataContainer = itemMeta.getPersistentDataContainer();
         dataContainer.set(PERSISTENT_DATA_CONTAINER_NAMESPACE, PersistentDataType.STRING, id);
     }
 
-    protected ItemMeta getMainItemMeta(){
+    protected @NotNull ItemMeta getMainItemMeta(){
         ItemMeta itemMeta = new ItemStack(getMaterial()).getItemMeta();
         setPersistentData(itemMeta);
 
@@ -142,20 +144,26 @@ public abstract class ConstructableCustomItem extends AbstractComponentHolder<Cu
         return itemMeta;
     }
 
-    protected void modifyFinalItemMeta(ItemMeta itemMeta){}
+    protected void modifyFinalItemMeta(@NotNull ItemMeta itemMeta){}
 
-    protected ItemStack getMainItemStack(){
+    protected @NotNull ItemStack getMainItemStack(){
         ItemMeta itemMeta = this.getMainItemMeta();
         this.modifyFinalItemMeta(itemMeta);
         ItemStack itemStack = new ItemStack(this.getMaterial());
         itemStack.setItemMeta(itemMeta);
+
+        // todo replace when bukkit ready
+        ConsumableComponent consumable = getConsumable();
+        if (consumable != null){
+            itemStack = Nms.get().setConsumableComponent(itemStack, consumable);
+        }
+
         return itemStack;
     }
 
-    protected void modifyFinalItemStack(ItemStack itemStack){}
+    protected void modifyFinalItemStack(@NotNull ItemStack itemStack){}
 
-    @Override
-    public @NotNull ItemStack getItem(){
+    protected @NotNull ItemStack getItemNoClone(){
         if (itemStack == null){
             ItemStack newItem = this.getMainItemStack();
             modifyFinalItemStack(newItem);
@@ -164,7 +172,12 @@ public abstract class ConstructableCustomItem extends AbstractComponentHolder<Cu
             event.getLoreBuilder().buildAndApply(event.getItemStack());
             itemStack = event.getItemStack();
         }
-        return itemStack.clone();
+        return itemStack;
+    }
+
+    @Override
+    public @NotNull ItemStack getItem(){
+        return getItemNoClone().clone();
     }
 
     @Override

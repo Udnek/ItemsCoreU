@@ -12,6 +12,9 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
+import net.minecraft.core.component.DataComponentMap;
+import net.minecraft.core.component.DataComponentType;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
 import net.minecraft.network.protocol.common.custom.GameTestAddMarkerDebugPayload;
@@ -27,6 +30,7 @@ import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.npc.VillagerTrades;
 import net.minecraft.world.item.MapItem;
 import net.minecraft.world.item.SpawnEggItem;
+import net.minecraft.world.item.component.Consumable;
 import net.minecraft.world.item.trading.MerchantOffer;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.ComposterBlock;
@@ -61,6 +65,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.MerchantRecipe;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.map.MapCursor;
 import org.bukkit.util.StructureSearchResult;
 import org.jetbrains.annotations.NotNull;
@@ -95,20 +100,38 @@ public class Nms {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    // USAGES
+    // ITEMS
     ///////////////////////////////////////////////////////////////////////////
 
     public float getCompostableChance(@NotNull Material material){
         return ComposterBlock.COMPOSTABLES.getOrDefault(NmsUtils.toNmsMaterial(material), 0);
     }
 
+    public @Nullable ConsumableComponent getConsumableComponent(@NotNull ItemStack bukkitItem){
+        Consumable consumable = NmsUtils.toNmsItemStack(bukkitItem).getComponents().get(DataComponents.CONSUMABLE);
+        if (consumable == null) return null;
+        return new ConsumableComponent(consumable);
+    }
+    public @Nullable ConsumableComponent getConsumableComponent(@NotNull Material material){
+        Consumable consumable = NmsUtils.toNmsMaterial(material).components().get(DataComponents.CONSUMABLE);
+        if (consumable == null) return null;
+        return new ConsumableComponent(consumable);
+    }
+    public @NotNull ItemStack setConsumableComponent(@NotNull ItemStack bukkitStack, @Nullable ConsumableComponent component){
+        net.minecraft.world.item.ItemStack itemStack = NmsUtils.toNmsItemStack(bukkitStack);
+        if (component == null) itemStack.set(DataComponents.CONSUMABLE, null);
+        else itemStack.set(DataComponents.CONSUMABLE, component.getNms());
+        return NmsUtils.toBukkitItemStack(itemStack);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    // USAGES
+    ///////////////////////////////////////////////////////////////////////////
 
     public @NotNull ItemStack getSpawnEggByType(@NotNull EntityType type){
         net.minecraft.world.entity.EntityType<?> aClass = CraftEntityType.bukkitToMinecraft(type);
         return CraftItemStack.asNewCraftStack(SpawnEggItem.byId(aClass));
     }
-
-
 
     ///////////////////////////////////////////////////////////////////////////
     // ENCHANTMENT
@@ -153,27 +176,6 @@ public class Nms {
     public @NotNull NmsLootTableContainer getLootTableContainer(org.bukkit.loot.LootTable lootTable){
         return new NmsDefaultLootTableContainer(NmsUtils.toNmsLootTable(lootTable));
     }
-
-/*    public void addLootPool(@NotNull org.bukkit.loot.LootTable bukkitLootTable, @NotNull NmsLootPoolContainer nmsLootPoolContainer){
-        LootTable lootTable = NmsUtils.toNmsLootTable(bukkitLootTable);
-
-        for (LootPoolSingletonContainer singletonContainer : NmsUtils.getAllSingletonContainers(lootTable)) {
-            if (singletonContainer instanceof DynamicLoot) return;
-        }
-
-        LootPool lootPool = nmsLootPoolContainer.get();
-
-        List<LootPool> pools = NmsUtils.getPools(lootTable);
-        if (pools instanceof ArrayList<LootPool>){
-            pools.add(lootPool);
-            return;
-        }
-        List<LootPool> newPools = new ArrayList<>(pools);
-        newPools.add(lootPool);
-
-        LogUtils.pluginLog("Added loot pool to: " + lootTable.craftLootTable.key().asString());
-        Reflex.setFieldValue(lootTable, "pools", newPools);
-    }*/
 
     public void removeAllEntriesContains(@NotNull org.bukkit.loot.LootTable bukkitLootTable, @NotNull Predicate<ItemStack> predicate){
         replaceAllEntriesContains(bukkitLootTable, predicate, null);

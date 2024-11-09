@@ -1,5 +1,6 @@
 package me.udnek.itemscoreu.customitem;
 
+import me.udnek.itemscoreu.nms.ConsumableComponent;
 import me.udnek.itemscoreu.util.LoreBuilder;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
@@ -56,7 +57,7 @@ public interface CustomItemProperties {
     // 2.9 can_break
     // 2.10 can_place_on
     // 2.11 charged_projectiles
-    // todo 2.12 consumable
+    @Nullable default ConsumableComponent getConsumable(){return null;} // 2.12 consumable todo replace when bukkit ready
     // 2.13 container
     // 2.14 container_loot
     // 2.15 custom_data

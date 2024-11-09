@@ -3,6 +3,7 @@ package me.udnek.itemscoreu.nms;
 import com.mojang.datafixers.util.Either;
 import me.udnek.itemscoreu.nms.loot.util.NmsFields;
 import me.udnek.itemscoreu.util.Reflex;
+import net.kyori.adventure.key.Key;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
@@ -47,7 +48,7 @@ public class NmsUtils {
         DedicatedServer server = ((CraftServer) Bukkit.getServer()).getServer();
         return server.registryAccess().lookup(registry).orElse(null);
     }
-    public static ResourceLocation getResourceLocation(NamespacedKey key){
+    public static ResourceLocation getResourceLocation(Key key){
         return ResourceLocation.parse(key.toString());
     }
 

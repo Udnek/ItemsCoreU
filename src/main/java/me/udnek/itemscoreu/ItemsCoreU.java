@@ -31,6 +31,7 @@ import me.udnek.itemscoreu.util.VanillaItemManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.loot.LootTables;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -86,6 +87,9 @@ public final class ItemsCoreU extends JavaPlugin implements ResourcePackablePlug
         this.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable(){
             public void run() {
                 InitializationProcess.start();
+
+                ItemStack itemStack = new ItemStack(Material.BRICK);
+                Nms.get().getConsumableComponent(itemStack);
             }
         });
     }
