@@ -9,7 +9,7 @@ public class InitializationProcess {
 
     public static void start(){
         new InitializationEvent(Step.BEFORE_REGISTRIES_INITIALIZATION).callEvent();
-        LogUtils.pluginLog("RegistriesInitialization started");
+        LogUtils.pluginLog("Registries After Initialization started");
         for (CustomRegistry<?> registry : CustomRegistries.getRegistries()) {
             for (Registrable registrable : registry.getAll()) {
                 registrable.afterInitialization();

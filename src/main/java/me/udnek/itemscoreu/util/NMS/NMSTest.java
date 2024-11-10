@@ -165,8 +165,17 @@ public class NMSTest {
     // TODO: 8/18/2024 WRAP
     public static MobEffect registerEffect(){
 
-
         Reflex.setFieldValue(BuiltInRegistries.MOB_EFFECT, "frozen", false);
+
+        Registry<MobEffect> registry = NmsUtils.getRegistry(Registries.MOB_EFFECT);
+
+        Class<?> tagSetClass = null;
+        try {tagSetClass = Class.forName("net.minecraft.core.MappedRegistry$TagSet");
+        } catch (ClassNotFoundException e) {throw new RuntimeException(e);}
+        Method unboundMethod = Reflex.getMethod(tagSetClass, "unbound");
+        Object tags = Reflex.invokeMethod(null, unboundMethod);
+        Reflex.setFieldValue(registry, "allTags", tags);
+
 
         MobEffect mobEffect;
         try {

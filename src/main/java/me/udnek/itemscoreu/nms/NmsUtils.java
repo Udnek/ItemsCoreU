@@ -4,6 +4,8 @@ import com.mojang.datafixers.util.Either;
 import me.udnek.itemscoreu.nms.loot.util.NmsFields;
 import me.udnek.itemscoreu.util.Reflex;
 import net.kyori.adventure.key.Key;
+import net.kyori.adventure.key.Keyed;
+import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
@@ -20,10 +22,8 @@ import net.minecraft.world.level.storage.loot.entries.LootPoolEntry;
 import net.minecraft.world.level.storage.loot.entries.LootPoolEntryContainer;
 import net.minecraft.world.level.storage.loot.entries.LootPoolSingletonContainer;
 import net.minecraft.world.level.storage.loot.entries.NestedLootTable;
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
-import org.bukkit.World;
+import org.bukkit.*;
+import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.craftbukkit.v1_21_R2.CraftLootTable;
 import org.bukkit.craftbukkit.v1_21_R2.CraftServer;
 import org.bukkit.craftbukkit.v1_21_R2.CraftWorld;
@@ -35,6 +35,7 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.management.Attribute;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -44,35 +45,49 @@ import java.util.function.Predicate;
 public class NmsUtils {
 
     // REGISTRY
-    public static <T> Registry<T> getRegistry(ResourceKey<Registry<T>> registry){
+    public static <T> Registry<T> getRegistry(@NotNull ResourceKey<Registry<T>> registry){
         DedicatedServer server = ((CraftServer) Bukkit.getServer()).getServer();
         return server.registryAccess().lookup(registry).orElse(null);
     }
-    public static ResourceLocation getResourceLocation(Key key){
+    public static ResourceLocation getResourceLocation(@NotNull Key key){
         return ResourceLocation.parse(key.toString());
     }
 
+    public static <T> Holder<T> toNms(@NotNull ResourceKey<Registry<T>> registry, @NotNull Keyed keyed){
+        return getRegistry(registry).get(getResourceLocation(keyed.key())).get();
+    }
+
     // ITEM
-    public static net.minecraft.world.item.ItemStack toNmsItemStack(ItemStack itemStack){
+    public static net.minecraft.world.item.ItemStack toNmsItemStack(@NotNull ItemStack itemStack){
         return CraftItemStack.asNMSCopy(itemStack);
     }
-    public static Item toNmsMaterial(Material material){
+    public static Item toNmsMaterial(@NotNull Material material){
         return CraftMagicNumbers.getItem(material);
     }
-    public static ItemStack toBukkitItemStack(net.minecraft.world.item.ItemStack itemStack){
+    public static ItemStack toBukkitItemStack(@NotNull net.minecraft.world.item.ItemStack itemStack){
         return CraftItemStack.asBukkitCopy(itemStack);
     }
     // ENTITY
-    public static Entity toNmsEntity(org.bukkit.entity.Entity entity){
+    public static Entity toNmsEntity(@NotNull org.bukkit.entity.Entity entity){
         return ((CraftEntity) entity).getHandle();
     }
-    public static LivingEntity toNmsEntity(org.bukkit.entity.LivingEntity entity){
+    public static LivingEntity toNmsEntity(@NotNull org.bukkit.entity.LivingEntity entity){
         return ((CraftLivingEntity) entity).getHandle();
     }
     // WORLD
-    public static ServerLevel toNmsWorld(World world){
+    public static ServerLevel toNmsWorld(@NotNull World world){
         return ((CraftWorld) world).getHandle();
     }
+
+    // Attribute
+    public static net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation toNmsOperation(@NotNull AttributeModifier.Operation bukkit){
+        return switch (bukkit){
+            case ADD_NUMBER -> net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_VALUE;
+            case ADD_SCALAR -> net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_MULTIPLIED_BASE;
+            case MULTIPLY_SCALAR_1 -> net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL;
+        };
+    }
+
 
     ///////////////////////////////////////////////////////////////////////////
     // ENCHANTMENT
@@ -148,7 +163,7 @@ public class NmsUtils {
     }
     public static void getPossibleLoot(LootPoolEntry entry, Consumer<net.minecraft.world.item.ItemStack> consumer){
         NmsItemConsumer localConsumer = new NmsItemConsumer();
-        try {entry.createItemStack(localConsumer, Nms.GENERIC_LOOT_CONTEXT);
+        try {entry.createItemStack(localConsumer, Nms.get().getGenericLootContext());
         } catch (Exception ignored) {}
 
         for (net.minecraft.world.item.ItemStack itemStack : localConsumer.get()) {

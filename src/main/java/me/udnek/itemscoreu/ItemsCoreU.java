@@ -4,6 +4,7 @@ import me.udnek.itemscoreu.customattribute.ClearAttributeCommand;
 import me.udnek.itemscoreu.customattribute.CustomAttributeCommand;
 import me.udnek.itemscoreu.customblock.CustomBlock;
 import me.udnek.itemscoreu.customblock.CustomBlockListener;
+import me.udnek.itemscoreu.customeffect.TestEffect;
 import me.udnek.itemscoreu.customentity.CustomEntityCommand;
 import me.udnek.itemscoreu.customentity.CustomEntityManager;
 import me.udnek.itemscoreu.customequipmentslot.CustomEquipmentSlot;
@@ -19,20 +20,15 @@ import me.udnek.itemscoreu.customrecipe.RecipeManager;
 import me.udnek.itemscoreu.customregistry.CustomRegistries;
 import me.udnek.itemscoreu.customregistry.CustomRegistry;
 import me.udnek.itemscoreu.nms.Nms;
-import me.udnek.itemscoreu.nms.loot.entry.NmsCustomLootEntryBuilder;
-import me.udnek.itemscoreu.nms.loot.pool.NmsLootPoolBuilder;
-import me.udnek.itemscoreu.nms.loot.util.ItemStackCreator;
 import me.udnek.itemscoreu.resourcepack.ResourcePackCommand;
 import me.udnek.itemscoreu.resourcepack.ResourcePackablePlugin;
 import me.udnek.itemscoreu.serializabledata.SerializableDataManager;
 import me.udnek.itemscoreu.util.InitializationProcess;
-import me.udnek.itemscoreu.util.NMS.NMSTest;
+import me.udnek.itemscoreu.nms.PacketHandler;
 import me.udnek.itemscoreu.util.VanillaItemManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.attribute.Attribute;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.loot.LootTables;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class ItemsCoreU extends JavaPlugin implements ResourcePackablePlugin {
@@ -73,15 +69,11 @@ public final class ItemsCoreU extends JavaPlugin implements ResourcePackablePlug
         customHudTicker = new CustomHudTicker();
         customHudTicker.start(this);
 
+        PacketHandler.initialize();
 
-        //NMSTest.editItem();
-        //NMSTest.testEnchantment();
-        //NMSTest.editEnchantment();
-        
-        // TODO: 8/19/2024 REMOVE
-        //NMSTest.registerAttribute("test", 0, 0, 8);
-        //MobEffect mobEffect = NMSTest.registerEffect();
-        //ProtocolTest.kek();
+
+
+        CustomRegistries.EFFECT.register(this, new TestEffect());
 
         SerializableDataManager.loadConfig();
         this.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable(){

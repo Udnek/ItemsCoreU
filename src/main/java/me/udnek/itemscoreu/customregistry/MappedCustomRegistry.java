@@ -16,7 +16,7 @@ public class MappedCustomRegistry<T extends Registrable> implements CustomRegist
     protected HashMap<String, T> map = new HashMap<>();
     protected String category;
 
-    public MappedCustomRegistry(String category){
+    public MappedCustomRegistry(@NotNull String category){
         this.category = category;
     }
 

@@ -8,13 +8,13 @@ import me.udnek.itemscoreu.nms.loot.table.NmsDefaultLootTableContainer;
 import me.udnek.itemscoreu.nms.loot.table.NmsLootTableContainer;
 import me.udnek.itemscoreu.util.LogUtils;
 import me.udnek.itemscoreu.util.Reflex;
+import net.kyori.adventure.key.Key;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
-import net.minecraft.core.component.DataComponentMap;
-import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
 import net.minecraft.network.protocol.common.custom.GameTestAddMarkerDebugPayload;
@@ -23,6 +23,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.ReloadableServerRegistries;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.context.ContextKeySet;
+import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
@@ -65,38 +66,41 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.MerchantRecipe;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.map.MapCursor;
 import org.bukkit.util.StructureSearchResult;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Predicate;
 
 public class Nms {
 
-    public static final LootContext GENERIC_LOOT_CONTEXT;
-
-    static {
-        ServerLevel serverLevel = NmsUtils.toNmsWorld(Bukkit.getWorld("world"));
-
-        LootParams.Builder paramsBuilder = new LootParams.Builder(serverLevel);
-        ContextKeySet.Builder keyBuilder = new ContextKeySet.Builder();
-
-        keyBuilder.required(LootContextParams.ORIGIN);
-        paramsBuilder.withParameter(LootContextParams.ORIGIN, new Vec3(0, 0, 0));
-        paramsBuilder.withLuck(1);
-
-        LootContext.Builder contextBuilder = new LootContext.Builder(paramsBuilder.create(keyBuilder.build()));
-        GENERIC_LOOT_CONTEXT = contextBuilder.create(Optional.empty());
-    }
+    private LootContext genericLootContext;
 
     private static Nms instance;
     public static Nms get(){
         if (instance == null) instance = new Nms();
         return instance;
+    }
+
+    public @NotNull LootContext getGenericLootContext(){
+        if (genericLootContext == null){
+            ServerLevel serverLevel = NmsUtils.toNmsWorld(Bukkit.getWorld("world"));
+
+            LootParams.Builder paramsBuilder = new LootParams.Builder(serverLevel);
+            ContextKeySet.Builder keyBuilder = new ContextKeySet.Builder();
+
+            keyBuilder.required(LootContextParams.ORIGIN);
+            paramsBuilder.withParameter(LootContextParams.ORIGIN, new Vec3(0, 0, 0));
+            paramsBuilder.withLuck(1);
+
+            LootContext.Builder contextBuilder = new LootContext.Builder(paramsBuilder.create(keyBuilder.build()));
+            genericLootContext = contextBuilder.create(Optional.empty());
+        }
+        return genericLootContext;
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -141,6 +145,28 @@ public class Nms {
         Registry<net.minecraft.world.item.enchantment.Enchantment> registry = NmsUtils.getRegistry(Registries.ENCHANTMENT);
         net.minecraft.world.item.enchantment.Enchantment enchantment = registry.getValue(NmsUtils.getResourceLocation(bukkitEnchantment.getKey()));
         return new NmsEnchantmentContainer(enchantment);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    // ENCHANTMENT
+    ///////////////////////////////////////////////////////////////////////////
+
+    public @NotNull Holder<MobEffect> registerEffect(@NotNull MobEffect effect, @NotNull Key key){
+
+        Reflex.setFieldValue(BuiltInRegistries.MOB_EFFECT, "frozen", false);
+
+        Registry<MobEffect> registry = NmsUtils.getRegistry(Registries.MOB_EFFECT);
+
+        Class<?> tagSetClass;
+        try {tagSetClass = Class.forName("net.minecraft.core.MappedRegistry$TagSet");
+        } catch (ClassNotFoundException e) {throw new RuntimeException(e);}
+        Method unboundMethod = Reflex.getMethod(tagSetClass, "unbound");
+        Object tags = Reflex.invokeMethod(null, unboundMethod);
+        Reflex.setFieldValue(registry, "allTags", tags);
+
+        Holder.Reference<MobEffect> holder = Registry.registerForHolder(BuiltInRegistries.MOB_EFFECT, NmsUtils.getResourceLocation(key), effect);
+        BuiltInRegistries.MOB_EFFECT.freeze();
+        return holder;
     }
 
     ///////////////////////////////////////////////////////////////////////////
