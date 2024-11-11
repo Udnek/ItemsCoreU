@@ -8,9 +8,6 @@ import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public interface CustomEntity {
 
     static @Nullable CustomEntityType<?> getType(@NotNull Entity entity) {

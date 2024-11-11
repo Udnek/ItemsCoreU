@@ -3,8 +3,6 @@ package me.udnek.itemscoreu.customenchantment;
 import me.udnek.itemscoreu.nms.NmsContainer;
 import me.udnek.itemscoreu.nms.NmsUtils;
 import me.udnek.itemscoreu.util.Reflex;
-import net.kyori.adventure.key.Key;
-import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
@@ -20,7 +18,6 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public class NmsEnchantmentContainer extends NmsContainer<Enchantment> {
     public NmsEnchantmentContainer(@NotNull Enchantment supply) {

@@ -8,6 +8,7 @@ import net.kyori.adventure.key.Key;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.particles.ColorParticleOption;
+import net.minecraft.core.particles.DustColorTransitionOptions;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.registries.Registries;
@@ -58,18 +59,30 @@ public abstract class ConstructableCustomEffect extends AbstractRegistrable impl
             mobEffect = Reflex.construct(constructor, category, getColorIfDefaultParticle());
         } else {
             Constructor<MobEffect> constructor = Reflex.getConstructor(MobEffect.class, MobEffectCategory.class, int.class, ParticleOptions.class);
-            ParticleOptions particleOptions = (ParticleOptions) NmsUtils.toNms(Registries.PARTICLE_TYPE, getParticle()).value();
+            ParticleType<?> particleType = NmsUtils.toNms(Registries.PARTICLE_TYPE, getParticle()).value();
 
-            // todo particle settings
 
-/*            new ModifyParticleConsumer() {
+            ModifyParticleConsumerWithReturn modifyParticleConsumer = new ModifyParticleConsumerWithReturn() {
+                private ParticleOptions newParticle = null;
+                @Override
+                public @Nullable ParticleOptions getOptions() {return newParticle;}
+
                 @Override
                 public void color(int color) {
-                    if (particleOptions instanceof ColorParticleOption colorParticleOption){
-                        colorParticleOption.
-                    }
+                    newParticle = ColorParticleOption.create((ParticleType<ColorParticleOption>) particleType, color);
                 }
-            };*/
+                @Override
+                public void dustTransition(int fromColor, int toColor, float size) {
+                    newParticle = new DustColorTransitionOptions(fromColor, toColor, size);
+                }
+            };
+            modifyParticleIfNotDefault(modifyParticleConsumer);
+            ParticleOptions particleOptions = modifyParticleConsumer.getOptions();
+
+            if (particleOptions == null) {
+                System.out.println("USING DEFAULT");
+                particleOptions = (ParticleOptions) particleType;
+            }
 
             mobEffect = Reflex.construct(constructor, category, getColorIfDefaultParticle(), particleOptions);
         }
@@ -112,5 +125,10 @@ public abstract class ConstructableCustomEffect extends AbstractRegistrable impl
 
     public interface ModifyParticleConsumer{
         void color(int color);
+        void dustTransition(int fromColor, int toColor, float size);
+    }
+
+    private interface ModifyParticleConsumerWithReturn extends ModifyParticleConsumer{
+        @Nullable ParticleOptions getOptions();
     }
 }

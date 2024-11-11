@@ -12,12 +12,9 @@ import me.udnek.itemscoreu.customeffect.CustomEffect;
 import me.udnek.itemscoreu.customregistry.CustomRegistries;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffect;
-import net.minecraft.world.effect.MobEffects;
 import org.bukkit.potion.PotionEffectType;
-import org.jetbrains.annotations.NotNull;
 
 public class PacketHandler {
     

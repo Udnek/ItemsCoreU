@@ -4,7 +4,6 @@ import me.udnek.itemscoreu.customequipmentslot.CustomEquipmentSlot;
 import org.bukkit.Keyed;
 import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.AttributeModifier;
-import org.bukkit.inventory.EquipmentSlotGroup;
 import org.jetbrains.annotations.NotNull;
 
 public class CustomKeyedAttributeModifier extends CustomAttributeModifier implements Keyed {

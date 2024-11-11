@@ -3,7 +3,6 @@ package me.udnek.itemscoreu.customattribute;
 import me.udnek.itemscoreu.customregistry.AbstractRegistrable;
 import me.udnek.itemscoreu.util.Utils;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.AttributeModifier;

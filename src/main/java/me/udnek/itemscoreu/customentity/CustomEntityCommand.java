@@ -1,8 +1,6 @@
 package me.udnek.itemscoreu.customentity;
 
-import me.udnek.itemscoreu.customrecipe.CustomRecipe;
 import me.udnek.itemscoreu.customregistry.CustomRegistries;
-import me.udnek.itemscoreu.customregistry.CustomRegistry;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;

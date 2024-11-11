@@ -1,7 +1,6 @@
 package me.udnek.itemscoreu.customeffect;
 
 import me.udnek.itemscoreu.customregistry.Registrable;
-import net.minecraft.world.effect.MobEffectInstance;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.potion.PotionEffect;
 import org.jetbrains.annotations.NotNull;
@@ -17,4 +16,9 @@ public interface CustomEffect extends Registrable {
     }
     boolean has(@NotNull LivingEntity entity);
     @Nullable PotionEffect get(@NotNull LivingEntity entity);
+    default int getAppliedLevel(@NotNull LivingEntity entity){
+        PotionEffect effect = get(entity);
+        if (effect == null) return -1;
+        return effect.getAmplifier();
+    }
 }
