@@ -4,6 +4,7 @@ import me.udnek.itemscoreu.customattribute.ClearAttributeCommand;
 import me.udnek.itemscoreu.customattribute.CustomAttributeCommand;
 import me.udnek.itemscoreu.customblock.CustomBlock;
 import me.udnek.itemscoreu.customblock.CustomBlockListener;
+import me.udnek.itemscoreu.customeffect.ConstructableCustomEffect;
 import me.udnek.itemscoreu.customeffect.TestEffect;
 import me.udnek.itemscoreu.customentity.CustomEntityCommand;
 import me.udnek.itemscoreu.customentity.CustomEntityManager;
@@ -26,10 +27,16 @@ import me.udnek.itemscoreu.serializabledata.SerializableDataManager;
 import me.udnek.itemscoreu.util.InitializationProcess;
 import me.udnek.itemscoreu.nms.PacketHandler;
 import me.udnek.itemscoreu.util.VanillaItemManager;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffects;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.potion.PotionEffectType;
+import org.bukkit.potion.PotionEffectTypeCategory;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public final class ItemsCoreU extends JavaPlugin implements ResourcePackablePlugin {
     private static JavaPlugin instance;

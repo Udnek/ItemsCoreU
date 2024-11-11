@@ -28,7 +28,7 @@ public class TestEffect extends ConstructableCustomEffect{
 
     @Override
     public @Nullable Particle getParticle() {
-        return Particle.SONIC_BOOM;
+        return Particle.SWEEP_ATTACK;
     }
 
     @Override
