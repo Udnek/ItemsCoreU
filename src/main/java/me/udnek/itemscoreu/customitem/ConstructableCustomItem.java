@@ -74,6 +74,8 @@ public abstract class ConstructableCustomItem extends AbstractComponentHolder<Cu
         return useCooldown;
     }
 
+    public void initializeAttributes(@NotNull ItemMeta itemMeta){}
+
     @Override
     public void setCooldown(@NotNull Player player, int ticks) {
         player.setCooldown(getItemNoClone(), ticks);
@@ -125,27 +127,21 @@ public abstract class ConstructableCustomItem extends AbstractComponentHolder<Cu
         if (itemMeta instanceof ArmorMeta armorMeta) armorMeta.setTrim(getTrim());
         if (itemMeta instanceof MusicInstrumentMeta instrumentMeta) instrumentMeta.setInstrument(getMusicInstrument());
         if (getAddDefaultAttributes()) AttributeUtils.addDefaultAttributes(itemMeta, getMaterial());
-        if (getAttributes() != null){
-            for (Map.Entry<Attribute, List<AttributeModifier>> entry : getAttributes().entrySet()) {
-                Attribute attribute = entry.getKey();
-                for (AttributeModifier modifier : entry.getValue()) {
-                    itemMeta.addAttributeModifier(attribute, modifier);
-                }
-            }
-        }
         if (getBlockData() != null && itemMeta instanceof BlockDataMeta blockDataMeta){
             blockDataMeta.setBlockData(getBlockData());
         }
         ItemFlag[] tooltipHides = getTooltipHides();
-        if (tooltipHides != null) itemMeta.addItemFlags(tooltipHides);
-
-        // 1.21.3
         if (getItemModel() != null) itemMeta.setItemModel(getItemModel());
         if (getUseRemainder() != null) itemMeta.setUseRemainder(getUseRemainder());
         if (getUseRemainderCustom() != null) itemMeta.setUseRemainder(getUseRemainderCustom().getItem());
         if (getEquippable() != null) itemMeta.setEquippable(getEquippable());
         if (getGlider() != null) itemMeta.setGlider(getGlider());
         if (getUseCooldown() != null) itemMeta.setUseCooldown(getUseCooldown());
+
+        // attributes
+        getAttributes(itemMeta::addAttributeModifier);
+        initializeAttributes(itemMeta);
+        if (tooltipHides != null) itemMeta.addItemFlags(tooltipHides);
 
         return itemMeta;
     }

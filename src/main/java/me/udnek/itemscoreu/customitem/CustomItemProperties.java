@@ -46,7 +46,7 @@ public interface CustomItemProperties {
     /////////////////////////
     // COMPONENTS
     /////////////////////////
-    @Nullable default Map<Attribute, List<AttributeModifier>> getAttributes(){return null;}
+    default void getAttributes(@NotNull AttributeConsumer consumer){}
     // 2.2 banner_patterns
     // 2.3 base_color
     // 2.4 bees
@@ -116,31 +116,7 @@ public interface CustomItemProperties {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    // CONSUMABLE
-    //  death_protection
-    // EQUIPPABLE
-    //JUKEBOX
-    // COLDOWN
-
-
+    interface AttributeConsumer{
+        void consume(@NotNull Attribute attribute, @NotNull AttributeModifier modifier);
+    }
 }
