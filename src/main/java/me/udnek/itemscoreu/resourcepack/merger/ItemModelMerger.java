@@ -7,29 +7,26 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.BufferedReader;
 import java.util.*;
 
-public class ItemModelMerger {
+public class ItemModelMerger implements RPFileMerger{
 
     public static final String CUSTOM_MODEL_DATA = "custom_model_data";
     public static final String OVERRIDES = "overrides";
     public static final String PREDICATE = "predicate";
 
     private final List<JsonObject> jsons = new ArrayList<>();
-    private JsonObject merged = null;
+    private JsonElement merged = null;
 
     public ItemModelMerger(){}
+    @Override
     public void add(@NotNull JsonObject jsonObject){
         jsons.add(jsonObject);
     }
-    public void add(@NotNull BufferedReader reader){
-        jsons.add((JsonObject) JsonParser.parseReader(reader));
-    }
 
+    @Override
     public void merge(){
         List<JsonObject> allOverrides = new ArrayList<>();
 
@@ -96,7 +93,8 @@ public class ItemModelMerger {
         return false;
     }
 
-    public String getMergedAsString() {
+    @Override
+    public @NotNull String getMergedAsString() {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
         JsonNode jsonNode;

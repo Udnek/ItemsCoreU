@@ -25,9 +25,10 @@ import java.util.function.Consumer;
 
 public class ResourcePackMerger {
 
-    private static final RPPath[] MERGE_DIRECTORIES = new RPPath[]{
-            new RPPath(null, "assets/minecraft/models/item")
-    };
+    public static final RPPath LANG_DIRECTORY = new RPPath(null, "assets/minecraft/lang");
+    public static final RPPath ITEM_MODEL_DIRECTORY = new RPPath(null, "assets/minecraft/models/item");
+
+    private static final RPPath[] MERGE_DIRECTORIES = new RPPath[]{LANG_DIRECTORY, ITEM_MODEL_DIRECTORY};
 
     private final SortedPathsContainer container = new SortedPathsContainer();
 
@@ -38,8 +39,8 @@ public class ResourcePackMerger {
     public String checkExtractDirectory(String extractDirectory){
         if (extractDirectory == null) return "Directory can not be null!";
         File file = new File(extractDirectory);
-        if (!file.isDirectory()) return  "Specified path is not a directory!";
-        if (!file.isAbsolute()) return  "Directory must be absolute!";
+        if (!file.isDirectory()) return "Specified path is not a directory!";
+        if (!file.isAbsolute()) return "Directory must be absolute!";
         if (!file.exists()) return "Directory does not exists!";
         if (!file.canWrite()) return "Directory can not be written!";
         return null;
@@ -86,13 +87,19 @@ public class ResourcePackMerger {
     }
 
     public void autoMergeCopy(SamePathsContainer container){
-        ItemModelMerger merger = new ItemModelMerger();
+        RPFileMerger merger;
+        if (container.getExample().isBelow(ITEM_MODEL_DIRECTORY)){
+            merger = new ItemModelMerger();
+        } else if (container.getExample().isBelow(LANG_DIRECTORY)){
+            merger = new LanguageMerger();
+        } else {
+            throw new RuntimeException("Directory can not be merged automatically");
+        }
         for (RPPath rpPath : container.getAll()) {
             merger.add(newBufferedReader(rpPath));
             LogUtils.pluginLog("Auto merging: " + rpPath);
         }
         merger.merge();
-
         RPPath rpPath = container.getExample();
         saveText(rpPath, merger.getMergedAsString());
     }
