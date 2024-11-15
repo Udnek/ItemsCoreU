@@ -6,46 +6,30 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 
-public class VanillaAttributesContainer {
+public class VanillaAttributesContainer extends AbstractAttributeContainer<Attribute, CustomKeyedAttributeModifier, VanillaAttributesContainer>{
 
-    private final HashMap<Attribute, List<CustomKeyedAttributeModifier>> attributes = new HashMap<>();
+    public static @NotNull VanillaAttributesContainer empty(){return new VanillaAttributesContainer();}
 
-    private VanillaAttributesContainer(){}
-    public static VanillaAttributesContainer empty(){return new VanillaAttributesContainer();}
-    public List<CustomAttributeModifier> get(Attribute attribute){return new ArrayList<>(attributes.get(attribute));}
-    public Map<Attribute, List<CustomKeyedAttributeModifier>> getAll(){return new HashMap<>(attributes);}
-    public VanillaAttributesContainer get(CustomEquipmentSlot slot){
+    @Override
+    public @NotNull
+
+
+    VanillaAttributesContainer get(@NotNull Predicate<@NotNull CustomEquipmentSlot> predicate) {
         VanillaAttributesContainer newContainer = new VanillaAttributesContainer();
         for (Map.Entry<Attribute, List<CustomKeyedAttributeModifier>> entry : attributes.entrySet()) {
             Attribute attribute = entry.getKey();
             for (CustomKeyedAttributeModifier modifier : entry.getValue()) {
-                if (modifier.getEquipmentSlot().test(slot)) newContainer.add(attribute, modifier);
+                if (predicate.test(modifier.getEquipmentSlot())) newContainer.add(attribute, modifier);
             }
 
         }
         return newContainer;
     }
-    public boolean isEmpty(){
-        return attributes.isEmpty();
-    }
-    public boolean contains(Attribute attribute){
-        return attributes.containsKey(attribute);
-    }
-    private void add(Attribute attribute, CustomKeyedAttributeModifier modifier){
-        List<CustomKeyedAttributeModifier> modifiers = attributes.get(attribute);
-        if (modifiers == null){
-            modifiers = new ArrayList<>();
-            modifiers.add(modifier);
-            attributes.put(attribute, modifiers);
-            return;
-        }
-        modifiers.add(modifier);
-    }
+
 
     public static class Builder{
 
