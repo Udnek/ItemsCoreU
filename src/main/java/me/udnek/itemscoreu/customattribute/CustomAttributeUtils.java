@@ -77,9 +77,9 @@ public class CustomAttributeUtils {
                     if (!modifier.getEquipmentSlot().isAppropriateSlot(entity, slotEntry.getKey())) continue;
 
                     switch (modifier.getOperation()){
-                        case ADD_NUMBER: amount += modifier.getAmount(); break;
-                        case ADD_SCALAR: multiplyBase += modifier.getAmount(); break;
-                        default: multiply *= (1 + modifier.getAmount()); break;
+                        case ADD_NUMBER -> amount += modifier.getAmount();
+                        case ADD_SCALAR -> multiplyBase += modifier.getAmount();
+                        default -> multiply *= (1 + modifier.getAmount());
                     }
                 }
             }
@@ -91,9 +91,9 @@ public class CustomAttributeUtils {
             custom.getCustomAttributes(potionEffect, (thisAttr, thisAmount, operation) -> {
                 if (thisAttr != attribute) return;
                 switch (operation){
-                    case ADD_NUMBER: amount += thisAmount; break;
-                    case ADD_SCALAR: multiplyBase += thisAmount; break;
-                    default: multiply *= (1 + thisAmount); break;
+                    case ADD_NUMBER -> amount += thisAmount;
+                    case ADD_SCALAR -> multiplyBase += thisAmount;
+                    default -> multiply *= (1 + thisAmount);
                 }
             });
         }
