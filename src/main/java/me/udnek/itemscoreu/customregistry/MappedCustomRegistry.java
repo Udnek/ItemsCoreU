@@ -37,6 +37,11 @@ public class MappedCustomRegistry<T extends Registrable> implements CustomRegist
     }
 
     @Override
+    public boolean contains(@Nullable String id) {
+        return map.containsKey(id);
+    }
+
+    @Override
     public @NotNull Collection<String> getIds() {
         return map.keySet();
     }

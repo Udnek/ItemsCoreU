@@ -1,5 +1,6 @@
 package me.udnek.itemscoreu.customitem;
 
+import com.destroystokyo.paper.ParticleBuilder;
 import com.google.common.base.Preconditions;
 import me.udnek.itemscoreu.customattribute.AttributeUtils;
 import me.udnek.itemscoreu.customcomponent.AbstractComponentHolder;

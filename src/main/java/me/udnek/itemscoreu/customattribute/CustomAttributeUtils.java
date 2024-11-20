@@ -1,14 +1,17 @@
 package me.udnek.itemscoreu.customattribute;
 
 import me.udnek.itemscoreu.customcomponent.CustomComponentType;
+import me.udnek.itemscoreu.customeffect.CustomEffect;
 import me.udnek.itemscoreu.customequipmentslot.CustomEquipmentSlot;
 import me.udnek.itemscoreu.customequipmentslot.SingleSlot;
 import me.udnek.itemscoreu.customitem.CustomItem;
 import me.udnek.itemscoreu.customregistry.CustomRegistries;
 import org.bukkit.Material;
+import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Mob;
 import org.bukkit.inventory.*;
+import org.bukkit.potion.PotionEffect;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
@@ -22,6 +25,9 @@ public class CustomAttributeUtils {
     private final Collection<CustomEquipmentSlot> searchTroughSlots;
     private final LivingEntity entity;
     private double amount;
+
+    private double multiplyBase = 1;
+    private double multiply = 1;
 
     public CustomAttributeUtils(@NotNull CustomAttribute attribute, @NotNull Collection<CustomEquipmentSlot> searchTroughSlots, @NotNull LivingEntity entity, double base){
         this.attribute = attribute;
@@ -55,10 +61,8 @@ public class CustomAttributeUtils {
                 slots.put(slot, item);
                 // TODO REPLACE WHEN API IS READY
             }
-        } else {return;}
+        }
 
-        double multiplyBase = 1;
-        double multiply = 1;
 
         for (Map.Entry<@NotNull Integer, @NotNull ItemStack> slotEntry : slots.entrySet()) {
             CustomItem customItem = CustomItem.get(slotEntry.getValue());
@@ -80,6 +84,20 @@ public class CustomAttributeUtils {
                 }
             }
         }
+
+        for (PotionEffect potionEffect : entity.getActivePotionEffects()) {
+            CustomEffect custom = CustomEffect.get(potionEffect.getType());
+            if (custom == null) return;
+            custom.getCustomAttributes(potionEffect, (thisAttr, thisAmount, operation) -> {
+                if (thisAttr != attribute) return;
+                switch (operation){
+                    case ADD_NUMBER: amount += thisAmount; break;
+                    case ADD_SCALAR: multiplyBase += thisAmount; break;
+                    default: multiply *= (1 + thisAmount); break;
+                }
+            });
+        }
+
 
         amount *= multiplyBase;
         amount *= multiply;
