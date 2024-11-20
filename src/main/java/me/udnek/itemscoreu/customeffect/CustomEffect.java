@@ -1,10 +1,8 @@
 package me.udnek.itemscoreu.customeffect;
 
 import me.udnek.itemscoreu.customattribute.CustomAttribute;
-import me.udnek.itemscoreu.customattribute.CustomAttributesContainer;
 import me.udnek.itemscoreu.customregistry.CustomRegistries;
 import me.udnek.itemscoreu.customregistry.Registrable;
-import net.minecraft.core.registries.Registries;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.potion.PotionEffect;
@@ -39,7 +37,7 @@ public interface CustomEffect extends Registrable {
         if (effect == null) return -1;
         return effect.getAmplifier();
     }
-    @NotNull CustomAttributesContainer getCustomAttributes(@NotNull PotionEffect context, @NotNull CustomAttributeConsumer consumer);
+    void getCustomAttributes(@NotNull PotionEffect context, @NotNull CustomAttributeConsumer consumer);
 
     interface CustomAttributeConsumer{
         void consume(@NotNull CustomAttribute attribute, double amount, @NotNull AttributeModifier.Operation operation);

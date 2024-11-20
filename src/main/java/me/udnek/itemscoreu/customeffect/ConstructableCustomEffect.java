@@ -41,6 +41,8 @@ public abstract class ConstructableCustomEffect extends AbstractRegistrable impl
     public @Nullable Sound getApplySound(){return null;}
     public void addAttributes(@NotNull AttributeConsumer consumer){}
     public void modifyParticleIfNotDefault(@NotNull ModifyParticleConsumer consumer){}
+    @Override
+    public void getCustomAttributes(@NotNull PotionEffect context, @NotNull CustomAttributeConsumer consumer) {}
 
     @Nullable
     public abstract PotionEffectType getVanillaDisguise();
