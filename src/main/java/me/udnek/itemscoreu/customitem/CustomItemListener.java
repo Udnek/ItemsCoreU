@@ -20,7 +20,7 @@ public class CustomItemListener extends SelfRegisteringListener {
         if (!event.getAction().isRightClick()) return;
         CustomItem customItem = CustomItem.get(event.getItem());
         if (customItem == null) return;
-        customItem.getComponentOrDefault(CustomComponentType.RIGHT_CLICKABLE_ITEM).onRightClick(customItem, event);
+        customItem.getComponents().getOrDefault(CustomComponentType.RIGHT_CLICKABLE_ITEM).onRightClick(customItem, event);
     }
 
     @EventHandler

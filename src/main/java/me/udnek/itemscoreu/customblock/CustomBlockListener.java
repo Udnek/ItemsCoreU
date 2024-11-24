@@ -63,6 +63,6 @@ public class CustomBlockListener extends SelfRegisteringListener {
         if (event.getClickedBlock() == null) return;
         CustomBlock customBlock = CustomBlock.get(event.getClickedBlock());
         if (customBlock == null) return;
-        customBlock.getComponentOrDefault(CustomComponentType.RIGHT_CLICKABLE_BLOCK).onRightClick(customBlock, event);
+        customBlock.getComponents().getOrDefault(CustomComponentType.RIGHT_CLICKABLE_BLOCK).onRightClick(customBlock, event);
     }
 }

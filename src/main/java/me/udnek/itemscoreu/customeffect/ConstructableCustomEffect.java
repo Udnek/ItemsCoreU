@@ -82,7 +82,6 @@ public abstract class ConstructableCustomEffect extends AbstractRegistrable impl
             ParticleOptions particleOptions = modifyParticleConsumer.getOptions();
 
             if (particleOptions == null) {
-                System.out.println("USING DEFAULT");
                 particleOptions = (ParticleOptions) particleType;
             }
 

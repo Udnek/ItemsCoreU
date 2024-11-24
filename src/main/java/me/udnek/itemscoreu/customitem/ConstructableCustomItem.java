@@ -1,9 +1,8 @@
 package me.udnek.itemscoreu.customitem;
 
-import com.destroystokyo.paper.ParticleBuilder;
 import com.google.common.base.Preconditions;
 import me.udnek.itemscoreu.customattribute.AttributeUtils;
-import me.udnek.itemscoreu.customcomponent.AbstractComponentHolder;
+import me.udnek.itemscoreu.customcomponent.OptimizedComponentHolder;
 import me.udnek.itemscoreu.customevent.CustomItemGeneratedEvent;
 import me.udnek.itemscoreu.customrecipe.RecipeManager;
 import me.udnek.itemscoreu.nms.ConsumableComponent;
@@ -29,7 +28,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 
-public abstract class ConstructableCustomItem extends AbstractComponentHolder<CustomItem> implements CustomItem, CustomItemProperties {
+public abstract class ConstructableCustomItem extends OptimizedComponentHolder<CustomItem> implements CustomItem, CustomItemProperties {
     private String id;
     protected ItemStack itemStack;
     protected List<Recipe> recipes = null;

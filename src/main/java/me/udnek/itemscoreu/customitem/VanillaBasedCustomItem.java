@@ -1,7 +1,7 @@
 package me.udnek.itemscoreu.customitem;
 
 import com.google.common.base.Preconditions;
-import me.udnek.itemscoreu.customcomponent.AbstractComponentHolder;
+import me.udnek.itemscoreu.customcomponent.OptimizedComponentHolder;
 import me.udnek.itemscoreu.customevent.CustomItemGeneratedEvent;
 import me.udnek.itemscoreu.customrecipe.RecipeManager;
 import net.kyori.adventure.text.Component;
@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
-public class VanillaBasedCustomItem extends AbstractComponentHolder<CustomItem> implements CustomItem{
+public class VanillaBasedCustomItem extends OptimizedComponentHolder<CustomItem> implements CustomItem{
 
     protected final Material material;
     private String id;

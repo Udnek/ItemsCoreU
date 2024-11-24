@@ -6,8 +6,9 @@ import me.udnek.itemscoreu.customequipmentslot.CustomEquipmentSlot;
 import me.udnek.itemscoreu.customequipmentslot.SingleSlot;
 import me.udnek.itemscoreu.customitem.CustomItem;
 import me.udnek.itemscoreu.customregistry.CustomRegistries;
+import net.minecraft.core.component.DataComponentType;
+import net.minecraft.core.component.DataComponents;
 import org.bukkit.Material;
-import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Mob;
 import org.bukkit.inventory.*;
@@ -63,11 +64,10 @@ public class CustomAttributeUtils {
             }
         }
 
-
         for (Map.Entry<@NotNull Integer, @NotNull ItemStack> slotEntry : slots.entrySet()) {
             CustomItem customItem = CustomItem.get(slotEntry.getValue());
             if (customItem == null) continue;
-            CustomAttributesContainer container = customItem.getComponentOrDefault(CustomComponentType.CUSTOM_ITEM_ATTRIBUTES).getAttributes(customItem);
+            CustomAttributesContainer container = customItem.getComponents().getOrDefault(CustomComponentType.CUSTOM_ITEM_ATTRIBUTES).getAttributes(customItem);
             if (container.isEmpty()) continue;
 
             for (Map.Entry<CustomAttribute, List<CustomAttributeModifier>> entry : container.getAll().entrySet()) {

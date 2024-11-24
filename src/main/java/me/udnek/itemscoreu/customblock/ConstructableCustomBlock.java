@@ -3,7 +3,7 @@ package me.udnek.itemscoreu.customblock;
 import com.destroystokyo.paper.ParticleBuilder;
 import com.destroystokyo.paper.event.block.BlockDestroyEvent;
 import com.google.common.base.Preconditions;
-import me.udnek.itemscoreu.customcomponent.AbstractComponentHolder;
+import me.udnek.itemscoreu.customcomponent.OptimizedComponentHolder;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
@@ -18,7 +18,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.util.EulerAngle;
 import org.jetbrains.annotations.NotNull;
 
-public abstract class ConstructableCustomBlock extends AbstractComponentHolder<CustomBlock> implements CustomBlock{
+public abstract class ConstructableCustomBlock extends OptimizedComponentHolder<CustomBlock> implements CustomBlock{
     private String id;
     protected EntitySnapshot visualRepresentation;
 

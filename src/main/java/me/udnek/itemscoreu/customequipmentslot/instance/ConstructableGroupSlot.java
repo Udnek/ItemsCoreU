@@ -4,7 +4,7 @@ import me.udnek.itemscoreu.customequipmentslot.AbstractCustomEquipmentSlot;
 import me.udnek.itemscoreu.customequipmentslot.CustomEquipmentSlot;
 import me.udnek.itemscoreu.customequipmentslot.GroupSlot;
 import me.udnek.itemscoreu.customequipmentslot.SingleSlot;
-import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.EquipmentSlotGroup;
 import org.jetbrains.annotations.NotNull;
@@ -27,7 +27,7 @@ public class ConstructableGroupSlot extends AbstractCustomEquipmentSlot implemen
         this.subs = subs;
     }
     @Override
-    public boolean isAppropriateSlot(@NotNull Entity entity, int slot) {
+    public boolean isAppropriateSlot(@NotNull LivingEntity entity, int slot) {
         return subs.stream().anyMatch(sub -> sub.isAppropriateSlot(entity, slot));
     }
     @Override
@@ -40,7 +40,7 @@ public class ConstructableGroupSlot extends AbstractCustomEquipmentSlot implemen
     public EquipmentSlot getVanillaSlot() {return vanillaSlot;}
 
     @Override
-    public void getAllSlots(@NotNull Entity entity, @NotNull Consumer<@NotNull Integer> consumer) {
+    public void getAllSlots(@NotNull LivingEntity entity, @NotNull Consumer<@NotNull Integer> consumer) {
         subs.forEach(singleSlot -> singleSlot.getAllSlots(entity, consumer));
     }
     @Override
