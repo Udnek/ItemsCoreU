@@ -20,5 +20,4 @@ public class Utils {
     public static <T> void consumeIfNotNull(@Nullable T object, @NotNull Consumer<@NotNull T> consumer){
         if (object != null) consumer.accept(object);
     }
-
 }

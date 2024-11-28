@@ -49,12 +49,6 @@ public class CustomHelpCommand extends SelfRegisteringListener implements Comman
     public void trigger(CommandSender commandSender){
         lines.forEach(commandSender::sendMessage);
     }
-    @EventHandler
-    public void onHelpCommand(PlayerCommandPreprocessEvent event){
-/*        String string = event.getMessage().toLowerCase();
-        if (string.startsWith("help") || string.startsWith("?")) event.setCancelled(true);
-        trigger(event.getPlayer());*/
-    }
 }
 
 

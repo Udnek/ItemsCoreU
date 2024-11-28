@@ -8,7 +8,7 @@ commands:
   helpu:
     description: "helpu"
     usage: "/helpu"
-    aliases: [ itemscoreuhelp, helpu, ?, h ]
+    aliases: [ itemscoreuhelp, ?, h ]
     permission-message: "You do not have permission to use this command"
   giveu:
     description: "giveu"

@@ -1,12 +1,16 @@
 package me.udnek.itemscoreu.customitem;
 
 import com.google.common.base.Preconditions;
+import io.papermc.paper.datacomponent.DataComponentType;
+import io.papermc.paper.datacomponent.DataComponentTypes;
+import io.papermc.paper.datacomponent.item.ItemLore;
 import me.udnek.itemscoreu.customattribute.AttributeUtils;
 import me.udnek.itemscoreu.customcomponent.OptimizedComponentHolder;
 import me.udnek.itemscoreu.customevent.CustomItemGeneratedEvent;
 import me.udnek.itemscoreu.customrecipe.RecipeManager;
 import me.udnek.itemscoreu.nms.ConsumableComponent;
 import me.udnek.itemscoreu.nms.Nms;
+import me.udnek.itemscoreu.util.Utils;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -27,8 +31,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
+import static io.papermc.paper.datacomponent.DataComponentTypes.*;
 
-public abstract class ConstructableCustomItem extends OptimizedComponentHolder<CustomItem> implements CustomItem, CustomItemProperties {
+
+public abstract class ConstructableCustomItem extends OptimizedComponentHolder<CustomItem> implements CustomItemProperties, ComponentUpdatingCustomItem {
     private String id;
     protected ItemStack itemStack;
     protected List<Recipe> recipes = null;
@@ -51,7 +57,7 @@ public abstract class ConstructableCustomItem extends OptimizedComponentHolder<C
 
     @Override
     public void afterInitialization() {
-        CustomItem.super.afterInitialization();
+        ComponentUpdatingCustomItem.super.afterInitialization();
         generateRecipes(this::registerRecipe);
     }
 
@@ -88,7 +94,6 @@ public abstract class ConstructableCustomItem extends OptimizedComponentHolder<C
     ///////////////////////////////////////////////////////////////////////////
     // CREATING
     ///////////////////////////////////////////////////////////////////////////
-
     protected void setPersistentData(@NotNull ItemMeta itemMeta){
         PersistentDataContainer dataContainer = itemMeta.getPersistentDataContainer();
         dataContainer.set(PERSISTENT_DATA_CONTAINER_NAMESPACE, PersistentDataType.STRING, id);
@@ -178,7 +183,6 @@ public abstract class ConstructableCustomItem extends OptimizedComponentHolder<C
     public @NotNull ItemStack getItem(){
         return getItemNoClone().clone();
     }
-
     @Override
     public @NotNull NamespacedKey getNewRecipeKey() {
         return NamespacedKey.fromString(getId() + "_" + (recipes != null ? Integer.toString(recipes.size()) : "0"));
@@ -198,4 +202,9 @@ public abstract class ConstructableCustomItem extends OptimizedComponentHolder<C
     }
 
     protected void generateRecipes(@NotNull Consumer<@NotNull Recipe> consumer){}
+
+    public interface ComponentConsumer{
+        <T> void accept(@NotNull DataComponentType.Valued<T> type);
+        void accept(@NotNull DataComponentType.NonValued type);
+    }
 }

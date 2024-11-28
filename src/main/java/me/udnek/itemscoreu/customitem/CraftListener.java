@@ -1,6 +1,7 @@
 package me.udnek.itemscoreu.customitem;
 
 import me.udnek.itemscoreu.util.SelfRegisteringListener;
+import me.udnek.itemscoreu.util.Utils;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.inventory.FurnaceSmeltEvent;
@@ -53,9 +54,8 @@ public class CraftListener extends SelfRegisteringListener {
             event.getInventory().setResult(new ItemStack(Material.AIR));
         }
 
-        if (CustomItem.isCustom(event.getRecipe().getResult())){
-            event.getInventory().setResult(CustomItem.get(event.getRecipe().getResult()).onPrepareCraft(event));
-        }
+        Utils.consumeIfNotNull(CustomItem.get(event.getRecipe().getResult()), customItem ->
+                customItem.onPrepareCraft(event));
     }
 
     @EventHandler

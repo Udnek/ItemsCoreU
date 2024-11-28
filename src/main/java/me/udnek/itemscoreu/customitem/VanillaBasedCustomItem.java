@@ -13,15 +13,19 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
-public class VanillaBasedCustomItem extends OptimizedComponentHolder<CustomItem> implements CustomItem{
+@ApiStatus.NonExtendable
+public class VanillaBasedCustomItem extends OptimizedComponentHolder<CustomItem> implements ComponentUpdatingCustomItem{
 
+    protected ItemStack itemStack;
     protected final Material material;
     private String id;
 
@@ -36,13 +40,16 @@ public class VanillaBasedCustomItem extends OptimizedComponentHolder<CustomItem>
     public @NotNull String getId() {return id;}
     @Override
     public @NotNull ItemStack getItem() {
-        ItemStack itemStack = new ItemStack(material);
-        itemStack.editMeta(itemMeta -> itemMeta.lore(List.of(Component.text("REPLACED"))));
-        CustomItemGeneratedEvent event = new CustomItemGeneratedEvent(this, itemStack, null);
-        event.callEvent();
-        event.getLoreBuilder().buildAndApply(event.getItemStack());
-        return event.getItemStack();
+        if (itemStack == null){
+            ItemStack newItemStack = new ItemStack(material);
+            CustomItemGeneratedEvent event = new CustomItemGeneratedEvent(this, newItemStack, null);
+            event.callEvent();
+            event.getLoreBuilder().buildAndApply(event.getItemStack());
+            itemStack = event.getItemStack();
+        }
+        return itemStack;
     }
+
     public @NotNull ItemStack getFrom(@NotNull ItemStack original){
         // TODO: 8/19/2024 MAKE ITEM MODIFICATORS
         Preconditions.checkArgument(original.getType() == material, "Can not create from different material!");
@@ -64,9 +71,7 @@ public class VanillaBasedCustomItem extends OptimizedComponentHolder<CustomItem>
     }
 
     @Override
-    public void setCooldown(@NotNull Player player, int ticks) {
-        player.setCooldown(material, ticks);
-    }
+    public void setCooldown(@NotNull Player player, int ticks) {player.setCooldown(getItem(), ticks);}
 
     @Override
     public int getCooldown(@NotNull Player player) {return player.getCooldown(getItem());}

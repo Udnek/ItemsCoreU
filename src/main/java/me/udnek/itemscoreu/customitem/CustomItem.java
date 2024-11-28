@@ -71,12 +71,15 @@ public interface CustomItem extends Registrable, ComponentHolder<CustomItem> {
     void getRecipes(@NotNull Consumer<@NotNull Recipe> consumer);
     void registerRecipe(@NotNull Recipe recipe);
     boolean isTagged(@NotNull Tag<Material> tag);
+    @Nullable ItemStack update(@NotNull ItemStack itemStack);
     ///////////////////////////////////////////////////////////////////////////
     // EVENTS
     ///////////////////////////////////////////////////////////////////////////
-    default ItemStack onPrepareCraft(PrepareItemCraftEvent event){
-        return getItemFromCraftingMatrix(event.getRecipe().getResult(), event.getInventory().getMatrix(), event.getRecipe());
+    default void onPrepareCraft(@NotNull PrepareItemCraftEvent event){
+        event.getInventory().setResult(getItemFromCraftingMatrix(event.getRecipe().getResult(), event.getInventory().getMatrix(), event.getRecipe()));
     }
-    default ItemStack getItemFromCraftingMatrix(ItemStack result, ItemStack[] matrix, Recipe recipe){return result;}
+    default @Nullable ItemStack getItemFromCraftingMatrix(@NotNull ItemStack result, @NotNull ItemStack[] matrix, @NotNull Recipe recipe){
+        return result;
+    }
 
 }

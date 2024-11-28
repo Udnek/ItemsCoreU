@@ -6,12 +6,17 @@ import org.jetbrains.annotations.Nullable;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Objects;
 
 public class CustomComponentMap<HolderType> implements Iterable<CustomComponent<HolderType>>{
     private final Map<CustomComponentType<HolderType, ?>, CustomComponent<HolderType>> map = new HashMap<>();
 
     public @NotNull <Type extends CustomComponentType<HolderType, Component>, Component extends CustomComponent<HolderType>> Component getOrDefault(@NotNull Type type) {
         return (Component) map.getOrDefault(type, type.getDefault());
+    }
+
+    public @NotNull <Type extends CustomComponentType<HolderType, Component>, Component extends CustomComponent<HolderType>> Component getOrException(@NotNull Type type){
+        return Objects.requireNonNull(get(type), "Component " + type.getKey().asString() + " is not present!");
     }
 
     public @Nullable <Type extends CustomComponentType<HolderType, Component>, Component extends CustomComponent<HolderType>> Component get(@NotNull Type type) {
