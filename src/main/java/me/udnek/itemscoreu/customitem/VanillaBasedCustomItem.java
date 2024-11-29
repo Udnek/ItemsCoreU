@@ -20,6 +20,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 @ApiStatus.NonExtendable
@@ -65,9 +66,9 @@ public class VanillaBasedCustomItem extends OptimizedComponentHolder<CustomItem>
 
     @Override
     public @NotNull NamespacedKey getNewRecipeKey() {
-        List<Recipe> recipes = new ArrayList<>();
-        getRecipes(recipes::add);
-        return NamespacedKey.fromString(getId() + "_" + recipes.size());
+        AtomicInteger amount = new AtomicInteger(0);
+        getRecipes(recipe -> amount.incrementAndGet());
+        return NamespacedKey.fromString(getId() + "_" + amount.get());
     }
 
     @Override
@@ -81,7 +82,7 @@ public class VanillaBasedCustomItem extends OptimizedComponentHolder<CustomItem>
 
     @Override
     public void getRecipes(@NotNull Consumer<@NotNull Recipe> consumer) {
-        RecipeManager.getInstance().getRecipesAsResult(this.getItem(), consumer);
+        RecipeManager.getInstance().getRecipesAsResult(getItem(), consumer);
     }
 
     @Override
