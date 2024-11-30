@@ -1,5 +1,6 @@
 package me.udnek.itemscoreu.customregistry;
 
+import com.google.common.base.Preconditions;
 import org.bukkit.Keyed;
 import org.bukkit.NamespacedKey;
 import org.bukkit.plugin.Plugin;
@@ -11,5 +12,8 @@ public interface Registrable extends Keyed {
     @NotNull String getId();
 
     @Override
-    default @NotNull NamespacedKey getKey(){return NamespacedKey.fromString(getId());}
+    default @NotNull NamespacedKey getKey(){
+        Preconditions.checkArgument(getId() != null, "Id is not present (not registered yet probably)");
+        return NamespacedKey.fromString(getId());
+    }
 }

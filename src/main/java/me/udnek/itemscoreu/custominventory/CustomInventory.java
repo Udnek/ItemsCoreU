@@ -31,5 +31,6 @@ public interface CustomInventory extends InventoryHolder {
     default void onPlayerDragsItem(InventoryDragEvent event){}
     default void onPlayerClosesInventory(InventoryCloseEvent event){}
     default void onPlayerOpensInventory(InventoryOpenEvent event){}
+    default boolean shouldAutoUpdateItems(){return true;}
 }
 
