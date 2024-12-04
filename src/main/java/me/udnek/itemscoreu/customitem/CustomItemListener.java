@@ -2,6 +2,7 @@ package me.udnek.itemscoreu.customitem;
 
 import me.udnek.itemscoreu.customcomponent.CustomComponentType;
 import me.udnek.itemscoreu.custominventory.CustomInventory;
+import me.udnek.itemscoreu.util.LogUtils;
 import me.udnek.itemscoreu.util.SelfRegisteringListener;
 import me.udnek.itemscoreu.util.Utils;
 import org.bukkit.Material;
@@ -45,6 +46,8 @@ public class CustomItemListener extends SelfRegisteringListener {
         Inventory clickedInventory = event.getClickedInventory();
         if (clickedInventory == null) return;
         if (clickedInventory.getType() == InventoryType.PLAYER) return;
+        CustomInventory customInventory = CustomInventory.get(clickedInventory);
+        if (customInventory != null && !customInventory.shouldAutoUpdateItems()) return;
         Utils.consumeIfNotNull(CustomItem.get(event.getCurrentItem()), customItem -> {
             event.setCurrentItem(customItem.update(event.getCurrentItem()));
         });
@@ -52,8 +55,6 @@ public class CustomItemListener extends SelfRegisteringListener {
     @EventHandler
     public void updateItemOnJoin(PlayerJoinEvent event){
         PlayerInventory inventory = event.getPlayer().getInventory();
-        CustomInventory customInventory = CustomInventory.get(inventory);
-        if (customInventory != null && !customInventory.shouldAutoUpdateItems()) return;
         for (int i = 0; i < inventory.getSize(); i++) {
             ItemStack item = inventory.getItem(i);
             int finalI = i;

@@ -9,12 +9,14 @@ import me.udnek.itemscoreu.customregistry.CustomRegistries;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
 import org.bukkit.Material;
+import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Mob;
 import org.bukkit.inventory.*;
 import org.bukkit.potion.PotionEffect;
 import org.jetbrains.annotations.NotNull;
 
+import javax.management.Attribute;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -75,26 +77,17 @@ public class CustomAttributeUtils {
 
                 for (CustomAttributeModifier modifier : entry.getValue()) {
                     if (!modifier.getEquipmentSlot().isAppropriateSlot(entity, slotEntry.getKey())) continue;
-
-                    switch (modifier.getOperation()){
-                        case ADD_NUMBER -> amount += modifier.getAmount();
-                        case ADD_SCALAR -> multiplyBase += modifier.getAmount();
-                        default -> multiply *= (1 + modifier.getAmount());
-                    }
+                    add(modifier.getOperation(), modifier.getAmount());
                 }
             }
         }
 
         for (PotionEffect potionEffect : entity.getActivePotionEffects()) {
             CustomEffect custom = CustomEffect.get(potionEffect.getType());
-            if (custom == null) return;
+            if (custom == null) continue;
             custom.getCustomAttributes(potionEffect, (thisAttr, thisAmount, operation) -> {
                 if (thisAttr != attribute) return;
-                switch (operation){
-                    case ADD_NUMBER -> amount += thisAmount;
-                    case ADD_SCALAR -> multiplyBase += thisAmount;
-                    default -> multiply *= (1 + thisAmount);
-                }
+                add(operation, thisAmount);
             });
         }
 
@@ -104,6 +97,15 @@ public class CustomAttributeUtils {
 
         amount = Math.clamp(amount, attribute.getMinimum(), attribute.getMaximum());
     }
+
+    public void add(@NotNull AttributeModifier.Operation operation, double amount){
+        switch (operation){
+            case ADD_NUMBER -> this.amount += amount;
+            case ADD_SCALAR -> multiplyBase += amount;
+            default -> multiply *= (1 + amount);
+        }
+    }
+
 
     public static double calculate(@NotNull CustomAttribute attribute, @NotNull Collection<CustomEquipmentSlot> slots, @NotNull LivingEntity entity, double base){
         CustomAttributeUtils attributeUtils = new CustomAttributeUtils(attribute, slots, entity, base);
