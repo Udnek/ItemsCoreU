@@ -4,8 +4,11 @@ import com.google.common.collect.ImmutableMap;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.objects.ObjectObjectMutablePair;
 import me.udnek.itemscoreu.util.ItemUtils;
+import me.udnek.itemscoreu.util.LogUtils;
 import me.udnek.itemscoreu.util.Reflex;
 import net.kyori.adventure.key.Key;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.minecraft.advancements.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.ServerAdvancementManager;
@@ -14,6 +17,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v1_21_R2.CraftServer;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,20 +25,8 @@ import java.util.Optional;
 
 public class CustomAdvancementUtils {
 
-    private static final Map<AdvancementHolder, Pair<Float, Float>> positions = new HashMap<>();
+    private static final HashMap<CustomAdvancementContainer, CustomAdvancementContainer> realPoses = new HashMap<>();
 
-    private static @NotNull Pair<Float, Float> getFromPositions(@NotNull AdvancementHolder advancementHolder){
-        for (Map.Entry<AdvancementHolder, Pair<Float, Float>> entry : positions.entrySet()) {
-            if (entry.getKey().equals(advancementHolder)) return entry.getValue();
-        }
-        return new ObjectObjectMutablePair<>(null, null);
-    }
-    private static void putToPositions(@NotNull CustomAdvancementContainer container){
-        if (container.getDisplay() == null) return;
-        if (container.getDisplay().x == null && container.getDisplay().y == null) return;
-        positions.put(container.get(), new ObjectObjectMutablePair<>(container.getDisplay().x, container.getDisplay().y));
-    }
-    
     public static @NotNull ConstructableCustomAdvancement itemAdvancement(@NotNull Key key, @NotNull ItemStack itemStack){
         ConstructableCustomAdvancement advancement = new ConstructableCustomAdvancement(key);
         advancement.addCriterion(ItemUtils.getId(itemStack), AdvancementCriterion.INVENTORY_CHANGE.create(itemStack));
@@ -50,7 +42,6 @@ public class CustomAdvancementUtils {
 
         AdvancementHolder advancementHolder = advancementContainer.get();
 
-        ImmutableMap.Builder<ResourceLocation, AdvancementHolder> mapBuilder = ImmutableMap.builder();
         Reflex.invokeMethod(
                 manager,
                 Reflex.getMethod(
@@ -61,6 +52,8 @@ public class CustomAdvancementUtils {
                 advancementHolder.id(),
                 advancementHolder.value()
         );
+
+        ImmutableMap.Builder<ResourceLocation, AdvancementHolder> mapBuilder = ImmutableMap.builder();
         mapBuilder.put(advancementHolder.id(), advancementHolder);
 
         Map<ResourceLocation, AdvancementHolder> advancements = new HashMap<>(mapBuilder.buildOrThrow());
@@ -72,33 +65,42 @@ public class CustomAdvancementUtils {
                 TreeNodePosition.run(advancementnode);
             }
         }
-        putToPositions(advancementContainer);
-
-
-        for (AdvancementHolder advancement : advancements.values()) {
-            DisplayInfo displayInfo = (DisplayInfo) Reflex.getFieldValue(advancement.value(), "display", Optional.class).orElse(null);
-            if (displayInfo == null) continue;
-            Pair<Float, Float> pos = getFromPositions(advancement);
-            displayInfo.setLocation(
-                    pos.left() == null ? displayInfo.getX() : pos.left(),
-                    pos.right() == null ? displayInfo.getY() : pos.right()
-            );
-        }
 
         Reflex.setFieldValue(manager, "advancements", advancements);
         Reflex.setFieldValue(manager, "tree", tree);
 
-        DisplayInfo displayInfo = (DisplayInfo) Reflex.getFieldValue(advancementHolder.value(), "display", Optional.class).orElse(null);
-        if (displayInfo == null) return;
-
         for (@NotNull CustomAdvancementContainer fake : advancementContainer.getFakes()) {
-            CustomAdvancementDisplayBuilder fakeDisplay = fake.getDisplay();
-            if (fakeDisplay != null){
-                fakeDisplay.x(displayInfo.getX());
-                fakeDisplay.y(displayInfo.getY());
-            }
+            realPoses.put(fake, advancementContainer);
             register(fake);
         }
+
+        for (Map.Entry<CustomAdvancementContainer, CustomAdvancementContainer> entry : realPoses.entrySet()) {
+            CustomAdvancementContainer fake = entry.getKey();
+            CustomAdvancementContainer real = entry.getValue();
+
+            DisplayInfo fakeDisplay = (DisplayInfo) Reflex.getFieldValue(fake.get().value(), "display", Optional.class).orElse(null);
+            if (fakeDisplay == null) continue;
+
+            DisplayInfo realDisplay = (DisplayInfo) Reflex.getFieldValue(real.get().value(), "display", Optional.class).orElse(null);
+            if (realDisplay == null) return;
+
+            fakeDisplay.setLocation(realDisplay.getX(), realDisplay.getY());
+        }
+
+/*        for (@NotNull CustomAdvancementContainer fake : advancementContainer.getFakes()) {
+            DisplayInfo fakeDisplay = (DisplayInfo) Reflex.getFieldValue(fake.get().value(), "display", Optional.class).orElse(null);
+            System.out.println("fakedisp: " + fakeDisplay);
+            if (fakeDisplay == null) continue;
+
+            DisplayInfo realDisplay = (DisplayInfo) Reflex.getFieldValue(fake.getRealPosition().get().value(), "display", Optional.class).orElse(null);
+            System.out.println("realdisp: " + realDisplay);
+            if (realDisplay == null) return;
+
+            LogUtils.log(Component.text("old fake pos: " + fakeDisplay.getX() + " "+  fakeDisplay.getY()).color(NamedTextColor.RED));
+            LogUtils.log(Component.text("setting fake pos: " + realDisplay.getX() + " "+  realDisplay.getY()).color(NamedTextColor.RED));
+
+            fakeDisplay.setLocation(realDisplay.getX(), realDisplay.getY());
+        }*/
         
 
     }

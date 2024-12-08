@@ -5,13 +5,12 @@ import me.udnek.itemscoreu.customitem.CustomItem;
 import me.udnek.itemscoreu.nms.NmsUtils;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.advancements.Criterion;
-import net.minecraft.advancements.critereon.ImpossibleTrigger;
-import net.minecraft.advancements.critereon.InventoryChangeTrigger;
-import net.minecraft.advancements.critereon.ItemPredicate;
-import net.minecraft.advancements.critereon.PlayerTrigger;
+import net.minecraft.advancements.critereon.*;
 import net.minecraft.core.component.DataComponentPredicate;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.world.level.block.Block;
+import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
@@ -23,42 +22,71 @@ public interface AdvancementCriterion extends Supplier<Criterion<?>>{
 
     AdvancementCriterion TICK = () -> CriteriaTriggers.TICK.createCriterion(PlayerTrigger.TriggerInstance.tick().triggerInstance());
     AdvancementCriterion IMPOSSIBLE = () -> CriteriaTriggers.IMPOSSIBLE.createCriterion(new ImpossibleTrigger.TriggerInstance());
-    InventoryChange INVENTORY_CHANGE = new InventoryChange();
+    InventoryChange INVENTORY_CHANGE = new InventoryChange(null, null);
+    EnterBlock ENTER_BLOCK = new EnterBlock(null);
 
 
+    class EnterBlock implements AdvancementCriterion{
+        private final Material material;
+
+        private EnterBlock(Material material){
+            this.material = material;
+        }
+
+        public @NotNull AdvancementCriterion.EnterBlock create(@NotNull Material material){
+            return new EnterBlock(material);
+        }
+
+        @Override
+        public Criterion<?> get() {
+            Preconditions.checkArgument(material != null,"Create criterion first!");
+            return EnterBlockTrigger.TriggerInstance.entersBlock(NmsUtils.toNmsBlock(material));
+        }
+    }
 
     class InventoryChange implements AdvancementCriterion{
         private final ItemStack itemStack;
+        private final Material material;
 
-        private InventoryChange(){this(null);}
-        private InventoryChange(ItemStack itemStack){
+        private InventoryChange(ItemStack itemStack, Material material){
             this.itemStack = itemStack;
+            this.material = material;
         }
 
         public @NotNull AdvancementCriterion create(@NotNull ItemStack itemStack){
-            return new InventoryChange(itemStack);
+            return new InventoryChange(itemStack, null);
         }
+
+        public @NotNull AdvancementCriterion create(@NotNull Material material){
+            return new InventoryChange(null, material);
+        }
+
         @Override
         public Criterion<?> get(){
-            Preconditions.checkArgument(itemStack != null, "Create criteria first!");
-            net.minecraft.world.item.ItemStack nmsItemStack = NmsUtils.toNmsItemStack(itemStack);
-
+            Preconditions.checkArgument(itemStack != null || material != null,"Create criterion first!");
             ItemPredicate.Builder predicate;
-            if (CustomItem.isCustom(itemStack)){
+            if (material != null){
                 predicate = ItemPredicate.Builder.item()
-                        .of(NmsUtils.getRegistry(Registries.ITEM), nmsItemStack.getItem())
-                        .hasComponents(
-                                DataComponentPredicate.builder().expect(
-                                        DataComponents.CUSTOM_DATA,
-                                        nmsItemStack.getComponents().get(DataComponents.CUSTOM_DATA)
-                                ).build()
-                        );
-            } else {
-                predicate = ItemPredicate.Builder.item()
-                        .of(NmsUtils.getRegistry(Registries.ITEM), nmsItemStack.getItem())
-                        .hasComponents(DataComponentPredicate.allOf(nmsItemStack.getComponents()));
+                        .of(NmsUtils.getRegistry(Registries.ITEM), NmsUtils.toNmsMaterial(material));
             }
+            else{
+                net.minecraft.world.item.ItemStack nmsItemStack = NmsUtils.toNmsItemStack(itemStack);
 
+                if (CustomItem.isCustom(itemStack)){
+                    predicate = ItemPredicate.Builder.item()
+                            .of(NmsUtils.getRegistry(Registries.ITEM), nmsItemStack.getItem())
+                            .hasComponents(
+                                    DataComponentPredicate.builder().expect(
+                                            DataComponents.CUSTOM_DATA,
+                                            nmsItemStack.getComponents().get(DataComponents.CUSTOM_DATA)
+                                    ).build()
+                            );
+                } else {
+                    predicate = ItemPredicate.Builder.item()
+                            .of(NmsUtils.getRegistry(Registries.ITEM), nmsItemStack.getItem())
+                            .hasComponents(DataComponentPredicate.allOf(nmsItemStack.getComponents()));
+                }
+            }
             return CriteriaTriggers.INVENTORY_CHANGED.createCriterion(new InventoryChangeTrigger.TriggerInstance(
                     Optional.empty(),
                     InventoryChangeTrigger.TriggerInstance.Slots.ANY,

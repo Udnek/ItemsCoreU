@@ -16,6 +16,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.entries.LootPoolEntry;
@@ -64,6 +65,9 @@ public class NmsUtils {
     }
     public static Item toNmsMaterial(@NotNull Material material){
         return CraftMagicNumbers.getItem(material);
+    }
+    public static Block toNmsBlock(@NotNull Material material){
+        return CraftMagicNumbers.getBlock(material);
     }
     public static ItemStack toBukkitItemStack(@NotNull net.minecraft.world.item.ItemStack itemStack){
         return CraftItemStack.asBukkitCopy(itemStack);

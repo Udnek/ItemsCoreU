@@ -19,8 +19,8 @@ import java.util.Set;
 public class ConstructableCustomAdvancement implements CustomAdvancementContainer {
     protected boolean registered = false;
     protected @Nullable CustomAdvancementContainer parent;
-    protected AdvancementHolder itself;
-    protected @NotNull Key key;
+    protected AdvancementHolder itself = null;
+    protected final @NotNull Key key;
     protected @Nullable CustomAdvancementDisplayBuilder display;
     protected Set<@NotNull CustomAdvancementContainer> fakes = new HashSet<>();
 
@@ -40,13 +40,10 @@ public class ConstructableCustomAdvancement implements CustomAdvancementContaine
     }
 
     @Override
-    public @NotNull CustomAdvancementContainer copy(@NotNull Key key) {
+    public @NotNull ConstructableCustomAdvancement copy(@NotNull Key key) {
         return new ConstructableCustomAdvancement(key, this);
     }
 
-    public void key(@NotNull Key key){
-        this.key = key;
-    }
     public void display(@Nullable CustomAdvancementDisplayBuilder display){
         this.display = display;
     }
@@ -55,8 +52,9 @@ public class ConstructableCustomAdvancement implements CustomAdvancementContaine
         this.parent = parent;
     }
 
+
     public void addFakeParent(@NotNull CustomAdvancementContainer parent){
-        CustomAdvancementContainer fake = this.copy(NamespacedKey.fromString(key.asString() + "_fake"));
+        ConstructableCustomAdvancement fake = copy(NamespacedKey.fromString(key.asString() + "_fake"));
         fake.setParent(parent);
         fake.getDisplay().showToast(false).announceToChat(false);
         fakes.add(fake);

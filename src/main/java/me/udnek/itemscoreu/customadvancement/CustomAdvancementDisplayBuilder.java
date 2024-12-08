@@ -61,12 +61,14 @@ public class CustomAdvancementDisplayBuilder {
         this.y = y; return this;
     }
     public @NotNull CustomAdvancementDisplayBuilder title(@Nullable net.kyori.adventure.text.Component component){
-        title = component;return this;
+        title = component; return this;
     }
     public @NotNull CustomAdvancementDisplayBuilder title(@Nullable String string){
         if (string == null) return title((net.kyori.adventure.text.Component) null);
         return title(net.kyori.adventure.text.Component.translatable(string));
     }
+    public @Nullable net.kyori.adventure.text.Component title() {return title;}
+
     public @NotNull CustomAdvancementDisplayBuilder description(@Nullable net.kyori.adventure.text.Component component){
         description = component; return this;
     }
@@ -74,6 +76,8 @@ public class CustomAdvancementDisplayBuilder {
         if (string == null) return description((net.kyori.adventure.text.Component) null);
         return description(net.kyori.adventure.text.Component.translatable(string));
     }
+    public @Nullable net.kyori.adventure.text.Component description() {return description;}
+
     public @NotNull CustomAdvancementDisplayBuilder background(@Nullable String background){
         this.background = background; return this;
     }
