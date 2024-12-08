@@ -130,6 +130,10 @@ public class ItemUtils {
                         predicate.test(smithingTrimRecipe.getAddition())
                 )
                 {recipes.accept(recipe);}
+            } else if (recipe instanceof TransmuteRecipe transmuteRecipe) {
+                if (predicate.test(transmuteRecipe.getInput()) || predicate.test(transmuteRecipe.getMaterial())){
+                    recipes.accept(recipe);
+                }
             }
         }
     }

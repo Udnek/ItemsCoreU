@@ -1,15 +1,29 @@
 package me.udnek.itemscoreu.customitem;
 
+import com.google.common.base.Preconditions;
+import io.papermc.paper.datacomponent.DataComponentTypes;
+import io.papermc.paper.datacomponent.item.Repairable;
+import io.papermc.paper.registry.RegistryKey;
+import io.papermc.paper.registry.TypedKey;
+import io.papermc.paper.registry.keys.BlockTypeKeys;
+import io.papermc.paper.registry.keys.ItemTypeKeys;
+import io.papermc.paper.registry.set.RegistryKeySet;
+import me.udnek.itemscoreu.util.ItemUtils;
 import me.udnek.itemscoreu.util.SelfRegisteringListener;
 import me.udnek.itemscoreu.util.Utils;
+import net.minecraft.core.registries.Registries;
 import org.bukkit.Material;
+import org.bukkit.Registry;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.inventory.FurnaceSmeltEvent;
+import org.bukkit.event.inventory.PrepareAnvilEvent;
+import org.bukkit.event.inventory.PrepareGrindstoneEvent;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.inventory.*;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class CraftListener extends SelfRegisteringListener {
 
@@ -18,22 +32,49 @@ public class CraftListener extends SelfRegisteringListener {
     }
 
     @EventHandler
-    public void onPrepareItemCraftEven(PrepareItemCraftEvent event) {
+    public void onCraft(PrepareItemCraftEvent event) {
         if (event.getRecipe() == null) {
             return;
         }
 
         Recipe recipe = event.getRecipe();
         ItemStack[] matrix = event.getInventory().getMatrix();
-        ArrayList<RecipeChoice> recipeChoices;
+        List<RecipeChoice> recipeChoices;
 
-        if (recipe instanceof ShapedRecipe) {
-            recipeChoices = new ArrayList<>(((ShapedRecipe) recipe).getChoiceMap().values());
-        } else if (recipe instanceof ShapelessRecipe) {
-            recipeChoices = (ArrayList<RecipeChoice>) ((ShapelessRecipe) recipe).getChoiceList();
-        } else {
+        if (recipe instanceof ShapedRecipe shapedRecipe) {
+            recipeChoices = new ArrayList<>(shapedRecipe.getChoiceMap().values());
+        } else if (recipe instanceof ShapelessRecipe shapelessRecipe) {
+            recipeChoices = shapelessRecipe.getChoiceList();
+        } else if (recipe instanceof TransmuteRecipe transmuteRecipe){
+            recipeChoices = List.of(transmuteRecipe.getInput(), transmuteRecipe.getMaterial());
+        } else if (event.isRepair()) {
+            ItemStack component0 = null;
+            ItemStack component1 = null;
+            for (ItemStack itemStack : matrix) {
+                if (itemStack == null || itemStack.getType() == Material.AIR) continue;
+                if (component0 == null) {
+                    component0 = itemStack;
+                }
+                else {
+                    component1 = itemStack;
+                    break;
+                }
+            }
+            Preconditions.checkArgument(component0 != null && component1 != null, "Repair item are null!");
+
+            if (ItemUtils.isSameIds(component0, component1)){
+                CustomItem customItem = CustomItem.get(component0);
+                if (customItem == null) return;
+                ItemStack newResult = customItem.getItem();
+                newResult.setData(DataComponentTypes.DAMAGE, event.getInventory().getResult().getDataOrDefault(DataComponentTypes.DAMAGE, 0));
+                event.getInventory().setResult(newResult);
+                customItem.onPrepareCraft(event, newResult);
+            } else {
+                event.getInventory().setResult(new ItemStack(Material.AIR));
+            }
             return;
-        }
+
+        } else return;
 
         int amountOfExactChoices = 0;
         for (RecipeChoice recipeChoice : recipeChoices ) {
@@ -55,11 +96,11 @@ public class CraftListener extends SelfRegisteringListener {
         }
 
         Utils.consumeIfNotNull(CustomItem.get(event.getRecipe().getResult()), customItem ->
-                customItem.onPrepareCraft(event));
+                customItem.onPrepareCraft(event, event.getInventory().getResult()));
     }
 
     @EventHandler
-    public void onFurnaceStartSmelt(FurnaceSmeltEvent event){
+    public void onFurnace(FurnaceSmeltEvent event){
         CookingRecipe<?> recipe = event.getRecipe();
         ItemStack itemStack = event.getSource();
         if (!CustomItem.isCustom(itemStack)){
@@ -69,4 +110,42 @@ public class CraftListener extends SelfRegisteringListener {
             event.setCancelled(true);
         }
     }
+
+    @EventHandler
+    public void onGrindstone(PrepareGrindstoneEvent event){
+        ItemStack upperItem = event.getInventory().getUpperItem();
+        ItemStack lowerItem = event.getInventory().getLowerItem();
+        if (upperItem == null || lowerItem == null) return;
+        if (ItemUtils.isSameIds(upperItem, lowerItem)) return;
+        event.setResult(new ItemStack(Material.AIR));
+    }
+
+    @EventHandler
+    public void onAnvil(PrepareAnvilEvent event){
+        ItemStack firstItem = event.getInventory().getFirstItem();
+        ItemStack secondItem = event.getInventory().getSecondItem();
+        if (firstItem == null || secondItem == null) return;
+        if (ItemUtils.isSameIds(firstItem, secondItem)) return;
+        Repairable repairable = firstItem.getDataOrDefault(DataComponentTypes.REPAIRABLE, firstItem.getType().getDefaultData(DataComponentTypes.REPAIRABLE));
+        if (repairable == null) return;
+        if (repairable.types().contains(TypedKey.create(RegistryKey.ITEM, secondItem.getType().key()))){
+            return;
+        }
+        event.setResult(new ItemStack(Material.AIR));
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

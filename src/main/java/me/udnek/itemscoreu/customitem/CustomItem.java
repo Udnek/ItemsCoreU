@@ -75,10 +75,10 @@ public interface CustomItem extends Registrable, ComponentHolder<CustomItem> {
     ///////////////////////////////////////////////////////////////////////////
     // EVENTS
     ///////////////////////////////////////////////////////////////////////////
-    default void onPrepareCraft(@NotNull PrepareItemCraftEvent event){
-        event.getInventory().setResult(getItemFromCraftingMatrix(event.getRecipe().getResult(), event.getInventory().getMatrix(), event.getRecipe()));
+    default void onPrepareCraft(@NotNull PrepareItemCraftEvent event, @Nullable ItemStack newResult){
+        event.getInventory().setResult(getItemFromCraftingMatrix(newResult, event.getInventory().getMatrix(), event.getRecipe()));
     }
-    default @Nullable ItemStack getItemFromCraftingMatrix(@NotNull ItemStack result, @NotNull ItemStack[] matrix, @NotNull Recipe recipe){
+    default @Nullable ItemStack getItemFromCraftingMatrix(@Nullable ItemStack result, @NotNull ItemStack[] matrix, @NotNull Recipe recipe){
         return result;
     }
 
