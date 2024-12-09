@@ -11,6 +11,7 @@ import io.papermc.paper.registry.set.RegistryKeySet;
 import me.udnek.itemscoreu.util.ItemUtils;
 import me.udnek.itemscoreu.util.SelfRegisteringListener;
 import me.udnek.itemscoreu.util.Utils;
+import me.udnek.itemscoreu.util.VanillaItemManager;
 import net.minecraft.core.registries.Registries;
 import org.bukkit.Material;
 import org.bukkit.Registry;
@@ -85,7 +86,8 @@ public class CraftListener extends SelfRegisteringListener {
 
         int amountOfCustomItems = 0;
         for (ItemStack itemStack : matrix) {
-            if (itemStack != null && CustomItem.isCustom(itemStack)) {
+            CustomItem customItem = CustomItem.get(itemStack);
+            if (customItem != null && !VanillaItemManager.isReplaced(customItem)) {
                 amountOfCustomItems++;
             }
         }

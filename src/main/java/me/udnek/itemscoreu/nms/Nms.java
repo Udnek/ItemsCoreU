@@ -74,6 +74,7 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public class Nms {
@@ -287,13 +288,7 @@ public class Nms {
     public List<ItemStack> getPossibleLoot(org.bukkit.loot.LootTable lootTable) {
         List<ItemStack> result = new ArrayList<>();
         LootTable nmsLootTable = ((CraftLootTable) lootTable).getHandle();
-        List<LootPoolEntry> entries = NmsUtils.getAllEntries(NmsUtils.getAllSingletonContainers(nmsLootTable));
-
-        for (LootPoolEntry entry : entries) {
-            NmsUtils.getPossibleLoot(entry, itemStack -> {
-                result.add(NmsUtils.toBukkitItemStack(itemStack));
-            });
-        }
+        NmsUtils.getPossibleLoot(nmsLootTable, itemStack -> result.add(NmsUtils.toBukkitItemStack(itemStack)));
         return result;
     }
     public @Nullable org.bukkit.loot.LootTable getDeathLootTable(@NotNull org.bukkit.entity.LivingEntity bukkitEntity){

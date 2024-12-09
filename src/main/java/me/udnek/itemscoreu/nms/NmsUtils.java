@@ -16,13 +16,13 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.LootTable;
-import net.minecraft.world.level.storage.loot.entries.LootPoolEntry;
-import net.minecraft.world.level.storage.loot.entries.LootPoolEntryContainer;
-import net.minecraft.world.level.storage.loot.entries.LootPoolSingletonContainer;
-import net.minecraft.world.level.storage.loot.entries.NestedLootTable;
+import net.minecraft.world.level.storage.loot.entries.*;
+import net.minecraft.world.level.storage.loot.functions.ExplorationMapFunction;
+import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -38,6 +38,7 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.sql.Ref;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -160,16 +161,30 @@ public class NmsUtils {
         }
         return singletonContainers;
     }
+    public static void getPossibleLoot(LootTable lootTable, Consumer<net.minecraft.world.item.ItemStack> consumer){
+        getPossibleLoot(getAllSingletonContainers(lootTable), consumer);
+    }
+
     public static void getPossibleLoot(List<LootPoolSingletonContainer> containers, Consumer<net.minecraft.world.item.ItemStack> consumer){
-        containers.forEach(container -> getPossibleLoot(getEntry(container), consumer));
+        containers.forEach(container -> getPossibleLoot(container, consumer));
     }
     public static void getPossibleLoot(LootPoolSingletonContainer container, Consumer<net.minecraft.world.item.ItemStack> consumer){
+        if (container instanceof LootItem){
+            Item item = ((Holder<Item>) Reflex.getFieldValue(container, "item")).value();
+            if (item == Items.MAP){
+                List<LootItemFunction> functions = (List<LootItemFunction>) Reflex.getFieldValue(container, "functions");
+                for (LootItemFunction function : functions) {
+                    if (!(function instanceof ExplorationMapFunction)) continue;
+                    consumer.accept(new net.minecraft.world.item.ItemStack(Items.FILLED_MAP));
+                    return;
+                }
+            }
+        }
         getPossibleLoot(getEntry(container), consumer);
     }
     public static void getPossibleLoot(LootPoolEntry entry, Consumer<net.minecraft.world.item.ItemStack> consumer){
         NmsItemConsumer localConsumer = new NmsItemConsumer();
-        try {entry.createItemStack(localConsumer, Nms.get().getGenericLootContext());
-        } catch (Exception ignored) {}
+        entry.createItemStack(consumer, Nms.get().getGenericLootContext());
 
         for (net.minecraft.world.item.ItemStack itemStack : localConsumer.get()) {
             if (itemStack.getCount() == 0) itemStack.setCount(1);
@@ -200,11 +215,11 @@ public class NmsUtils {
         }
         return null;
     }
-    public static @NotNull ResourceKey<net.minecraft.world.level.storage.loot.LootTable> getResourceKeyLootTable(String id){
+    public static @NotNull ResourceKey<LootTable> getResourceKeyLootTable(String id){
         ResourceLocation resourceLocation = ResourceLocation.parse(id);
         return ResourceKey.create(Registries.LOOT_TABLE, resourceLocation);
     }
-    public static @NotNull LootTable getLootTable(@NotNull ResourceKey<net.minecraft.world.level.storage.loot.LootTable> resourceKey){
+    public static @NotNull LootTable getLootTable(@NotNull ResourceKey<LootTable> resourceKey){
         ReloadableServerRegistries.Holder registries = ((CraftServer) Bukkit.getServer()).getServer().reloadableRegistries();
         return registries.getLootTable(resourceKey);
     }
