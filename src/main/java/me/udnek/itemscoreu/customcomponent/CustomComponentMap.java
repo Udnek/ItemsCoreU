@@ -9,27 +9,31 @@ import java.util.Map;
 import java.util.Objects;
 
 public class CustomComponentMap<HolderType> implements Iterable<CustomComponent<HolderType>>{
-    private final Map<CustomComponentType<HolderType, ?>, CustomComponent<HolderType>> map = new HashMap<>();
+    private Map<CustomComponentType<HolderType, ?>, CustomComponent<HolderType>> map = null;
 
     public @NotNull <Type extends CustomComponentType<HolderType, Component>, Component extends CustomComponent<HolderType>> Component getOrDefault(@NotNull Type type) {
+        if (map == null) return type.getDefault();
         return (Component) map.getOrDefault(type, type.getDefault());
     }
 
     public @NotNull <Type extends CustomComponentType<HolderType, Component>, Component extends CustomComponent<HolderType>> Component getOrException(@NotNull Type type){
-        return Objects.requireNonNull(get(type), "Component " + type.getKey().asString() + " is not present!");
+        return Objects.requireNonNull(map == null ? null : get(type), "Component " + type.getKey().asString() + " is not present!");
     }
 
     public @Nullable <Type extends CustomComponentType<HolderType, Component>, Component extends CustomComponent<HolderType>> Component get(@NotNull Type type) {
+        if (map == null) return null;
         return (Component) map.get(type);
     }
     public <Type extends CustomComponentType<HolderType, ?>> boolean has(@NotNull Type type) {
+        if (map == null) return false;
         return map.containsKey(type);
     }
     public <Component extends CustomComponent<HolderType>> void set(@NotNull Component component) {
+        if (map == null) map = new HashMap<>();
         map.put(component.getType(), component);
     }
     public <Type extends CustomComponentType<HolderType, ?>> void remove(@NotNull Type type) {
-        map.remove(type);
+        if (map != null) map.remove(type);
     }
 
     @Override

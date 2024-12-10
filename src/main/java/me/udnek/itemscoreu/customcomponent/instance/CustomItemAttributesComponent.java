@@ -16,10 +16,10 @@ public class CustomItemAttributesComponent implements CustomComponent<CustomItem
         this.container = container;
     }
 
-    public @NotNull CustomAttributesContainer getAttributes(@NotNull CustomItem customItem) {return container;}
+    public @NotNull CustomAttributesContainer getAttributes() {return container;}
 
     @Override
-    public @NotNull CustomComponentType<CustomItem, CustomItemAttributesComponent> getType() {
+    public @NotNull CustomComponentType<CustomItem, ?> getType() {
         return CustomComponentType.CUSTOM_ITEM_ATTRIBUTES;
     }
 }

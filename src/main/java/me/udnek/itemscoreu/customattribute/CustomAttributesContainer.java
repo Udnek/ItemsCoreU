@@ -32,17 +32,25 @@ public class CustomAttributesContainer extends AbstractAttributeContainer<Custom
         public Builder(){
             container = new CustomAttributesContainer();
         }
-        public Builder add(@NotNull CustomAttribute customAttribute, double amount, @NotNull AttributeModifier.Operation operation, @NotNull CustomEquipmentSlot slot){
+        public @NotNull Builder add(@NotNull CustomAttributesContainer container){
+            for (Map.Entry<@NotNull CustomAttribute, @NotNull List<@NotNull CustomAttributeModifier>> entry : container.getAll().entrySet()) {
+                for (@NotNull CustomAttributeModifier modifier : entry.getValue()) {
+                    add(entry.getKey(), modifier);
+                }
+            }
+            return this;
+        }
+        public @NotNull Builder add(@NotNull CustomAttribute customAttribute, double amount, @NotNull AttributeModifier.Operation operation, @NotNull CustomEquipmentSlot slot){
             CustomAttributeModifier attributeModifier = new CustomAttributeModifier(amount, operation, slot);
             return add(customAttribute, attributeModifier);
         }
 
-        public Builder add(@NotNull CustomAttribute customAttribute, @NotNull CustomAttributeModifier attributeModifier){
+        public @NotNull Builder add(@NotNull CustomAttribute customAttribute, @NotNull CustomAttributeModifier attributeModifier){
             container.add(customAttribute, attributeModifier);
             return this;
         }
 
-        public CustomAttributesContainer build(){
+        public @NotNull CustomAttributesContainer build(){
             return container;
         }
 

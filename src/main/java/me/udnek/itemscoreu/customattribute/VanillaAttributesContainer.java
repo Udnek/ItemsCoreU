@@ -37,17 +37,27 @@ public class VanillaAttributesContainer extends AbstractAttributeContainer<Attri
         public Builder(){
             container = new VanillaAttributesContainer();
         }
-        public VanillaAttributesContainer.Builder add(@NotNull Attribute attribute, @NotNull NamespacedKey key, double amount, @NotNull AttributeModifier.Operation operation, @NotNull CustomEquipmentSlot slot){
+
+        public @NotNull VanillaAttributesContainer.Builder add(@NotNull VanillaAttributesContainer container){
+            for (Map.Entry<@NotNull Attribute, @NotNull List<@NotNull CustomKeyedAttributeModifier>> entry : container.getAll().entrySet()) {
+                for (@NotNull CustomKeyedAttributeModifier modifier : entry.getValue()) {
+                    add(entry.getKey(), modifier);
+                }
+            }
+            return this;
+        }
+
+        public @NotNull VanillaAttributesContainer.Builder add(@NotNull Attribute attribute, @NotNull NamespacedKey key, double amount, @NotNull AttributeModifier.Operation operation, @NotNull CustomEquipmentSlot slot){
             CustomKeyedAttributeModifier attributeModifier = new CustomKeyedAttributeModifier(key, amount, operation, slot);
             return add(attribute, attributeModifier);
         }
 
-        public VanillaAttributesContainer.Builder add(@NotNull Attribute attribute, @NotNull CustomKeyedAttributeModifier attributeModifier){
+        public @NotNull VanillaAttributesContainer.Builder add(@NotNull Attribute attribute, @NotNull CustomKeyedAttributeModifier attributeModifier){
             container.add(attribute, attributeModifier);
             return this;
         }
 
-        public VanillaAttributesContainer build(){
+        public @NotNull VanillaAttributesContainer build(){
             return container;
         }
 
