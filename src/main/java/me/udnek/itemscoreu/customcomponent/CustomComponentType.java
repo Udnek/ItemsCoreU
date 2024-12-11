@@ -2,10 +2,7 @@ package me.udnek.itemscoreu.customcomponent;
 
 import me.udnek.itemscoreu.ItemsCoreU;
 import me.udnek.itemscoreu.customblock.CustomBlock;
-import me.udnek.itemscoreu.customcomponent.instance.CustomItemAttributesComponent;
-import me.udnek.itemscoreu.customcomponent.instance.RightClickableBlock;
-import me.udnek.itemscoreu.customcomponent.instance.RightClickableItem;
-import me.udnek.itemscoreu.customcomponent.instance.VanillaAttributesComponent;
+import me.udnek.itemscoreu.customcomponent.instance.*;
 import me.udnek.itemscoreu.customitem.CustomItem;
 import me.udnek.itemscoreu.customregistry.CustomRegistries;
 import me.udnek.itemscoreu.customregistry.Registrable;
@@ -14,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 public interface CustomComponentType<HolderType, Component extends CustomComponent<HolderType>> extends Registrable {
 
     CustomComponentType<CustomItem, CustomItemAttributesComponent>
-            CUSTOM_ITEM_ATTRIBUTES = register(new ConstructableComponentType("custom_item_attributes", CustomItemAttributesComponent.EMPTY));
+            CUSTOM_ATTRIBUTED_ITEM = register(new ConstructableComponentType("custom_attributed_item", CustomItemAttributesComponent.EMPTY));
 
     CustomComponentType<CustomItem, RightClickableItem>
             RIGHT_CLICKABLE_ITEM = register(new ConstructableComponentType("right_clickable_item", RightClickableItem.EMPTY));
@@ -23,7 +20,10 @@ public interface CustomComponentType<HolderType, Component extends CustomCompone
             RIGHT_CLICKABLE_BLOCK = register(new ConstructableComponentType("right_clickable_block", RightClickableBlock.EMPTY));
 
     CustomComponentType<CustomItem, VanillaAttributesComponent>
-            VANILLA_ATTRIBUTES_ITEM = register(new ConstructableComponentType("vanilla_attributes_item", VanillaAttributesComponent.DEFAULT));
+            VANILLA_ATTRIBUTED_ITEM = register(new ConstructableComponentType("vanilla_attributed_item", VanillaAttributesComponent.DEFAULT));
+
+    CustomComponentType<CustomItem, RepairableWithCustomItem>
+            REPAIRABLE_WITH_CUSTOM_ITEM = register(new ConstructableComponentType("repairable_with_custom_item", RepairableWithCustomItem.DEFAULT));
 
     @NotNull Component getDefault();
 

@@ -20,6 +20,6 @@ public class CustomItemAttributesComponent implements CustomComponent<CustomItem
 
     @Override
     public @NotNull CustomComponentType<CustomItem, ?> getType() {
-        return CustomComponentType.CUSTOM_ITEM_ATTRIBUTES;
+        return CustomComponentType.CUSTOM_ATTRIBUTED_ITEM;
     }
 }

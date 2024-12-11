@@ -2,15 +2,15 @@ package me.udnek.itemscoreu.customitem;
 
 import com.google.common.base.Preconditions;
 import io.papermc.paper.datacomponent.DataComponentType;
-import io.papermc.paper.datacomponent.DataComponentTypes;
-import io.papermc.paper.datacomponent.item.ItemLore;
+import io.papermc.paper.datacomponent.item.Repairable;
+import io.papermc.paper.registry.RegistryKey;
+import io.papermc.paper.registry.set.RegistrySet;
 import me.udnek.itemscoreu.customattribute.AttributeUtils;
 import me.udnek.itemscoreu.customcomponent.OptimizedComponentHolder;
 import me.udnek.itemscoreu.customevent.CustomItemGeneratedEvent;
 import me.udnek.itemscoreu.customrecipe.RecipeManager;
 import me.udnek.itemscoreu.nms.ConsumableComponent;
 import me.udnek.itemscoreu.nms.Nms;
-import me.udnek.itemscoreu.util.Utils;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -18,6 +18,7 @@ import org.bukkit.Tag;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.ItemType;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.meta.*;
 import org.bukkit.inventory.meta.components.UseCooldownComponent;
@@ -50,7 +51,6 @@ public abstract class ConstructableCustomItem extends OptimizedComponentHolder<C
     public void initialize(@NotNull Plugin plugin){
         Preconditions.checkArgument(id == null, "Item already initialized!");
         id = new NamespacedKey(plugin, getRawId()).asString();
-        initializeComponents();
     }
 
     public void initializeComponents(){}
@@ -58,6 +58,7 @@ public abstract class ConstructableCustomItem extends OptimizedComponentHolder<C
     @Override
     public void afterInitialization() {
         ComponentUpdatingCustomItem.super.afterInitialization();
+        initializeComponents();
         generateRecipes(this::registerRecipe);
     }
 
@@ -89,6 +90,15 @@ public abstract class ConstructableCustomItem extends OptimizedComponentHolder<C
     @Override
     public boolean isTagged(@NotNull Tag<Material> tag) {
         return tag.isTagged(getMaterial());
+    }
+
+    public void getRepairMaterials(@NotNull Consumer<Material> consumer){}
+
+    @Override
+    public @Nullable Repairable getRepairable() {
+        List<ItemType> materials = new ArrayList<>();
+        getRepairMaterials(material -> materials.add(material.asItemType()));
+        return Repairable.repairable(RegistrySet.keySetFromValues(RegistryKey.ITEM, materials));
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -151,12 +161,13 @@ public abstract class ConstructableCustomItem extends OptimizedComponentHolder<C
     protected void modifyFinalItemMeta(@NotNull ItemMeta itemMeta){}
 
     protected @NotNull ItemStack getMainItemStack(){
-        ItemMeta itemMeta = this.getMainItemMeta();
-        this.modifyFinalItemMeta(itemMeta);
-        ItemStack itemStack = new ItemStack(this.getMaterial());
+        ItemMeta itemMeta = getMainItemMeta();
+        modifyFinalItemMeta(itemMeta);
+        ItemStack itemStack = new ItemStack(getMaterial());
         itemStack.setItemMeta(itemMeta);
 
-        // todo replace when bukkit ready
+        if (getRepairable() != null) itemStack.setData(REPAIRABLE, getRepairable());
+
         ConsumableComponent consumable = getConsumable();
         if (consumable != null){
             itemStack = Nms.get().setConsumableComponent(itemStack, consumable);

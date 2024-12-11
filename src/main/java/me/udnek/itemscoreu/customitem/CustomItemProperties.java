@@ -1,5 +1,6 @@
 package me.udnek.itemscoreu.customitem;
 
+import io.papermc.paper.datacomponent.item.Repairable;
 import me.udnek.itemscoreu.nms.ConsumableComponent;
 import me.udnek.itemscoreu.util.LoreBuilder;
 import net.kyori.adventure.text.Component;
@@ -96,7 +97,7 @@ public interface CustomItemProperties {
     // 2.52 profile
     @Nullable default ItemRarity getRarity(){return null;} // 2.53 rarity
     // 2.54 recipes
-    // todo 2.55 repairable
+    @Nullable default Repairable getRepairable(){return null;} // 2.55 repairable
     // 2.56 repair_cost
     // 2.57 stored_enchantments
     // 2.58 suspicious_stew_effects

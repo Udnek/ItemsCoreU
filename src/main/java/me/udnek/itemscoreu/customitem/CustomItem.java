@@ -1,5 +1,6 @@
 package me.udnek.itemscoreu.customitem;
 
+import io.papermc.paper.datacomponent.item.Repairable;
 import me.udnek.itemscoreu.ItemsCoreU;
 import me.udnek.itemscoreu.customcomponent.ComponentHolder;
 import me.udnek.itemscoreu.customregistry.CustomRegistries;

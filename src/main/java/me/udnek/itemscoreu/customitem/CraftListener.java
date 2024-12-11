@@ -8,6 +8,7 @@ import io.papermc.paper.registry.TypedKey;
 import io.papermc.paper.registry.keys.BlockTypeKeys;
 import io.papermc.paper.registry.keys.ItemTypeKeys;
 import io.papermc.paper.registry.set.RegistryKeySet;
+import me.udnek.itemscoreu.customcomponent.CustomComponentType;
 import me.udnek.itemscoreu.util.ItemUtils;
 import me.udnek.itemscoreu.util.SelfRegisteringListener;
 import me.udnek.itemscoreu.util.Utils;
@@ -22,6 +23,7 @@ import org.bukkit.event.inventory.PrepareGrindstoneEvent;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.inventory.*;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -126,14 +128,25 @@ public class CraftListener extends SelfRegisteringListener {
     public void onAnvil(PrepareAnvilEvent event){
         ItemStack firstItem = event.getInventory().getFirstItem();
         ItemStack secondItem = event.getInventory().getSecondItem();
+
         if (firstItem == null || secondItem == null) return;
         if (ItemUtils.isSameIds(firstItem, secondItem)) return;
-        Repairable repairable = firstItem.getDataOrDefault(DataComponentTypes.REPAIRABLE, firstItem.getType().getDefaultData(DataComponentTypes.REPAIRABLE));
-        if (repairable == null) return;
-        if (repairable.types().contains(TypedKey.create(RegistryKey.ITEM, secondItem.getType().key()))){
-            return;
+
+        if (!canBeRepaired(firstItem, secondItem)) event.setResult(new ItemStack(Material.AIR));
+    }
+
+    public boolean canBeRepaired(@NotNull ItemStack toBeRepaired, @NotNull ItemStack repairer){
+        CustomItem toBeRepairedCustom = CustomItem.get(toBeRepaired);
+        CustomItem repairerCustom = CustomItem.get(repairer);
+
+        Repairable materialRepairable = toBeRepaired.getDataOrDefault(DataComponentTypes.REPAIRABLE, toBeRepaired.getType().getDefaultData(DataComponentTypes.REPAIRABLE));
+        if (materialRepairable != null && repairerCustom == null){
+            if (!materialRepairable.types().contains(TypedKey.create(RegistryKey.ITEM, repairer.getType().key()))) return false;
         }
-        event.setResult(new ItemStack(Material.AIR));
+        if (toBeRepairedCustom != null && repairerCustom != null){
+            if (!toBeRepairedCustom.getComponents().getOrDefault(CustomComponentType.REPAIRABLE_WITH_CUSTOM_ITEM).canBeRepairedWith(repairerCustom)) return false;
+        }
+        return true;
     }
 }
 

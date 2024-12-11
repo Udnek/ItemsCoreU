@@ -20,7 +20,7 @@ public class VanillaAttributesComponent implements CustomComponent<CustomItem> {
 
     @Override
     public @NotNull CustomComponentType<CustomItem, ?> getType() {
-        return CustomComponentType.VANILLA_ATTRIBUTES_ITEM;
+        return CustomComponentType.VANILLA_ATTRIBUTED_ITEM;
     }
 
 }
