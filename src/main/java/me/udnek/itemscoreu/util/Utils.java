@@ -7,8 +7,6 @@ import java.text.DecimalFormat;
 import java.util.function.Consumer;
 
 public class Utils {
-    private Utils(){}
-
 
     public static @NotNull String roundToTwoDigits(double value){
         if (value % 1 == 0){

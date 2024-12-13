@@ -50,9 +50,9 @@ public class NmsEnchantmentContainer extends NmsContainer<Enchantment> {
             case MULTIPLY_SCALAR_1 -> AttributeModifier.Operation.ADD_MULTIPLIED_BASE;
             case ADD_SCALAR -> AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL;
         };
-        net.minecraft.world.entity.ai.attributes.Attribute attribute = NmsUtils.getRegistry(Registries.ATTRIBUTE).getValue(NmsUtils.getResourceLocation(bukkitAttribute.getKey()));
+        net.minecraft.world.entity.ai.attributes.Attribute attribute = NmsUtils.toNms(Registries.ATTRIBUTE, bukkitAttribute).value();
         EnchantmentAttributeEffect effect = new EnchantmentAttributeEffect(
-                NmsUtils.getResourceLocation(id),
+                NmsUtils.toNmsResourceLocation(id),
                 NmsUtils.getRegistry(Registries.ATTRIBUTE).wrapAsHolder(attribute),
                 LevelBasedValue.perLevel(baseValue, valueAboveFirst),
                 operation

@@ -41,7 +41,7 @@ public class ConsumableComponent {
     public void clearConsumeEffects(){this.onConsumeEffects = new ArrayList<>();}
     public void setSound(@Nullable Sound newSound){
         if (newSound == null) newSound = Sound.INTENTIONALLY_EMPTY;
-        sound = NmsUtils.getRegistry(Registries.SOUND_EVENT).get(NmsUtils.getResourceLocation(newSound.key())).get();
+        sound = NmsUtils.getRegistry(Registries.SOUND_EVENT).get(NmsUtils.toNmsResourceLocation(newSound.key())).get();
     }
 
     public @NotNull Consumable getNms(){

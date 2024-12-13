@@ -2,10 +2,8 @@ package me.udnek.itemscoreu.customitem;
 
 import me.udnek.itemscoreu.customcomponent.CustomComponentType;
 import me.udnek.itemscoreu.custominventory.CustomInventory;
-import me.udnek.itemscoreu.util.LogUtils;
 import me.udnek.itemscoreu.util.SelfRegisteringListener;
 import me.udnek.itemscoreu.util.Utils;
-import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;

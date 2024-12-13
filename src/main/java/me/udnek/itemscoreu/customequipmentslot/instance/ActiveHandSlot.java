@@ -4,8 +4,6 @@ import me.udnek.itemscoreu.ItemsCoreU;
 import me.udnek.itemscoreu.customequipmentslot.AbstractCustomEquipmentSlot;
 import me.udnek.itemscoreu.customequipmentslot.CustomEquipmentSlot;
 import me.udnek.itemscoreu.customequipmentslot.SingleSlot;
-import net.minecraft.core.component.DataComponentMap;
-import net.minecraft.core.component.DataComponents;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.EquipmentSlot;

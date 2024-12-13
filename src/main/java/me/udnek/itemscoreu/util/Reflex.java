@@ -1,5 +1,6 @@
 package me.udnek.itemscoreu.util;
 
+import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import sun.misc.Unsafe;
@@ -10,37 +11,36 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 public class Reflex {
-    public static Field getField(Class<?> source, String name) {
+    public static @NotNull Field getField(@NotNull Class<?> source, @NotNull String name) {
         try {
             return source.getDeclaredField(name);
         }
         catch (NoSuchFieldException exception) {
             Class<?> superClass = source.getSuperclass();
-            return superClass == null ? null : getField(superClass, name);
+            Preconditions.checkArgument(superClass != null);
+            return getField(superClass, name);
         }
     }
 
-    public static Object getFieldValue(Object source, String name) {
+    public static @NotNull Object getFieldValue(@NotNull Object source, @NotNull String name) {
+        Class<?> clazz = source instanceof Class<?> ? (Class<?>) source : source.getClass();
+        Field field = getField(clazz, name);
+
+        field.setAccessible(true);
         try {
-            Class<?> clazz = source instanceof Class<?> ? (Class<?>) source : source.getClass();
-            Field field = getField(clazz, name);
-            if (field == null) return null;
-
-            field.setAccessible(true);
             return field.get(source);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
         }
-        catch (IllegalAccessException exception) {
-            exception.printStackTrace();
-        }
-        return null;
+
     }
 
-    public static <T> T getFieldValue(Object source, String name, Class<T> tClass) {
+    public static <T> T getFieldValue(@NotNull Object source, @NotNull String name, Class<T> tClass) {
         return (T) getFieldValue(source, name);
     }
 
 
-    public static void setFieldValue(Object source, @NotNull String name, @Nullable Object value) {
+    public static void setFieldValue(@NotNull Object source, @NotNull String name, @Nullable Object value) {
         try {
             boolean isStatic = source instanceof Class;
             Class<?> clazz = isStatic ? (Class<?>) source : source.getClass();
@@ -53,7 +53,7 @@ public class Reflex {
         }
     }
 
-    public static void setRecordFieldValue(Object instance, @NotNull String fieldName, @Nullable Object value) {
+    public static void setRecordFieldValue(@NotNull Object instance, @NotNull String fieldName, @Nullable Object value) {
         try {
             Field f = instance.getClass().getDeclaredField(fieldName);
 
@@ -75,7 +75,7 @@ public class Reflex {
     }
 
 
-    public static Method getMethod(Class<?> clazz, String name, Class<?>... parameterTypes){
+    public static @NotNull Method getMethod(@NotNull Class<?> clazz, @NotNull String name, @Nullable Class<?>... parameterTypes){
         try {
             Method method = clazz.getDeclaredMethod(name, parameterTypes);
             method.setAccessible(true);
@@ -84,7 +84,7 @@ public class Reflex {
             throw new RuntimeException(e);
         }
     }
-    public static Method getMethod(Class<?> clazz, String name){
+    public static @NotNull Method getMethod(@NotNull Class<?> clazz, @NotNull String name){
         Method[] methods = clazz.getDeclaredMethods();
         for (Method method : methods) {
             if (method.getName().equals(name)){
@@ -95,7 +95,7 @@ public class Reflex {
         throw new RuntimeException(new NoSuchFieldException(name));
     }
 
-    public static Object invokeMethod(Object object, Method method, Object ...args){
+    public static @Nullable Object invokeMethod(@Nullable Object object, @NotNull Method method, @Nullable Object ...args){
         try {
             return method.invoke(object, args);
         } catch (IllegalAccessException | InvocationTargetException e) {
@@ -103,13 +103,13 @@ public class Reflex {
         }
     }
 
-    public static <T> Constructor<T> getFirstConstructor(Class<T> clazz){
+    public static <T> @NotNull Constructor<T> getFirstConstructor(@NotNull Class<T> clazz){
         Constructor<?>[] constructor = clazz.getDeclaredConstructors();
         constructor[0].setAccessible(true);
         return (Constructor<T>) constructor[0];
     }
 
-    public static <T> Constructor<T> getConstructor(Class<T> clazz, Class<?> ...parameterTypes){
+    public static <T> @NotNull Constructor<T> getConstructor(@NotNull Class<T> clazz, @NotNull Class<?> ...parameterTypes){
         try {
             Constructor<T> constructor = clazz.getDeclaredConstructor(parameterTypes);
             constructor.setAccessible(true);
@@ -119,7 +119,7 @@ public class Reflex {
         }
     }
 
-    public static <T> T construct(Constructor<T> constructor, Object ...args){
+    public static <T> @NotNull T construct(@NotNull Constructor<T> constructor, @Nullable Object ...args){
         try {
             return constructor.newInstance(args);
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {

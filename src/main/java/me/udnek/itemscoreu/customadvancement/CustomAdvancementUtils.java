@@ -1,14 +1,9 @@
 package me.udnek.itemscoreu.customadvancement;
 
 import com.google.common.collect.ImmutableMap;
-import it.unimi.dsi.fastutil.Pair;
-import it.unimi.dsi.fastutil.objects.ObjectObjectMutablePair;
 import me.udnek.itemscoreu.util.ItemUtils;
-import me.udnek.itemscoreu.util.LogUtils;
 import me.udnek.itemscoreu.util.Reflex;
 import net.kyori.adventure.key.Key;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import net.minecraft.advancements.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.ServerAdvancementManager;
@@ -17,7 +12,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v1_21_R2.CraftServer;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;

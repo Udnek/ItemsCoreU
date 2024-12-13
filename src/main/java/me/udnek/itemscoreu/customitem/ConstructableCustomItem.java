@@ -32,7 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-import static io.papermc.paper.datacomponent.DataComponentTypes.*;
+import static io.papermc.paper.datacomponent.DataComponentTypes.REPAIRABLE;
 
 
 public abstract class ConstructableCustomItem extends OptimizedComponentHolder<CustomItem> implements CustomItemProperties, ComponentUpdatingCustomItem {
@@ -63,8 +63,8 @@ public abstract class ConstructableCustomItem extends OptimizedComponentHolder<C
     }
 
     @Override
-    public @Nullable NamespacedKey getItemModel() {return NamespacedKey.fromString(getId());}
-    public @Nullable String getRawItemName(){return "item."+NamespacedKey.fromString(getId()).getNamespace()+"."+getRawId();}
+    public @Nullable NamespacedKey getItemModel() {return getKey();}
+    public @Nullable String getRawItemName(){return "item."+getKey().namespace()+"."+getRawId();}
     @Override
     public @Nullable Component getItemName() {
         if (getRawItemName() == null) return null;

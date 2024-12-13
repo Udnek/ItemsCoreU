@@ -6,7 +6,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import static io.papermc.paper.datacomponent.DataComponentTypes.*;
-import static io.papermc.paper.datacomponent.DataComponentTypes.ITEM_NAME;
 
 public interface ComponentUpdatingCustomItem extends CustomItem{
 

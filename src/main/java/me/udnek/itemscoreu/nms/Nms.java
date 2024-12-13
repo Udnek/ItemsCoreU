@@ -8,13 +8,11 @@ import me.udnek.itemscoreu.nms.loot.table.NmsDefaultLootTableContainer;
 import me.udnek.itemscoreu.nms.loot.table.NmsLootTableContainer;
 import me.udnek.itemscoreu.util.LogUtils;
 import me.udnek.itemscoreu.util.Reflex;
-import net.kyori.adventure.key.Key;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
 import net.minecraft.network.protocol.common.custom.GameTestAddMarkerDebugPayload;
@@ -23,7 +21,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.ReloadableServerRegistries;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.context.ContextKeySet;
-import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
@@ -71,10 +68,8 @@ import org.bukkit.util.StructureSearchResult;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public class Nms {
@@ -144,31 +139,46 @@ public class Nms {
 
     public @NotNull NmsEnchantmentContainer getEnchantment(@NotNull Enchantment bukkitEnchantment){
         Registry<net.minecraft.world.item.enchantment.Enchantment> registry = NmsUtils.getRegistry(Registries.ENCHANTMENT);
-        net.minecraft.world.item.enchantment.Enchantment enchantment = registry.getValue(NmsUtils.getResourceLocation(bukkitEnchantment.getKey()));
+        net.minecraft.world.item.enchantment.Enchantment enchantment = registry.getValue(NmsUtils.toNmsResourceLocation(bukkitEnchantment.getKey()));
         return new NmsEnchantmentContainer(enchantment);
     }
 
-    ///////////////////////////////////////////////////////////////////////////
-    // ENCHANTMENT
-    ///////////////////////////////////////////////////////////////////////////
+/*    public void registerEnchantment(@NotNull){
+        Registry<net.minecraft.world.item.enchantment.Enchantment> registry = NmsUtils.getRegistry(Registries.ENCHANTMENT);
+        // unfreeze
+        Reflex.setFieldValue(registry, "frozen", false);
+        Reflex.setFieldValue(registry, "unregisteredIntrusiveHolders", new IdentityHashMap<>());
+        // resource key
+        String enchantId = "test";
+        ResourceKey<net.minecraft.world.item.enchantment.Enchantment> key = key(enchantId);
+        // properties
+        Component description = net.minecraft.network.chat.Component.literal("test desc");
+        HolderSet<net.minecraft.world.item.enchantment.Enchantment> exclusiveSet = HolderSet.direct();
+        DataComponentMap effects = DataComponentMap.builder().build();
 
-    public @NotNull Holder<MobEffect> registerEffect(@NotNull MobEffect effect, @NotNull Key key){
+        Registry<Item> itemRegistry = NmsUtils.getRegistry(Registries.ITEM);
+        HolderSet<Item> supportedItems = itemRegistry.getOrThrow(ItemTags.SWORD_ENCHANTABLE);
+        HolderSet<Item> primaryItems = itemRegistry.getOrThrow(ItemTags.SWORD_ENCHANTABLE);
 
-        Reflex.setFieldValue(BuiltInRegistries.MOB_EFFECT, "frozen", false);
 
-        Registry<MobEffect> registry = NmsUtils.getRegistry(Registries.MOB_EFFECT);
 
-        Class<?> tagSetClass;
-        try {tagSetClass = Class.forName("net.minecraft.core.MappedRegistry$TagSet");
-        } catch (ClassNotFoundException e) {throw new RuntimeException(e);}
-        Method unboundMethod = Reflex.getMethod(tagSetClass, "unbound");
-        Object tags = Reflex.invokeMethod(null, unboundMethod);
-        Reflex.setFieldValue(registry, "allTags", tags);
+        EquipmentSlotGroup[] slots = nmsSlots(new EquipmentSlot[]{ EquipmentSlot.HAND});
 
-        Holder.Reference<MobEffect> holder = Registry.registerForHolder(BuiltInRegistries.MOB_EFFECT, NmsUtils.getResourceLocation(key), effect);
-        BuiltInRegistries.MOB_EFFECT.freeze();
-        return holder;
-    }
+        // definition
+        int weight = 1;
+        int maxLevel = 5;
+        net.minecraft.world.item.enchantment.Enchantment.Cost minCost = new net.minecraft.world.item.enchantment.Enchantment.Cost(1, 11);
+        net.minecraft.world.item.enchantment.Enchantment.Cost maxCost = new net.minecraft.world.item.enchantment.Enchantment.Cost(12, 11);
+        int anvilCost = 2;
+
+        net.minecraft.world.item.enchantment.Enchantment.EnchantmentDefinition definition = net.minecraft.world.item.enchantment.Enchantment.definition(supportedItems, primaryItems, weight, maxLevel, minCost, maxCost, anvilCost, slots);
+        net.minecraft.world.item.enchantment.Enchantment enchantment = new net.minecraft.world.item.enchantment.Enchantment(description, definition, exclusiveSet, effects);
+        Holder.Reference<net.minecraft.world.item.enchantment.Enchantment> reference = registry.createIntrusiveHolder(enchantment);
+        Registry.register(registry, key, enchantment);
+
+        registry.freeze();
+    }*/
+
 
     ///////////////////////////////////////////////////////////////////////////
     // LOOT
@@ -261,7 +271,7 @@ public class Nms {
         return null;
     }
 
-    public List<String> getRegisteredLootTableIds(){
+    public @NotNull List<String> getRegisteredLootTableIds(){
         List<String> ids = new ArrayList<>();
         ReloadableServerRegistries.Holder registries = ((CraftServer) Bukkit.getServer()).getServer().reloadableRegistries();
         Collection<ResourceLocation> keys = registries.getKeys(Registries.LOOT_TABLE);
@@ -270,7 +280,7 @@ public class Nms {
         }
         return ids;
     }
-    public List<org.bukkit.loot.LootTable> getRegisteredLootTables(){
+    public @NotNull List<org.bukkit.loot.LootTable> getRegisteredLootTables(){
         List<org.bukkit.loot.LootTable> lootTables = new ArrayList<>();
         ReloadableServerRegistries.Holder registries = ((CraftServer) Bukkit.getServer()).getServer().reloadableRegistries();
         Collection<ResourceLocation> keys = registries.getKeys(Registries.LOOT_TABLE);
@@ -285,7 +295,7 @@ public class Nms {
         return NmsUtils.getLootTable(key).craftLootTable;
     }
 
-    public List<ItemStack> getPossibleLoot(org.bukkit.loot.LootTable lootTable) {
+    public @NotNull List<ItemStack> getPossibleLoot(@NotNull org.bukkit.loot.LootTable lootTable) {
         List<ItemStack> result = new ArrayList<>();
         LootTable nmsLootTable = ((CraftLootTable) lootTable).getHandle();
         NmsUtils.getPossibleLoot(nmsLootTable, itemStack -> result.add(NmsUtils.toBukkitItemStack(itemStack)));

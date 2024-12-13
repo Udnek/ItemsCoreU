@@ -1,7 +1,6 @@
 package me.udnek.itemscoreu.customeffect;
 
 import me.udnek.itemscoreu.customregistry.AbstractRegistrable;
-import me.udnek.itemscoreu.nms.Nms;
 import me.udnek.itemscoreu.nms.NmsUtils;
 import me.udnek.itemscoreu.util.Reflex;
 import net.kyori.adventure.key.Key;
@@ -93,13 +92,13 @@ public abstract class ConstructableCustomEffect extends AbstractRegistrable impl
         addAttributes((attribute, key, amount, operation) ->
                         mobEffect.addAttributeModifier(
                                 NmsUtils.toNms(Registries.ATTRIBUTE, attribute),
-                                NmsUtils.getResourceLocation(key),
+                                NmsUtils.toNmsResourceLocation(key),
                                 amount,
                                 NmsUtils.toNmsOperation(operation)
                         )
         );
 
-        nmsEffect = Nms.get().registerEffect(mobEffect, new NamespacedKey(plugin, getRawId()));
+        nmsEffect = NmsUtils.registerEffect(mobEffect, new NamespacedKey(plugin, getRawId()));
         Registry<MobEffect> registry = NmsUtils.getRegistry(Registries.MOB_EFFECT);
         bukkitEffect = PotionEffectType.getById(registry.getIdOrThrow(nmsEffect.value()) + 1);
     }

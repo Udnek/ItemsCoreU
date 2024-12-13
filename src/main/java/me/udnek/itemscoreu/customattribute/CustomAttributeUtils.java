@@ -2,12 +2,14 @@ package me.udnek.itemscoreu.customattribute;
 
 import me.udnek.itemscoreu.customcomponent.CustomComponentType;
 import me.udnek.itemscoreu.customeffect.CustomEffect;
+import me.udnek.itemscoreu.customenchantment.CustomEnchantment;
 import me.udnek.itemscoreu.customequipmentslot.CustomEquipmentSlot;
 import me.udnek.itemscoreu.customequipmentslot.SingleSlot;
 import me.udnek.itemscoreu.customitem.CustomItem;
 import me.udnek.itemscoreu.customregistry.CustomRegistries;
 import org.bukkit.Material;
 import org.bukkit.attribute.AttributeModifier;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Mob;
 import org.bukkit.inventory.*;
@@ -64,6 +66,17 @@ public class CustomAttributeUtils {
         }
 
         for (Map.Entry<@NotNull Integer, @NotNull ItemStack> slotEntry : slots.entrySet()) {
+
+            for (Map.Entry<Enchantment, Integer> enchantmentEntry : slotEntry.getValue().getEnchantments().entrySet()) {
+                CustomEnchantment enchantment = CustomEnchantment.get(enchantmentEntry.getKey());
+                if (enchantment == null) continue;
+                enchantment.getCustomAttributes(enchantmentEntry.getValue(), (localAttribute, amount, operation, slot) -> {
+                    if (localAttribute != attribute) return;
+                    if (!slot.isAppropriateSlot(entity, slotEntry.getKey())) return;
+                    add(operation, amount);
+                });
+            }
+
             CustomItem customItem = CustomItem.get(slotEntry.getValue());
             if (customItem == null) continue;
             CustomAttributesContainer container = customItem.getComponents().getOrDefault(CustomComponentType.CUSTOM_ATTRIBUTED_ITEM).getAttributes();

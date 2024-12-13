@@ -18,7 +18,6 @@ import me.udnek.itemscoreu.customloot.LootTableUtils;
 import me.udnek.itemscoreu.customrecipe.RecipeManager;
 import me.udnek.itemscoreu.customregistry.CustomRegistries;
 import me.udnek.itemscoreu.customregistry.CustomRegistry;
-import me.udnek.itemscoreu.nms.Nms;
 import me.udnek.itemscoreu.nms.PacketHandler;
 import me.udnek.itemscoreu.resourcepack.ResourcePackCommand;
 import me.udnek.itemscoreu.resourcepack.ResourcePackablePlugin;
@@ -26,8 +25,6 @@ import me.udnek.itemscoreu.serializabledata.SerializableDataManager;
 import me.udnek.itemscoreu.util.InitializationProcess;
 import me.udnek.itemscoreu.util.VanillaItemManager;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class ItemsCoreU extends JavaPlugin implements ResourcePackablePlugin {
@@ -75,9 +72,6 @@ public final class ItemsCoreU extends JavaPlugin implements ResourcePackablePlug
         this.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable(){
             public void run() {
                 InitializationProcess.start();
-
-                ItemStack itemStack = new ItemStack(Material.BRICK);
-                Nms.get().getConsumableComponent(itemStack);
             }
         });
     }

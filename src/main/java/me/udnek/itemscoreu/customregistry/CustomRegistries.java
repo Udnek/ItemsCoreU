@@ -4,6 +4,7 @@ import me.udnek.itemscoreu.customattribute.CustomAttribute;
 import me.udnek.itemscoreu.customblock.CustomBlock;
 import me.udnek.itemscoreu.customcomponent.CustomComponentType;
 import me.udnek.itemscoreu.customeffect.CustomEffect;
+import me.udnek.itemscoreu.customenchantment.CustomEnchantment;
 import me.udnek.itemscoreu.customentity.CustomEntityType;
 import me.udnek.itemscoreu.customequipmentslot.CustomEquipmentSlot;
 import me.udnek.itemscoreu.customitem.CustomItem;
@@ -25,6 +26,7 @@ public class CustomRegistries {
     public static final CustomRegistry<CustomEntityType<?>> ENTITY_TYPE = addRegistry(new MappedCustomRegistry<>("EntityType"));
     public static final LootTableRegistry LOOT_TABLE = (LootTableRegistry) addRegistry(new LootTableRegistry());
     public static final CustomRegistry<CustomEffect> EFFECT = addRegistry(new MappedCustomRegistry<>("Effect"));
+    public static final CustomRegistry<CustomEnchantment> ENCHANTMENT = addRegistry(new MappedCustomRegistry<>("Enchantment"));
 
     private static <T extends Registrable> CustomRegistry<T> addRegistry(@NotNull CustomRegistry<T> registry){
         registries.add(registry);

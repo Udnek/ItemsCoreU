@@ -5,17 +5,12 @@ import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.Repairable;
 import io.papermc.paper.registry.RegistryKey;
 import io.papermc.paper.registry.TypedKey;
-import io.papermc.paper.registry.keys.BlockTypeKeys;
-import io.papermc.paper.registry.keys.ItemTypeKeys;
-import io.papermc.paper.registry.set.RegistryKeySet;
 import me.udnek.itemscoreu.customcomponent.CustomComponentType;
 import me.udnek.itemscoreu.util.ItemUtils;
 import me.udnek.itemscoreu.util.SelfRegisteringListener;
 import me.udnek.itemscoreu.util.Utils;
 import me.udnek.itemscoreu.util.VanillaItemManager;
-import net.minecraft.core.registries.Registries;
 import org.bukkit.Material;
-import org.bukkit.Registry;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.inventory.FurnaceSmeltEvent;
 import org.bukkit.event.inventory.PrepareAnvilEvent;
@@ -130,6 +125,7 @@ public class CraftListener extends SelfRegisteringListener {
         ItemStack secondItem = event.getInventory().getSecondItem();
 
         if (firstItem == null || secondItem == null) return;
+        if (secondItem.getType() == Material.ENCHANTED_BOOK) return;
         if (ItemUtils.isSameIds(firstItem, secondItem)) return;
 
         if (!canBeRepaired(firstItem, secondItem)) event.setResult(new ItemStack(Material.AIR));

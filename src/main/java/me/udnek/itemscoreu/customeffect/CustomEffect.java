@@ -39,7 +39,8 @@ public interface CustomEffect extends Registrable {
     }
     void getCustomAttributes(@NotNull PotionEffect context, @NotNull CustomAttributeConsumer consumer);
 
-    interface CustomAttributeConsumer{
-        void consume(@NotNull CustomAttribute attribute, double amount, @NotNull AttributeModifier.Operation operation);
+    interface CustomAttributeConsumer {
+        void accept(@NotNull CustomAttribute attribute, double amount, @NotNull AttributeModifier.Operation operation);
     }
+
 }
