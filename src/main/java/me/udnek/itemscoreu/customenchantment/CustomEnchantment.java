@@ -22,6 +22,7 @@ public interface CustomEnchantment extends Registrable {
 
     @NotNull ItemStack createEnchantedBook(int level);
     void enchant(@NotNull ItemStack itemStack, int level);
+    void enchantBook(@NotNull ItemStack itemStack, int level);
     @NotNull Enchantment getBukkit();
 
     void getCustomAttributes(int level, @NotNull CustomAttributeConsumer consumer);

@@ -28,6 +28,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
 import java.lang.reflect.Constructor;
+import java.sql.Ref;
 
 public abstract class ConstructableCustomEffect extends AbstractRegistrable implements CustomEffect{
     protected Holder<MobEffect> nmsEffect;
@@ -99,14 +100,22 @@ public abstract class ConstructableCustomEffect extends AbstractRegistrable impl
         );
 
         nmsEffect = NmsUtils.registerEffect(mobEffect, new NamespacedKey(plugin, getRawId()));
+
         Registry<MobEffect> registry = NmsUtils.getRegistry(Registries.MOB_EFFECT);
         bukkitEffect = PotionEffectType.getById(registry.getIdOrThrow(nmsEffect.value()) + 1);
+
+        Reflex.setFieldValue(nmsEffect.value(), "descriptionId", translationKey());
     }
 
     @Override
     public void apply(@NotNull LivingEntity bukkit, int duration, int amplifier, boolean ambient, boolean showParticles, boolean showIcon) {
         net.minecraft.world.entity.LivingEntity entity = NmsUtils.toNmsEntity(bukkit);
         entity.addEffect(new MobEffectInstance(nmsEffect, duration, amplifier, ambient, showParticles, showIcon));
+    }
+
+    @Override
+    public @NotNull PotionEffectType getBukkitType() {
+        return bukkitEffect;
     }
 
     @Override

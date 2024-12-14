@@ -3,6 +3,7 @@ package me.udnek.itemscoreu.customeffect;
 import me.udnek.itemscoreu.customattribute.CustomAttribute;
 import me.udnek.itemscoreu.customregistry.CustomRegistries;
 import me.udnek.itemscoreu.customregistry.Registrable;
+import net.kyori.adventure.translation.Translatable;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.potion.PotionEffect;
@@ -10,7 +11,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public interface CustomEffect extends Registrable {
+public interface CustomEffect extends Registrable, Translatable {
 
     static boolean isCustom(@NotNull PotionEffectType bukkit){
         return CustomRegistries.EFFECT.contains(bukkit.key().asString());
@@ -19,6 +20,13 @@ public interface CustomEffect extends Registrable {
         return CustomRegistries.EFFECT.get(bukkit.key().asString());
     }
 
+    @NotNull PotionEffectType getBukkitType();
+
+    @Override
+    @NotNull
+    default String translationKey(){
+        return getBukkitType().translationKey();
+    }
 
     void apply(@NotNull LivingEntity entity, int duration, int amplifier, boolean ambient, boolean showParticles, boolean showIcon);
     default void apply(@NotNull LivingEntity entity, @NotNull PotionEffect effect){

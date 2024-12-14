@@ -73,13 +73,18 @@ public abstract class ConstructableCustomEnchantment extends AbstractRegistrable
     @Override
     public @NotNull ItemStack createEnchantedBook(int level) {
         ItemStack book = new ItemStack(Material.ENCHANTED_BOOK);
-        book.setData(DataComponentTypes.STORED_ENCHANTMENTS, ItemEnchantments.itemEnchantments().add(bukkit, level));
+        enchantBook(book, level);
         return book;
     }
 
     @Override
     public void enchant(@NotNull ItemStack itemStack, int level) {
         itemStack.addEnchantment(bukkit, level);
+    }
+
+    @Override
+    public void enchantBook(@NotNull ItemStack itemStack, int level) {
+        itemStack.setData(DataComponentTypes.STORED_ENCHANTMENTS, ItemEnchantments.itemEnchantments().add(bukkit, level));
     }
 
     @Override

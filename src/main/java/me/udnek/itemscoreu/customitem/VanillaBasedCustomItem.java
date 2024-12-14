@@ -44,7 +44,7 @@ public class VanillaBasedCustomItem extends OptimizedComponentHolder<CustomItem>
             event.getLoreBuilder().buildAndApply(event.getItemStack());
             itemStack = event.getItemStack();
         }
-        return itemStack;
+        return itemStack.clone();
     }
 
     public @NotNull ItemStack getFrom(@NotNull ItemStack original){
