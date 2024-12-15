@@ -11,6 +11,7 @@ import me.udnek.itemscoreu.util.SelfRegisteringListener;
 import me.udnek.itemscoreu.util.Utils;
 import me.udnek.itemscoreu.util.VanillaItemManager;
 import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_21_R2.inventory.CraftComplexRecipe;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.inventory.FurnaceSmeltEvent;
 import org.bukkit.event.inventory.PrepareAnvilEvent;
@@ -19,6 +20,7 @@ import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.inventory.*;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +45,7 @@ public class CraftListener extends SelfRegisteringListener {
             recipeChoices = new ArrayList<>(shapedRecipe.getChoiceMap().values());
         } else if (recipe instanceof ShapelessRecipe shapelessRecipe) {
             recipeChoices = shapelessRecipe.getChoiceList();
-        } else if (recipe instanceof TransmuteRecipe transmuteRecipe){
+        } else if (recipe instanceof TransmuteRecipe transmuteRecipe) {
             recipeChoices = List.of(transmuteRecipe.getInput(), transmuteRecipe.getMaterial());
         } else if (event.isRepair()) {
             ItemStack component0 = null;
@@ -72,6 +74,15 @@ public class CraftListener extends SelfRegisteringListener {
             }
             return;
 
+        } else if (recipe instanceof ComplexRecipe complexRecipe) {
+            for (@Nullable ItemStack itemStack : event.getInventory().getMatrix()) {
+                if (itemStack == null) continue;
+                if (CustomItem.isCustom(itemStack)) {
+                    event.getInventory().setResult(new ItemStack(Material.AIR));
+                    return;
+                }
+            }
+            return;
         } else return;
 
         int amountOfExactChoices = 0;
@@ -135,14 +146,24 @@ public class CraftListener extends SelfRegisteringListener {
         CustomItem toBeRepairedCustom = CustomItem.get(toBeRepaired);
         CustomItem repairerCustom = CustomItem.get(repairer);
 
-        Repairable materialRepairable = toBeRepaired.getDataOrDefault(DataComponentTypes.REPAIRABLE, toBeRepaired.getType().getDefaultData(DataComponentTypes.REPAIRABLE));
-        if (materialRepairable != null && repairerCustom == null){
+        //Repairable materialRepairable = toBeRepaired.getDataOrDefault(DataComponentTypes.REPAIRABLE, toBeRepaired.getType().getDefaultData(DataComponentTypes.REPAIRABLE));
+        if (toBeRepairedCustom != null){
+            RepairData repairData = toBeRepairedCustom.getRepairData();
+            if (repairData == null) return true;
+            return repairData.contains(repairer);
+        }
+        return repairerCustom == null;
+
+
+
+
+/*        if (materialRepairable != null && repairerCustom == null){
             if (!materialRepairable.types().contains(TypedKey.create(RegistryKey.ITEM, repairer.getType().key()))) return false;
         }
         if (toBeRepairedCustom != null && repairerCustom != null){
             if (!toBeRepairedCustom.getComponents().getOrDefault(CustomComponentType.REPAIRABLE_WITH_CUSTOM_ITEM).canBeRepairedWith(repairerCustom)) return false;
         }
-        return true;
+        return true;*/
     }
 }
 

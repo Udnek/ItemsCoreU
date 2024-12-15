@@ -14,6 +14,7 @@ import org.bukkit.inventory.Recipe;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -58,6 +59,11 @@ public class VanillaBasedCustomItem extends OptimizedComponentHolder<CustomItem>
             }
         });
         return newItem;
+    }
+
+    @Override
+    public @Nullable RepairData getRepairData() {
+        return null;
     }
 
     @Override

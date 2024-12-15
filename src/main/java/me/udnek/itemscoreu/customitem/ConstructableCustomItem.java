@@ -29,7 +29,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 
 import static io.papermc.paper.datacomponent.DataComponentTypes.REPAIRABLE;
@@ -92,12 +94,16 @@ public abstract class ConstructableCustomItem extends OptimizedComponentHolder<C
         return tag.isTagged(getMaterial());
     }
 
-    public void getRepairMaterials(@NotNull Consumer<Material> consumer){}
+    @Override
+    public @Nullable RepairData getRepairData() {return null;}
 
     @Override
-    public @Nullable Repairable getRepairable() {
-        List<ItemType> materials = new ArrayList<>();
-        getRepairMaterials(material -> materials.add(material.asItemType()));
+    public final @Nullable Repairable getRepairable() {
+        RepairData repairData = getRepairData();
+        if (repairData == null) return null;
+        Set<ItemType> materials = new HashSet<>();
+        repairData.getCustomItems().forEach(customItem -> materials.add(customItem.getItem().getType().asItemType()));
+        repairData.getMaterials().forEach(material -> materials.add(material.asItemType()));
         return Repairable.repairable(RegistrySet.keySetFromValues(RegistryKey.ITEM, materials));
     }
 

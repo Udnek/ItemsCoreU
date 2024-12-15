@@ -72,6 +72,7 @@ public interface CustomItem extends Registrable, ComponentHolder<CustomItem> {
     void registerRecipe(@NotNull Recipe recipe);
     boolean isTagged(@NotNull Tag<Material> tag);
     @Nullable ItemStack update(@NotNull ItemStack itemStack);
+    @Nullable RepairData getRepairData();
     ///////////////////////////////////////////////////////////////////////////
     // EVENTS
     ///////////////////////////////////////////////////////////////////////////

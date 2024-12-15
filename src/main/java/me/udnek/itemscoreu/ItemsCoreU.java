@@ -24,6 +24,10 @@ import me.udnek.itemscoreu.resourcepack.ResourcePackablePlugin;
 import me.udnek.itemscoreu.serializabledata.SerializableDataManager;
 import me.udnek.itemscoreu.util.InitializationProcess;
 import me.udnek.itemscoreu.util.VanillaItemManager;
+import net.minecraft.world.entity.animal.Wolf;
+import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.Recipe;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 

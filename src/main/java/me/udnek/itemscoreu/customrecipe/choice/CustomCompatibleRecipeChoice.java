@@ -2,6 +2,7 @@ package me.udnek.itemscoreu.customrecipe.choice;
 
 import com.google.common.base.Preconditions;
 import me.udnek.itemscoreu.customitem.CustomItem;
+import me.udnek.itemscoreu.util.ItemUtils;
 import me.udnek.itemscoreu.util.VanillaItemManager;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -37,12 +38,7 @@ public class CustomCompatibleRecipeChoice implements CustomRecipeChoice {
 
     @Override
     public boolean test(@NotNull ItemStack itemStack) {
-        CustomItem customItem = CustomItem.get(itemStack);
-        if (customItem != null){
-            if (VanillaItemManager.isReplaced(customItem)) return customs.contains(customItem) || materials.contains(itemStack.getType());
-            else return customs.contains(customItem);
-        }
-        return materials.contains(itemStack.getType());
+        return ItemUtils.containsSame(itemStack, materials, customs);
     }
 
     @Override

@@ -11,6 +11,7 @@ import org.bukkit.inventory.meta.FireworkEffectMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Consumer;
@@ -18,6 +19,15 @@ import java.util.function.Predicate;
 
 
 public class ItemUtils {
+
+    public static boolean containsSame(@NotNull ItemStack itemStack, @NotNull Collection<Material> materials, @NotNull Collection<CustomItem> customs){
+        CustomItem customItem = CustomItem.get(itemStack);
+        if (customItem != null){
+            if (VanillaItemManager.isReplaced(customItem)) return customs.contains(customItem) || materials.contains(itemStack.getType());
+            else return customs.contains(customItem);
+        }
+        return materials.contains(itemStack.getType());
+    }
 
     public static boolean isVanillaMaterial(@NotNull ItemStack itemStack, @NotNull Material material){
         return !CustomItem.isCustom(itemStack) && itemStack.getType() == material;
