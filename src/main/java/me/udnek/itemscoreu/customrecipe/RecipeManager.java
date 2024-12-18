@@ -70,7 +70,7 @@ public class RecipeManager {
         recipes.forEach(consumer);
     }
 
-    public void getRecipesAsIngredient(ItemStack itemStack, @NotNull Consumer<Recipe> consumer){
+    public void getRecipesAsIngredient(@NotNull ItemStack itemStack, @NotNull Consumer<Recipe> consumer){
         Set<Recipe> recipes = new HashSet<>();
         ItemUtils.getItemInRecipesUsages(itemStack, recipes::add);
         for (CustomRecipe<?> recipe : customRecipes.values()) {

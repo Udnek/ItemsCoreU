@@ -21,6 +21,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.ReloadableServerRegistries;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.context.ContextKeySet;
+import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
@@ -31,6 +32,7 @@ import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.item.component.Consumable;
 import net.minecraft.world.item.trading.MerchantOffer;
 import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.ComposterBlock;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.LevelChunk;
@@ -38,6 +40,7 @@ import net.minecraft.world.level.chunk.status.ChunkStatus;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructurePiece;
 import net.minecraft.world.level.levelgen.structure.StructureStart;
+import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.level.saveddata.maps.MapDecorationType;
 import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
 import net.minecraft.world.level.storage.loot.LootContext;
@@ -124,6 +127,21 @@ public class Nms {
         return NmsUtils.toBukkitItemStack(itemStack);
     }
 
+    ///////////////////////////////////////////////////////////////////////////
+    // BLOCKS
+    ///////////////////////////////////////////////////////////////////////////
+    
+    public void setBlockFriction(@NotNull Material material, float friction){
+        Block block = NmsUtils.toNms(Registries.BLOCK, material).value();
+        Reflex.setFieldValue(block, "friction", friction);
+    }
+
+    public void setBlockSpeedFactor(@NotNull Material material, float speed){
+        Block block = NmsUtils.toNms(Registries.BLOCK, material).value();
+        Reflex.setFieldValue(block, "speedFactor", speed);
+    }
+
+    
     ///////////////////////////////////////////////////////////////////////////
     // USAGES
     ///////////////////////////////////////////////////////////////////////////
@@ -415,15 +433,22 @@ public class Nms {
     ///////////////////////////////////////////////////////////////////////////
     // MISC
     ///////////////////////////////////////////////////////////////////////////
-    public void showDebugBlock(Player player, Location location, int color, String name, int time){
+    public void showDebugBlock(@NotNull Location location, int color, int time, @NotNull String name){
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            showDebugBlock(player, location, color, time, name);
+        }
+    }
+    public void showDebugBlock(@NotNull Player player, @NotNull Location location, int color, int time, @NotNull String name){
         Color rgb = Color.fromRGB(color);
         color = rgb.getBlue() | (rgb.getGreen() << 8) | (rgb.getRed() << 16) | (rgb.getAlpha() << 24);
         GameTestAddMarkerDebugPayload payload = new GameTestAddMarkerDebugPayload(CraftLocation.toBlockPosition(location), color, name, time * 1000/20);
         ((CraftPlayer) player).getHandle().connection.send(new ClientboundCustomPayloadPacket(payload));
     }
-    public void showDebugBlock(Player player, Location location, int color, int time){
-        showDebugBlock(player, location, color, "", time);
+    public void showDebugBlock(@NotNull Player player, @NotNull Location location, int color, int time){
+        showDebugBlock(player, location, color, time, "");
     }
+
+
     ///////////////////////////////////////////////////////////////////////////
     // BIOME
     ///////////////////////////////////////////////////////////////////////////

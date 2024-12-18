@@ -22,9 +22,6 @@ public interface CustomComponentType<HolderType, Component extends CustomCompone
     CustomComponentType<CustomItem, VanillaAttributesComponent>
             VANILLA_ATTRIBUTED_ITEM = register(new ConstructableComponentType("vanilla_attributed_item", VanillaAttributesComponent.DEFAULT));
 
-    CustomComponentType<CustomItem, RepairableWithCustomItem>
-            REPAIRABLE_WITH_CUSTOM_ITEM = register(new ConstructableComponentType("repairable_with_custom_item", RepairableWithCustomItem.DEFAULT));
-
     @NotNull Component getDefault();
 
     private static <HolderType, Component extends CustomComponent<HolderType>> CustomComponentType<HolderType, Component> register(CustomComponentType<HolderType, Component> type){
