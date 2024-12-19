@@ -5,7 +5,9 @@ import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class RepairData {
@@ -24,6 +26,17 @@ public class RepairData {
     }
     public RepairData(@NotNull Material ...materials){
         this(Set.of(), Set.of(materials));
+    }
+
+    public boolean isEmpty(){
+        return customs.isEmpty() && materials.isEmpty();
+    }
+
+    public @NotNull List<ItemStack> getStacks(){
+        List<ItemStack> stacks = new ArrayList<>();
+        for (CustomItem custom : customs) stacks.add(custom.getItem());
+        for (Material material : materials) stacks.add(new ItemStack(material));
+        return stacks;
     }
 
     public @NotNull Set<@NotNull CustomItem> getCustomItems() {

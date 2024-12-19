@@ -307,7 +307,7 @@ public class Nms {
         }
         return lootTables;
     }
-    public @NotNull org.bukkit.loot.LootTable getLootTable(String id){
+    public @NotNull org.bukkit.loot.LootTable getLootTable(@NotNull String id){
         ResourceLocation resourceLocation = ResourceLocation.parse(id);
         ResourceKey<LootTable> key = ResourceKey.create(Registries.LOOT_TABLE, resourceLocation);
         return NmsUtils.getLootTable(key).craftLootTable;
@@ -448,6 +448,15 @@ public class Nms {
         showDebugBlock(player, location, color, time, "");
     }
 
+    ///////////////////////////////////////////////////////////////////////////
+    // ENTITY
+    ///////////////////////////////////////////////////////////////////////////
+    public void setSpinAttack(@NotNull Player player, int ticks, float damage, @Nullable ItemStack itemStack){
+        ((CraftPlayer) player).getHandle().startAutoSpinAttack(ticks, damage, NmsUtils.toNmsItemStack(itemStack));
+    }
+    public void resetSpinAttack(@NotNull Player player){
+        setSpinAttack(player, 0, 0, null);
+    }
 
     ///////////////////////////////////////////////////////////////////////////
     // BIOME

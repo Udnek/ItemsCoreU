@@ -42,6 +42,7 @@ import org.bukkit.craftbukkit.v1_21_R2.inventory.CraftItemStack;
 import org.bukkit.craftbukkit.v1_21_R2.util.CraftChatMessage;
 import org.bukkit.craftbukkit.v1_21_R2.util.CraftMagicNumbers;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -109,7 +110,9 @@ public class NmsUtils {
     }
 
     // ITEM
-    public static net.minecraft.world.item.ItemStack toNmsItemStack(@NotNull ItemStack itemStack){
+    @Contract("null -> null")
+    public static @Nullable net.minecraft.world.item.ItemStack toNmsItemStack(@Nullable ItemStack itemStack){
+        if (itemStack == null) return null;
         return CraftItemStack.asNMSCopy(itemStack);
     }
     public static Item toNmsMaterial(@NotNull Material material){

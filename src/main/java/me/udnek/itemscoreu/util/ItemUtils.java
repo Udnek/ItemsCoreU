@@ -1,6 +1,9 @@
 package me.udnek.itemscoreu.util;
 
+import io.papermc.paper.datacomponent.DataComponentTypes;
+import io.papermc.paper.datacomponent.item.Repairable;
 import me.udnek.itemscoreu.customitem.CustomItem;
+import me.udnek.itemscoreu.customitem.RepairData;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
@@ -31,6 +34,16 @@ public class ItemUtils {
 
     public static boolean isVanillaMaterial(@NotNull ItemStack itemStack, @NotNull Material material){
         return !CustomItem.isCustom(itemStack) && itemStack.getType() == material;
+    }
+    public static boolean isRepairable(@NotNull ItemStack item){
+        CustomItem customItem = CustomItem.get(item);
+        if (customItem != null){
+            RepairData repairData = customItem.getRepairData();
+            if (repairData != null) return !repairData.isEmpty();
+        }
+        Repairable repairable = item.getDataOrDefault(DataComponentTypes.REPAIRABLE, item.getType().getDefaultData(DataComponentTypes.REPAIRABLE));
+        if (repairable == null) return false;
+        return !repairable.types().isEmpty();
     }
 
     public static boolean isSameIds(@NotNull ItemStack itemA, @NotNull ItemStack itemB){

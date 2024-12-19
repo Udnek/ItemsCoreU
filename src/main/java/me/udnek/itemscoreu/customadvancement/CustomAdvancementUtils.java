@@ -48,10 +48,10 @@ public class CustomAdvancementUtils {
         );
 
         ImmutableMap.Builder<ResourceLocation, AdvancementHolder> mapBuilder = ImmutableMap.builder();
-        mapBuilder.put(advancementHolder.id(), advancementHolder);
-
         Map<ResourceLocation, AdvancementHolder> advancements = new HashMap<>(mapBuilder.buildOrThrow());
         advancements.putAll((Map<ResourceLocation, AdvancementHolder>) Reflex.getFieldValue(manager, "advancements"));
+        advancements.put(advancementHolder.id(), advancementHolder);
+
         AdvancementTree tree = new AdvancementTree();
         tree.addAll(advancements.values());
         for (AdvancementNode advancementnode : tree.roots()) {
@@ -80,22 +80,5 @@ public class CustomAdvancementUtils {
 
             fakeDisplay.setLocation(realDisplay.getX(), realDisplay.getY());
         }
-
-/*        for (@NotNull CustomAdvancementContainer fake : advancementContainer.getFakes()) {
-            DisplayInfo fakeDisplay = (DisplayInfo) Reflex.getFieldValue(fake.get().value(), "display", Optional.class).orElse(null);
-            System.out.println("fakedisp: " + fakeDisplay);
-            if (fakeDisplay == null) continue;
-
-            DisplayInfo realDisplay = (DisplayInfo) Reflex.getFieldValue(fake.getRealPosition().get().value(), "display", Optional.class).orElse(null);
-            System.out.println("realdisp: " + realDisplay);
-            if (realDisplay == null) return;
-
-            LogUtils.log(Component.text("old fake pos: " + fakeDisplay.getX() + " "+  fakeDisplay.getY()).color(NamedTextColor.RED));
-            LogUtils.log(Component.text("setting fake pos: " + realDisplay.getX() + " "+  realDisplay.getY()).color(NamedTextColor.RED));
-
-            fakeDisplay.setLocation(realDisplay.getX(), realDisplay.getY());
-        }*/
-        
-
     }
 }
