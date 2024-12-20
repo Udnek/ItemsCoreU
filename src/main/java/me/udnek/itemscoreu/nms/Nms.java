@@ -1,6 +1,7 @@
 package me.udnek.itemscoreu.nms;
 
 import com.mojang.datafixers.util.Pair;
+import io.papermc.paper.entity.Frictional;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import me.udnek.itemscoreu.customenchantment.NmsEnchantmentContainer;
 import me.udnek.itemscoreu.nms.loot.entry.NmsCustomLootEntryBuilder;
@@ -33,6 +34,7 @@ import net.minecraft.world.item.component.Consumable;
 import net.minecraft.world.item.trading.MerchantOffer;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.ComposterBlock;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.LevelChunk;
@@ -447,6 +449,7 @@ public class Nms {
     public void showDebugBlock(@NotNull Player player, @NotNull Location location, int color, int time){
         showDebugBlock(player, location, color, time, "");
     }
+
 
     ///////////////////////////////////////////////////////////////////////////
     // ENTITY

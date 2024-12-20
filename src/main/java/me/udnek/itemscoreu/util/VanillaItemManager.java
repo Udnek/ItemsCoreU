@@ -1,6 +1,7 @@
 package me.udnek.itemscoreu.util;
 
 import com.google.common.base.Preconditions;
+import com.mojang.datafixers.types.Func;
 import me.udnek.itemscoreu.ItemsCoreU;
 import me.udnek.itemscoreu.customitem.CustomItem;
 import me.udnek.itemscoreu.customitem.VanillaBasedCustomItem;
@@ -28,6 +29,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 public class VanillaItemManager extends SelfRegisteringListener{
@@ -77,17 +79,16 @@ public class VanillaItemManager extends SelfRegisteringListener{
 
             for (Recipe recipe : recipes) {
                 recipeManager.unregister(recipe);
-                //LogUtils.pluginLog("Unregistered recipe: " + (recipe instanceof Keyed keyed ? keyed.key().asString() : recipe));
+                Recipe newRecipe = copyRecipeWithRemovedItem(recipe, material);
+                if (newRecipe != null) recipeManager.register(newRecipe);
             }
 
             // loot table removal
             for (LootTable lootTable : LootTableUtils.getWhereItemOccurs(toRemoveItem)) {
                 if (lootTable instanceof CustomLootTable customLootTable) {
                     customLootTable.removeItem(toRemoveItem);
-                    //LogUtils.pluginLog("Custom lootTable was edited: " + customLootTable.getKey().asString());
                 } else {
                     Nms.get().removeAllEntriesContains(lootTable, VanillaItemManager::isDisabled);
-                    //LogUtils.pluginLog("Removed entries from vanilla lootTable: " + lootTable.getKey().asString());
                 }
             }
 
@@ -98,39 +99,34 @@ public class VanillaItemManager extends SelfRegisteringListener{
     private void startReplacer(){
         RecipeManager recipeManager = RecipeManager.getInstance();
         for (Map.Entry<Material, VanillaBasedCustomItem> entry : replacedByMaterial.entrySet()) {
-            VanillaBasedCustomItem vanillaBasedItem = entry.getValue();
+            VanillaBasedCustomItem newItem = entry.getValue();
 
             ItemStack oldItem = new ItemStack(entry.getKey());
 
             // recipe replace
-            ArrayList<Recipe> recipes = new ArrayList<>();
+            List<Recipe> recipes = new ArrayList<>();
             recipeManager.getRecipesAsIngredient(oldItem, recipes::add);
             recipeManager.getRecipesAsResult(oldItem, recipes::add);
 
-            ReplaceHelper replaceHelper = new ReplaceHelper(oldItem, vanillaBasedItem);
             for (Recipe oldRecipe : recipes) {
                 if (oldRecipe instanceof CustomRecipe<?> customRecipe){
-                    customRecipe.replaceItem(oldItem, vanillaBasedItem.getItem());
+                    customRecipe.replaceItem(oldItem, newItem.getItem());
                 } else {
-                    Recipe newRecipe = replaceHelper.copyRecipeWithReplacedIngredient(oldRecipe);
                     recipeManager.unregister(oldRecipe);
+                    Recipe newRecipe = copyRecipeWithReplacedItem(oldRecipe, entry.getKey(), newItem);
                     recipeManager.register(newRecipe);
                 }
-
-                //LogUtils.pluginLog("Replaced recipe: " + (newRecipe instanceof Keyed keyed ? keyed.key().asString() : newRecipe));
             }
 
             // loot table replace
             for (LootTable lootTable : LootTableUtils.getWhereItemOccurs(oldItem)) {
                 if (lootTable instanceof CustomLootTable customLootTable) {
-                    customLootTable.replaceItem(oldItem, vanillaBasedItem.getItem());
-                    //LogUtils.pluginLog("Custom lootTable was edited: " + customLootTable.getKey().asString());
+                    customLootTable.replaceItem(oldItem, newItem.getItem());
                 } else {
-                    Predicate<ItemStack> predicate = itemStack -> CustomItem.get(itemStack) == vanillaBasedItem;
+                    Predicate<ItemStack> predicate = itemStack -> CustomItem.get(itemStack) == newItem;
                     Pair<Integer, Integer> weightAndQuality = Nms.get().getWeightAndQuality(lootTable, predicate);
                     if (weightAndQuality == null) continue;
-                    Nms.get().replaceAllEntriesContains(lootTable, predicate, NmsCustomLootEntryBuilder.fromVanilla(lootTable, predicate, new ItemStackCreator.Custom(vanillaBasedItem)));
-                    //LogUtils.pluginLog("Vanilla lootTable was replaced!: " + lootTable.getKey().asString());
+                    Nms.get().replaceAllEntriesContains(lootTable, predicate, NmsCustomLootEntryBuilder.fromVanilla(lootTable, predicate, new ItemStackCreator.Custom(newItem)));
                 }
             }
 
@@ -224,88 +220,139 @@ public class VanillaItemManager extends SelfRegisteringListener{
         event.setRecipe(recipe);
     }
 
-    public static class ReplaceHelper{
+    public @Nullable Recipe copyRecipeWithReplacedItem(@NotNull Recipe abstractRecipe, @NotNull NotNullToNullFunction<ItemStack> resultFunction, @NotNull NotNullToNullFunction<RecipeChoice> choiceFunction){
+        Preconditions.checkArgument(!(abstractRecipe instanceof CustomRecipe), "Custom recipes are not allowed!");
+        ItemStack result = resultFunction.apply(abstractRecipe.getResult());
+        if (result == null) return null;
+        switch (abstractRecipe) {
+            case CookingRecipe<?> cookingRecipe -> {
+                RecipeChoice choice = choiceFunction.apply(cookingRecipe.getInputChoice());
+                if (choice == null) return null;
+                switch (cookingRecipe) {
+                    case BlastingRecipe recipe -> {
+                        return new BlastingRecipe(cookingRecipe.getKey(), result, choice, cookingRecipe.getExperience(), cookingRecipe.getCookingTime());
+                    }
+                    case FurnaceRecipe recipe -> {
+                        return new FurnaceRecipe(cookingRecipe.getKey(), result, choice, cookingRecipe.getExperience(), cookingRecipe.getCookingTime());
+                    }
+                    case SmokingRecipe recipe -> {
+                        return new SmokingRecipe(cookingRecipe.getKey(), result, choice, cookingRecipe.getExperience(), cookingRecipe.getCookingTime());
+                    }
+                    case CampfireRecipe recipe -> {
+                        return new CampfireRecipe(cookingRecipe.getKey(), result, choice, cookingRecipe.getExperience(), cookingRecipe.getCookingTime());
+                    }
+                    default -> throw new IllegalStateException("Unexpected value: " + cookingRecipe);
+                }
 
-        private final ItemStack oldItem;
-        private final VanillaBasedCustomItem newItem;
-        public ReplaceHelper(ItemStack oldItem, VanillaBasedCustomItem vanillaBasedCustomItem){
-            this.oldItem = oldItem;
-            this.newItem = vanillaBasedCustomItem;
-        }
-        private RecipeChoice replaceChoice(RecipeChoice choice){
-            return replaceChoice(choice, oldItem, newItem.getItem());
-        }
-        private ItemStack replaceResult(ItemStack itemStack){
-            if (!ItemUtils.isSameIds(oldItem, itemStack)) return itemStack;
-            return newItem.getFrom(itemStack);
-        }
-
-        private Recipe copyRecipeWithReplacedIngredient(Recipe abstractRecipe){
-            Preconditions.checkArgument(!(abstractRecipe instanceof CustomRecipe), "Custom recipes are not allowed!");
-            if (abstractRecipe instanceof BlastingRecipe recipe){
-                return new BlastingRecipe(recipe.getKey(), replaceResult(recipe.getResult()), replaceChoice(recipe.getInputChoice()), recipe.getExperience(), recipe.getCookingTime());
-            } else if (abstractRecipe instanceof FurnaceRecipe recipe){
-                return new FurnaceRecipe(recipe.getKey(), replaceResult(recipe.getResult()), replaceChoice(recipe.getInputChoice()), recipe.getExperience(), recipe.getCookingTime());
-            } else if (abstractRecipe instanceof SmokingRecipe recipe){
-                return new SmokingRecipe(recipe.getKey(), replaceResult(recipe.getResult()), replaceChoice(recipe.getInputChoice()), recipe.getExperience(), recipe.getCookingTime());
-            } else if (abstractRecipe instanceof CampfireRecipe recipe){
-                return new CampfireRecipe(recipe.getKey(), replaceResult(recipe.getResult()), replaceChoice(recipe.getInputChoice()), recipe.getExperience(), recipe.getCookingTime());
             }
-
-            else if (abstractRecipe instanceof ShapedRecipe recipe){
-                ShapedRecipe newRecipe = new ShapedRecipe(recipe.getKey(), replaceResult(recipe.getResult()));
+            case ShapedRecipe recipe -> {
+                ShapedRecipe newRecipe = new ShapedRecipe(recipe.getKey(), result);
                 newRecipe.shape(recipe.getShape());
 
                 for (Map.Entry<Character, RecipeChoice> entry : recipe.getChoiceMap().entrySet()) {
                     if (entry.getValue() == null) continue; // BUG WITH LEATHER BOOTS
-                    newRecipe.setIngredient(entry.getKey(), replaceChoice(entry.getValue()));
+                    RecipeChoice choice = choiceFunction.apply(entry.getValue());
+                    if (choice == null) return null;
+                    newRecipe.setIngredient(entry.getKey(), choice);
                 }
                 return newRecipe;
             }
-            else if (abstractRecipe instanceof ShapelessRecipe recipe){
-                ShapelessRecipe newRecipe = new ShapelessRecipe(recipe.getKey(), replaceResult(recipe.getResult()));
+            case ShapelessRecipe recipe -> {
+                ShapelessRecipe newRecipe = new ShapelessRecipe(recipe.getKey(), result);
                 for (RecipeChoice choice : recipe.getChoiceList()) {
-                    newRecipe.addIngredient(replaceChoice(choice));
+                    RecipeChoice newChoice = choiceFunction.apply(choice);
+                    if (newChoice == null) return null;
+                    newRecipe.addIngredient(newChoice);
                 }
                 return newRecipe;
             }
-
-            else if (abstractRecipe instanceof SmithingTransformRecipe recipe){
-                return new SmithingTransformRecipe(recipe.getKey(), replaceResult(recipe.getResult()), replaceChoice(recipe.getTemplate()), replaceChoice(recipe.getBase()), replaceChoice(recipe.getAddition()), recipe.willCopyDataComponents());
-            } else if (abstractRecipe instanceof SmithingTrimRecipe recipe){
-                return new SmithingTrimRecipe(recipe.getKey(), replaceChoice(recipe.getTemplate()), replaceChoice(recipe.getBase()), replaceChoice(recipe.getAddition()), recipe.willCopyDataComponents());
-            }
-
-            else if (abstractRecipe instanceof StonecuttingRecipe recipe){
-                return new StonecuttingRecipe(recipe.getKey(), replaceResult(recipe.getResult()), replaceChoice(recipe.getInputChoice()));
-            }
-
-            throw new IllegalArgumentException("Replacer does not support recipe: " + abstractRecipe);
-        }
-
-
-        private static RecipeChoice replaceChoice(RecipeChoice recipeChoice, ItemStack oldItem, ItemStack newItem){
-            if (recipeChoice instanceof RecipeChoice.MaterialChoice materialChoice){
-                Material oldMaterial = oldItem.getType();
-                Material newMaterial = newItem.getType();
-                List<Material> newChoices = new ArrayList<>();
-                for (Material choice : materialChoice.getChoices()) {
-                    if (choice == oldMaterial){
-                        newChoices.add(newMaterial);
-                    } else newChoices.add(choice);
+            case SmithingRecipe smithingRecipe -> {
+                RecipeChoice base = choiceFunction.apply(smithingRecipe.getBase());
+                RecipeChoice addition = choiceFunction.apply(smithingRecipe.getAddition());
+                if (base == null || addition == null) return null;
+                switch (smithingRecipe) {
+                    case SmithingTransformRecipe recipe -> {
+                        RecipeChoice template = choiceFunction.apply(recipe.getTemplate());
+                        if (template == null) return null;
+                        return new SmithingTransformRecipe(recipe.getKey(), result, template, base, addition, recipe.willCopyDataComponents());
+                    }
+                    case SmithingTrimRecipe recipe -> {
+                        RecipeChoice template = choiceFunction.apply(recipe.getTemplate());
+                        if (template == null) return null;
+                        return new SmithingTrimRecipe(recipe.getKey(), template, base, addition, recipe.willCopyDataComponents());
+                    }
+                    default -> throw new IllegalStateException("Unexpected value: " + smithingRecipe);
                 }
-                return new RecipeChoice.MaterialChoice(newChoices);
-            } else if (recipeChoice instanceof RecipeChoice.ExactChoice exactChoice) {
-                List<ItemStack> newChoices = new ArrayList<>();
-                for (ItemStack choice : exactChoice.getChoices()) {
-                    if (ItemUtils.isSameIds(choice, oldItem)){
-                        newChoices.add(newItem);
-                    } else newChoices.add(choice);
-                }
-                return new RecipeChoice.ExactChoice(newChoices);
             }
-            LogUtils.pluginWarning("Recipe choice is not Material or Exact or Empty: " + recipeChoice);
-            return recipeChoice;
+            case StonecuttingRecipe recipe -> {
+                RecipeChoice choice = choiceFunction.apply(recipe.getInputChoice());
+                if (choice == null) return null;
+                return new StonecuttingRecipe(recipe.getKey(), result, choice);
+            }
+            default -> {}
         }
+        throw new IllegalArgumentException("Replacer does not support recipe: " + abstractRecipe);
+    }
+
+
+    public @NotNull Recipe copyRecipeWithReplacedItem(@NotNull Recipe recipe, @NotNull Material oldMaterial, @NotNull VanillaBasedCustomItem newItem){
+        return Objects.requireNonNull(copyRecipeWithReplacedItem(recipe, new NotNullToNullFunction<ItemStack>() {
+            @Override
+            public @NotNull ItemStack apply(@NotNull ItemStack itemStack) {
+                return ItemUtils.isVanillaMaterial(itemStack, oldMaterial) ? newItem.getFrom(itemStack) : itemStack;
+            }
+        }, new NotNullToNullFunction<RecipeChoice>() {
+            @Override
+            public @Nullable RecipeChoice apply(@NotNull RecipeChoice recipeChoice) {
+                if (recipeChoice instanceof RecipeChoice.MaterialChoice materialChoice) {
+                    return materialChoice;
+                } else if (recipeChoice instanceof RecipeChoice.ExactChoice exactChoice) {
+                    List<ItemStack> newStacks = new ArrayList<>();
+                    for (ItemStack choice : exactChoice.getChoices()) {
+                        if (ItemUtils.isVanillaMaterial(choice, oldMaterial)) newStacks.add(newItem.getItem());
+                        else newStacks.add(choice);
+                    }
+                    if (newStacks.isEmpty()) return null;
+                    return new RecipeChoice.ExactChoice(newStacks);
+                }
+                LogUtils.pluginWarning("Recipe choice is not Material or Exact or Empty: " + recipeChoice);
+                return recipeChoice;
+            }
+        }));
+    }
+
+    public @Nullable Recipe copyRecipeWithRemovedItem(@NotNull Recipe recipe, @NotNull Material toRemove){
+        return copyRecipeWithReplacedItem(recipe, new NotNullToNullFunction<ItemStack>() {
+            @Override
+            public @Nullable ItemStack apply(@NotNull ItemStack itemStack) {
+                return ItemUtils.isVanillaMaterial(itemStack, toRemove) ? null : itemStack;
+            }
+        }, new NotNullToNullFunction<RecipeChoice>() {
+            @Override
+            public @Nullable RecipeChoice apply(@NotNull RecipeChoice recipeChoice) {
+                if (recipeChoice instanceof RecipeChoice.MaterialChoice materialChoice){
+                    List<Material> newMaterials = new ArrayList<>();
+                    for (Material choice : materialChoice.getChoices()) {
+                        if (choice != toRemove) newMaterials.add(choice);
+                    }
+                    if (newMaterials.isEmpty()) return null;
+                    return new RecipeChoice.MaterialChoice(newMaterials);
+                } else if (recipeChoice instanceof RecipeChoice.ExactChoice exactChoice) {
+                    List<ItemStack> newStacks = new ArrayList<>();
+                    for (ItemStack choice : exactChoice.getChoices()) {
+                        if (!ItemUtils.isSameIds(choice, new ItemStack(toRemove))) newStacks.add(choice);
+                    }
+                    if (newStacks.isEmpty()) return null;
+                    return new RecipeChoice.ExactChoice(newStacks);
+                }
+                LogUtils.pluginWarning("Recipe choice is not Material or Exact or Empty: " + recipeChoice);
+                return recipeChoice;
+            }
+        });
+    }
+
+    public interface NotNullToNullFunction<T> extends Function<T, T>{
+        @Override
+        @Nullable T apply(@NotNull T t);
     }
 }

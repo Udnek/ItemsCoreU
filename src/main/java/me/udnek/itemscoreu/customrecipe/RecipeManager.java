@@ -27,9 +27,6 @@ public class RecipeManager {
     }
     public void register(@NotNull Recipe recipe){
         if (recipe instanceof CustomRecipe<?> customRecipe){
-            Preconditions.checkArgument(customRecipe.key() != null, "Recipe results can not be null!");
-            Preconditions.checkArgument(customRecipe.getResults() != null, "Recipe results can not be null!");
-            Preconditions.checkArgument(customRecipe.getType() != null, "Recipe type can not be null!");
             Preconditions.checkArgument(
                     !customRecipes.containsKey(customRecipe.key().asString()),
                     "Recipe id duplicate: " + customRecipe.key().asString() + "!"
