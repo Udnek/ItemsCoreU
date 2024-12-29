@@ -2,6 +2,7 @@ package me.udnek.itemscoreu.customattribute;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
+import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.ItemAttributeModifiers;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -20,7 +21,7 @@ public class AttributeUtils {
     public static void addDefaultAttributes(@NotNull ItemStack itemStack){
         itemStack.editMeta(itemMeta -> addDefaultAttributes(itemMeta, itemStack.getType()));
     }
-    public static void addDefaultAttributes(@NotNull ItemMeta itemMeta, @NotNull Material material){
+    private static void addDefaultAttributes(@NotNull ItemMeta itemMeta, @NotNull Material material){
         Multimap<Attribute, AttributeModifier> attributeModifiers = material.getDefaultAttributeModifiers();
         for (Map.Entry<Attribute, AttributeModifier> entry : attributeModifiers.entries()) {
             // todo remove when fixed
@@ -30,7 +31,7 @@ public class AttributeUtils {
         }
     }
 
-    public static void addAttribute(@NotNull ItemMeta itemMeta, @NotNull Attribute attribute, @NotNull NamespacedKey id, double amount, @NotNull AttributeModifier.Operation operation, @NotNull EquipmentSlotGroup slot){
+    private static void addAttribute(@NotNull ItemMeta itemMeta, @NotNull Attribute attribute, @NotNull NamespacedKey id, double amount, @NotNull AttributeModifier.Operation operation, @NotNull EquipmentSlotGroup slot){
         itemMeta.addAttributeModifier(attribute, new AttributeModifier(id, amount, operation, slot));
     }
     public static void addAttribute(@NotNull ItemStack itemStack, @NotNull Attribute attribute, @NotNull NamespacedKey id, double amount, @NotNull AttributeModifier.Operation operation, @NotNull EquipmentSlotGroup slot){
@@ -38,19 +39,19 @@ public class AttributeUtils {
     }
 
     public static @NotNull Multimap<Attribute, AttributeModifier> getAttributes(@NotNull ItemStack itemStack){
-        Multimap<Attribute, AttributeModifier> vanillaAttributes = itemStack.getItemMeta().getAttributeModifiers();
-        System.out.println(vanillaAttributes);
-        if (vanillaAttributes == null){
-            vanillaAttributes = itemStack.getType().getDefaultAttributeModifiers();
-        }
-        return vanillaAttributes;
+        ArrayListMultimap<Attribute, AttributeModifier> attributes = ArrayListMultimap.create();
+        ItemAttributeModifiers data = itemStack.getDataOrDefault(DataComponentTypes.ATTRIBUTE_MODIFIERS,
+                itemStack.getType().getDefaultData(DataComponentTypes.ATTRIBUTE_MODIFIERS));
+        if (data == null) return attributes;
+        data.modifiers().forEach(entry -> attributes.put(entry.attribute(), entry.modifier()));
+        return attributes;
     }
 
     public static void appendAttribute(@NotNull ItemStack itemStack, @NotNull Attribute attribute, @UnknownNullability("can be null if item has attribute") NamespacedKey id, double amount, @NotNull AttributeModifier.Operation operation, @NotNull EquipmentSlotGroup slot){
         itemStack.editMeta(itemMeta -> appendAttribute(itemMeta, attribute, id, amount, operation, slot));
     }
 
-    public static void appendAttribute(@NotNull ItemMeta itemMeta, @NotNull Attribute attribute, @UnknownNullability("can be null if item has attribute") NamespacedKey id,  double amount, @NotNull AttributeModifier.Operation operation, @NotNull EquipmentSlotGroup slot) {
+    private static void appendAttribute(@NotNull ItemMeta itemMeta, @NotNull Attribute attribute, @UnknownNullability("can be null if item has attribute") NamespacedKey id,  double amount, @NotNull AttributeModifier.Operation operation, @NotNull EquipmentSlotGroup slot) {
         if (!itemMeta.hasAttributeModifiers()) {
             addAttribute(itemMeta, attribute, id, amount, operation, slot);
             return;
@@ -90,7 +91,7 @@ public class AttributeUtils {
         itemMeta.setAttributeModifiers(newAttributeMap);
     }
 
-    public static Multimap<Attribute, AttributeModifier> getAttributesBySlot(Multimap<Attribute, AttributeModifier> attributes, EquipmentSlotGroup slot){
+    public static @NotNull Multimap<Attribute, AttributeModifier> getAttributesBySlot(@NotNull Multimap<Attribute, AttributeModifier> attributes, @NotNull EquipmentSlotGroup slot){
         ArrayListMultimap<Attribute, AttributeModifier> newAttributes = ArrayListMultimap.create();
         for (Map.Entry<Attribute, AttributeModifier> entry : attributes.entries()) {
             AttributeModifier modifier = entry.getValue();

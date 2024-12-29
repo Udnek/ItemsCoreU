@@ -1,6 +1,7 @@
 package me.udnek.itemscoreu.customitem;
 
 import com.google.common.base.Preconditions;
+import io.papermc.paper.datacomponent.DataComponentTypes;
 import me.udnek.itemscoreu.customcomponent.OptimizedComponentHolder;
 import me.udnek.itemscoreu.customevent.CustomItemGeneratedEvent;
 import me.udnek.itemscoreu.customrecipe.RecipeManager;
@@ -24,6 +25,7 @@ import java.util.function.Consumer;
 public class VanillaBasedCustomItem extends OptimizedComponentHolder<CustomItem> implements ComponentUpdatingCustomItem{
 
     protected ItemStack itemStack;
+    protected RepairData repairData = null;
     protected final Material material;
     private String id;
 
@@ -40,10 +42,12 @@ public class VanillaBasedCustomItem extends OptimizedComponentHolder<CustomItem>
     public @NotNull ItemStack getItem() {
         if (itemStack == null){
             ItemStack newItemStack = new ItemStack(material);
-            CustomItemGeneratedEvent event = new CustomItemGeneratedEvent(this, newItemStack, null);
+            CustomItemGeneratedEvent event = new CustomItemGeneratedEvent(this, newItemStack, null, null);
             event.callEvent();
             event.getLoreBuilder().buildAndApply(event.getItemStack());
+            repairData = event.getRepairData();
             itemStack = event.getItemStack();
+            if (repairData != null) itemStack.setData(DataComponentTypes.REPAIRABLE, repairData.getSuitableVanillaRepairable());
         }
         return itemStack.clone();
     }
@@ -63,7 +67,7 @@ public class VanillaBasedCustomItem extends OptimizedComponentHolder<CustomItem>
 
     @Override
     public @Nullable RepairData getRepairData() {
-        return null;
+        return repairData;
     }
 
     @Override

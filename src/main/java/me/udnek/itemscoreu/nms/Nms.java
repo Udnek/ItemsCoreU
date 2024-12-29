@@ -112,22 +112,6 @@ public class Nms {
         return ComposterBlock.COMPOSTABLES.getOrDefault(NmsUtils.toNmsMaterial(material), 0);
     }
 
-    public @Nullable ConsumableComponent getConsumableComponent(@NotNull ItemStack bukkitItem){
-        Consumable consumable = NmsUtils.toNmsItemStack(bukkitItem).getComponents().get(DataComponents.CONSUMABLE);
-        if (consumable == null) return null;
-        return new ConsumableComponent(consumable);
-    }
-    public @Nullable ConsumableComponent getConsumableComponent(@NotNull Material material){
-        Consumable consumable = NmsUtils.toNmsMaterial(material).components().get(DataComponents.CONSUMABLE);
-        if (consumable == null) return null;
-        return new ConsumableComponent(consumable);
-    }
-    public @NotNull ItemStack setConsumableComponent(@NotNull ItemStack bukkitStack, @Nullable ConsumableComponent component){
-        net.minecraft.world.item.ItemStack itemStack = NmsUtils.toNmsItemStack(bukkitStack);
-        if (component == null) itemStack.set(DataComponents.CONSUMABLE, null);
-        else itemStack.set(DataComponents.CONSUMABLE, component.getNms());
-        return NmsUtils.toBukkitItemStack(itemStack);
-    }
 
     ///////////////////////////////////////////////////////////////////////////
     // BLOCKS

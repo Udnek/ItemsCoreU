@@ -1,8 +1,13 @@
 package me.udnek.itemscoreu.customitem;
 
+import io.papermc.paper.datacomponent.DataComponentTypes;
+import io.papermc.paper.datacomponent.item.Repairable;
+import io.papermc.paper.registry.RegistryKey;
+import io.papermc.paper.registry.set.RegistrySet;
 import me.udnek.itemscoreu.util.ItemUtils;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.ItemType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -11,7 +16,6 @@ import java.util.List;
 import java.util.Set;
 
 public class RepairData {
-
 
     // TODO VANILLA REPLACER
     protected Set<CustomItem> customs;
@@ -44,6 +48,13 @@ public class RepairData {
     }
     public @NotNull Set<@NotNull Material> getMaterials() {
         return materials;
+    }
+
+    public @NotNull Repairable getSuitableVanillaRepairable(){
+        Set<ItemType> materials = new HashSet<>();
+        getCustomItems().forEach(customItem -> materials.add(customItem.getItem().getType().asItemType()));
+        getMaterials().forEach(material -> materials.add(material.asItemType()));
+        return Repairable.repairable(RegistrySet.keySetFromValues(RegistryKey.ITEM, materials));
     }
 
     public boolean contains(@NotNull ItemStack itemStack){

@@ -11,7 +11,6 @@ public interface ComponentUpdatingCustomItem extends CustomItem{
 
     default void getComponentsToUpdate(@NotNull ConstructableCustomItem.ComponentConsumer consumer){
         consumer.accept(MAX_DAMAGE);
-        consumer.accept(REPAIR_COST);
         consumer.accept(CONSUMABLE);
         consumer.accept(RARITY);
         consumer.accept(LORE);
@@ -45,5 +44,10 @@ public interface ComponentUpdatingCustomItem extends CustomItem{
             }
         });
         return itemStack;
+    }
+
+    interface ComponentConsumer{
+        <T> void accept(@NotNull DataComponentType.Valued<T> type);
+        void accept(@NotNull DataComponentType.NonValued type);
     }
 }
