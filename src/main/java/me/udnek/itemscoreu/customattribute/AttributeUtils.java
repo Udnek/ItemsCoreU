@@ -49,8 +49,7 @@ public class AttributeUtils {
 
     public static @NotNull Multimap<Attribute, AttributeModifier> getAttributes(@NotNull ItemStack itemStack){
         ArrayListMultimap<Attribute, AttributeModifier> attributes = ArrayListMultimap.create();
-        ItemAttributeModifiers data = itemStack.getDataOrDefault(DataComponentTypes.ATTRIBUTE_MODIFIERS,
-                itemStack.getType().getDefaultData(DataComponentTypes.ATTRIBUTE_MODIFIERS));
+        ItemAttributeModifiers data = itemStack.getData(DataComponentTypes.ATTRIBUTE_MODIFIERS);
         if (data == null) return attributes;
         data.modifiers().forEach(entry -> attributes.put(entry.attribute(), entry.modifier()));
         return attributes;
