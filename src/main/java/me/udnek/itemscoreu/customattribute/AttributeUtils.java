@@ -8,6 +8,7 @@ import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.EquipmentSlotGroup;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -30,6 +31,14 @@ public class AttributeUtils {
             itemMeta.addAttributeModifier(entry.getKey(), new AttributeModifier(namespacedKey, oldModifier.getAmount(), oldModifier.getOperation(), oldModifier.getSlotGroup()));
         }
     }
+
+    public static void removeAttribute(@NotNull ItemStack itemStack, @NotNull Attribute attribute){
+        itemStack.editMeta(itemMeta -> itemMeta.removeAttributeModifier(attribute));
+    }
+    public static void removeAttribute(@NotNull ItemStack itemStack, @NotNull EquipmentSlot slot){
+        itemStack.editMeta(itemMeta -> itemMeta.removeAttributeModifier(slot));
+    }
+
 
     private static void addAttribute(@NotNull ItemMeta itemMeta, @NotNull Attribute attribute, @NotNull NamespacedKey id, double amount, @NotNull AttributeModifier.Operation operation, @NotNull EquipmentSlotGroup slot){
         itemMeta.addAttributeModifier(attribute, new AttributeModifier(id, amount, operation, slot));

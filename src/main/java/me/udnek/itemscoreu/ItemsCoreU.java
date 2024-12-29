@@ -31,6 +31,7 @@ import me.udnek.itemscoreu.util.VanillaItemManager;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.entity.animal.Wolf;
 import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.level.block.Block;

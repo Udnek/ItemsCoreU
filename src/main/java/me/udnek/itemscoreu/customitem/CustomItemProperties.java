@@ -72,7 +72,7 @@ public interface CustomItemProperties {
     // 2.48 note_block_sound
     // 2.49 ominous_bottle_amplifier
     // 2.50 pot_decorations
-    // 2.51 potion_contents
+    @Nullable default DataSupplier<PotionContents> getPotionContents(){return null;} // 2.51 potion_contents
     // 2.52 profile
     @Nullable default DataSupplier<ItemRarity> getRarity(){return null;} // 2.53 rarity
     // 2.54 recipes
