@@ -1,5 +1,6 @@
 package me.udnek.itemscoreu.customitem;
 
+import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.*;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
@@ -43,7 +44,7 @@ public interface CustomItemProperties {
     @Nullable default DataSupplier<DamageResistant> getDamageResistant(){return null;} // 2.19 damage_resistant
     // 2.20 debug_stick_state
     // todo 2.21 death_protection
-    // todo 2.22 dyed_color
+    @Nullable default DataSupplier<DyedItemColor> getDyedColor(){return null;} //2.22 dyed_color
     // todo 2.23 enchantable
     @Nullable default DataSupplier<Boolean> getEnchantmentGlintOverride(){return null;} // 2.24 enchantment_glint_override
     // 2.25 enchantments

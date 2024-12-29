@@ -26,6 +26,7 @@ import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.OverridingMethodsMustInvokeSuper;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -56,6 +57,7 @@ public abstract class ConstructableCustomItem extends OptimizedComponentHolder<C
         Preconditions.checkArgument(id == null, "Item already initialized!");
         id = new NamespacedKey(plugin, getRawId()).asString();
     }
+    @OverridingMethodsMustInvokeSuper
     public void initializeComponents(){}
     @Override
     public void afterInitialization() {
@@ -133,7 +135,7 @@ public abstract class ConstructableCustomItem extends OptimizedComponentHolder<C
     protected <T> void setData(@NotNull DataComponentType.Valued<T> type, @Nullable DataSupplier<T> supplier){
         if (supplier == null) return;
         T value = supplier.get();
-        if (value == null) itemStack.resetData(type);
+        if (value == null) itemStack.unsetData(type);
         else itemStack.setData(type, value);
     }
     protected void setData(@NotNull DataComponentType.NonValued type, @Nullable Boolean value){
@@ -177,6 +179,7 @@ public abstract class ConstructableCustomItem extends OptimizedComponentHolder<C
         setData(REPAIRABLE, getRepairable());
         setData(CONSUMABLE, getConsumable());
         setData(POTION_CONTENTS, getPotionContents());
+        setData(DYED_COLOR, getDyedColor());
         
         if (getUseRemainderCustom() != null) itemStack.setData(USE_REMAINDER, UseRemainder.useRemainder(getUseRemainderCustom().getItem()));
         if (addDefaultAttributes()) AttributeUtils.addDefaultAttributes(itemStack);

@@ -18,6 +18,8 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.util.EulerAngle;
 import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.OverridingMethodsMustInvokeSuper;
+
 public abstract class ConstructableCustomBlock extends OptimizedComponentHolder<CustomBlock> implements CustomBlock{
     private String id;
     protected EntitySnapshot visualRepresentation;
@@ -27,6 +29,15 @@ public abstract class ConstructableCustomBlock extends OptimizedComponentHolder<
         Preconditions.checkArgument(id == null, "Registrable already initialized!");
         id = new NamespacedKey(plugin, getRawId()).asString();
     }
+
+    @Override
+    public void afterInitialization() {
+        CustomBlock.super.afterInitialization();
+        initializeComponents();
+    }
+
+    @OverridingMethodsMustInvokeSuper
+    public void initializeComponents(){}
 
     public abstract @NotNull String getRawId();
 
