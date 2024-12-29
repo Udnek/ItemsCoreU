@@ -145,25 +145,12 @@ public class CraftListener extends SelfRegisteringListener {
     public boolean canBeRepaired(@NotNull ItemStack toBeRepaired, @NotNull ItemStack repairer){
         CustomItem toBeRepairedCustom = CustomItem.get(toBeRepaired);
         CustomItem repairerCustom = CustomItem.get(repairer);
-
-        //Repairable materialRepairable = toBeRepaired.getDataOrDefault(DataComponentTypes.REPAIRABLE, toBeRepaired.getType().getDefaultData(DataComponentTypes.REPAIRABLE));
         if (toBeRepairedCustom != null){
             RepairData repairData = toBeRepairedCustom.getRepairData();
             if (repairData == null) return true;
             return repairData.contains(repairer);
         }
         return repairerCustom == null;
-
-
-
-
-/*        if (materialRepairable != null && repairerCustom == null){
-            if (!materialRepairable.types().contains(TypedKey.create(RegistryKey.ITEM, repairer.getType().key()))) return false;
-        }
-        if (toBeRepairedCustom != null && repairerCustom != null){
-            if (!toBeRepairedCustom.getComponents().getOrDefault(CustomComponentType.REPAIRABLE_WITH_CUSTOM_ITEM).canBeRepairedWith(repairerCustom)) return false;
-        }
-        return true;*/
     }
 }
 

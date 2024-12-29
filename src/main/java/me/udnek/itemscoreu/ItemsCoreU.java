@@ -1,5 +1,6 @@
 package me.udnek.itemscoreu;
 
+import io.papermc.paper.datacomponent.DataComponentTypes;
 import me.udnek.itemscoreu.customattribute.ClearAttributeCommand;
 import me.udnek.itemscoreu.customattribute.CustomAttributeCommand;
 import me.udnek.itemscoreu.customblock.CustomBlock;
@@ -31,7 +32,6 @@ import me.udnek.itemscoreu.util.VanillaItemManager;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.entity.animal.Wolf;
 import net.minecraft.world.entity.npc.Villager;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.level.block.Block;
@@ -39,6 +39,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.material.PushReaction;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class ItemsCoreU extends JavaPlugin implements ResourcePackablePlugin {

@@ -41,7 +41,7 @@ public class ItemUtils {
             RepairData repairData = customItem.getRepairData();
             if (repairData != null) return !repairData.isEmpty();
         }
-        Repairable repairable = item.getDataOrDefault(DataComponentTypes.REPAIRABLE, item.getType().getDefaultData(DataComponentTypes.REPAIRABLE));
+        Repairable repairable = item.getData(DataComponentTypes.REPAIRABLE);
         if (repairable == null) return false;
         return !repairable.types().isEmpty();
     }
@@ -161,13 +161,13 @@ public class ItemUtils {
         }
     }
 
-    public static void setFireworkColor(FireworkEffectMeta itemMeta, Color color){
+    public static void setFireworkColor(@NotNull ItemStack itemStack, @NotNull Color color){
         FireworkEffect.Builder builder = FireworkEffect.builder();
         builder.withColor(color);
-        itemMeta.setEffect(builder.build());
+        itemStack.setData(DataComponentTypes.FIREWORK_EXPLOSION, builder.build());
     }
-    public static void setFireworkColor(FireworkEffectMeta itemMeta, int color){
-        setFireworkColor(itemMeta, Color.fromRGB(color));
+    public static void setFireworkColor(@NotNull ItemStack itemStack, int color){
+        setFireworkColor(itemStack, Color.fromRGB(color));
     }
 }
 
