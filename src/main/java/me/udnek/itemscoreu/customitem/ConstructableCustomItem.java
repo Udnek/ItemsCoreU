@@ -146,7 +146,7 @@ public abstract class ConstructableCustomItem extends OptimizedComponentHolder<C
     protected <T extends ShownInTooltip<T>> void hideSpecificComponent(@NotNull DataComponentType.Valued<T> type){
         T data = itemStack.getData(type);
         if (data == null) return;
-        itemStack.setData(type, data.showInTooltip(true));
+        itemStack.setData(type, data.showInTooltip(false));
     }
 
     protected void initializeItemStack(){
