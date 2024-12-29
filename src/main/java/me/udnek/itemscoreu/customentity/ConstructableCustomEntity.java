@@ -9,7 +9,7 @@ public abstract class ConstructableCustomEntity<VanillaEntity extends Entity> im
 
     protected VanillaEntity entity;
 
-    public abstract EntityType getVanillaEntityType();
+    public abstract @NotNull EntityType getVanillaEntityType();
 
     @Override
     public @NotNull Entity spawnNewEntity(Location location){

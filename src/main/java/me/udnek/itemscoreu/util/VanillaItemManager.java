@@ -100,8 +100,9 @@ public class VanillaItemManager extends SelfRegisteringListener{
         RecipeManager recipeManager = RecipeManager.getInstance();
         for (Map.Entry<Material, VanillaBasedCustomItem> entry : replacedByMaterial.entrySet()) {
             VanillaBasedCustomItem newItem = entry.getValue();
+            Material oldMaterial = entry.getKey();
 
-            ItemStack oldItem = new ItemStack(entry.getKey());
+            ItemStack oldItem = new ItemStack(oldMaterial);
 
             // recipe replace
             List<Recipe> recipes = new ArrayList<>();
@@ -113,7 +114,7 @@ public class VanillaItemManager extends SelfRegisteringListener{
                     customRecipe.replaceItem(oldItem, newItem.getItem());
                 } else {
                     recipeManager.unregister(oldRecipe);
-                    Recipe newRecipe = copyRecipeWithReplacedItem(oldRecipe, entry.getKey(), newItem);
+                    Recipe newRecipe = copyRecipeWithReplacedItem(oldRecipe, oldMaterial, newItem);
                     recipeManager.register(newRecipe);
                 }
             }
@@ -130,7 +131,7 @@ public class VanillaItemManager extends SelfRegisteringListener{
                 }
             }
 
-            LogUtils.pluginLog("Replaced: " + entry.getKey());
+            LogUtils.pluginLog("Replaced: " + oldMaterial);
         }
     }
 
@@ -299,7 +300,7 @@ public class VanillaItemManager extends SelfRegisteringListener{
         return Objects.requireNonNull(copyRecipeWithReplacedItem(recipe, new NotNullToNullFunction<ItemStack>() {
             @Override
             public @NotNull ItemStack apply(@NotNull ItemStack itemStack) {
-                return ItemUtils.isVanillaMaterial(itemStack, oldMaterial) ? newItem.getFrom(itemStack) : itemStack;
+                return VanillaItemManager.isReplaced(itemStack) && itemStack.getType() == oldMaterial ? newItem.getFrom(itemStack) : itemStack;
             }
         }, new NotNullToNullFunction<RecipeChoice>() {
             @Override
@@ -315,7 +316,7 @@ public class VanillaItemManager extends SelfRegisteringListener{
                     if (newStacks.isEmpty()) return null;
                     return new RecipeChoice.ExactChoice(newStacks);
                 }
-                LogUtils.pluginWarning("Recipe choice is not Material or Exact or Empty: " + recipeChoice);
+                LogUtils.pluginWarning("Recipe choice is not (Material or Exact): " + recipeChoice);
                 return recipeChoice;
             }
         }));

@@ -14,6 +14,7 @@ import org.bukkit.event.server.ServerLoadEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 
 public class CustomBlockListener extends SelfRegisteringListener {
     public CustomBlockListener(JavaPlugin plugin) {super(plugin);}
@@ -30,13 +31,13 @@ public class CustomBlockListener extends SelfRegisteringListener {
         if (customBlock != null) customBlock.onDestroy(event);
     }
 
-    public void loadChunk(Chunk chunk){
+    public void loadChunk(@NotNull Chunk chunk){
         for (BlockState blockState : chunk.getTileEntities()) {
             CustomBlock customBlock = CustomBlock.get(blockState);
             if (customBlock != null) customBlock.onLoad(blockState);
         }
     }
-    public void unloadChunk(Chunk chunk){
+    public void unloadChunk(@NotNull Chunk chunk){
         for (BlockState blockState : chunk.getTileEntities()) {
             CustomBlock customBlock = CustomBlock.get(blockState);
             if (customBlock != null) customBlock.onUnload(blockState);

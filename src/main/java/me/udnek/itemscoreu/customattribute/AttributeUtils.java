@@ -2,6 +2,7 @@ package me.udnek.itemscoreu.customattribute;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
+import io.papermc.paper.datacomponent.item.ItemAttributeModifiers;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
@@ -38,7 +39,8 @@ public class AttributeUtils {
 
     public static @NotNull Multimap<Attribute, AttributeModifier> getAttributes(@NotNull ItemStack itemStack){
         Multimap<Attribute, AttributeModifier> vanillaAttributes = itemStack.getItemMeta().getAttributeModifiers();
-        if (vanillaAttributes == null || vanillaAttributes.isEmpty()){
+        System.out.println(vanillaAttributes);
+        if (vanillaAttributes == null){
             vanillaAttributes = itemStack.getType().getDefaultAttributeModifiers();
         }
         return vanillaAttributes;

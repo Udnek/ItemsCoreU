@@ -22,6 +22,12 @@ commands:
     aliases: [itemscoreusummon]
     permission: itemscoreu.admin
     permission-message: "You do not have permission to use this command"
+  custom_entities:
+      description: "custom_entities"
+      usage: "/custom_entities"
+      aliases: []
+      permission: itemscoreu.admin
+      permission-message: "You do not have permission to use this command"
   resourcepacku:
     description: "resourcepacku"
     usage: "/resourcepacku <directory>"

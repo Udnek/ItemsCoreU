@@ -76,7 +76,6 @@ public class RecipeManager {
         recipes.forEach(consumer);
     }
 
-    // TODO: 8/25/2024 OPTIMIZE USING OTHER HASHMAP
     public <T extends CustomRecipe<?>> List<T> getByType(@NotNull CustomRecipeType<T> type){
         List<T> recipes = new ArrayList<>();
         for (CustomRecipe<?> recipe : customRecipes.values()) {
@@ -99,14 +98,17 @@ public class RecipeManager {
         return customRecipes.get(id.asString());
     }
 
+    public void getAll(@NotNull Consumer<Recipe> consumer){
+        customRecipes.values().forEach(consumer);
+        Bukkit.recipeIterator().forEachRemaining(consumer);
+    }
+
     public void unregister(@NotNull Recipe recipe){
         if (recipe instanceof CustomRecipe<?> customRecipe){
             customRecipes.remove(customRecipe.key().asString());
-            //LogUtils.pluginLog("Custom recipe was unregistered: " + customRecipe.key().asString());
         } else {
             if (!(recipe instanceof Keyed keyed)) return;
             Bukkit.removeRecipe((NamespacedKey) keyed.key());
-            //LogUtils.pluginLog("Vanilla recipe was unregistered: " + keyed.key().asString());
         }
     }
     public void unregister(@NotNull NamespacedKey key){
@@ -118,7 +120,7 @@ public class RecipeManager {
     public void unregister(@NotNull Iterable<Recipe> recipes){
         for (Recipe recipe : recipes) unregister(recipe);
     }
-    public void unregister(Recipe[] recipes){
+    public void unregister(@NotNull Recipe[] recipes){
         for (Recipe recipe : recipes) unregister(recipe);
     }
 }

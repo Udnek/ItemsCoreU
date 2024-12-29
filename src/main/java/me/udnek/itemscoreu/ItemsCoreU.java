@@ -6,6 +6,7 @@ import me.udnek.itemscoreu.customblock.CustomBlock;
 import me.udnek.itemscoreu.customblock.CustomBlockListener;
 import me.udnek.itemscoreu.customentity.CustomEntityCommand;
 import me.udnek.itemscoreu.customentity.CustomEntityManager;
+import me.udnek.itemscoreu.customentity.CustomLoadedEntitiesCommand;
 import me.udnek.itemscoreu.customequipmentslot.CustomEquipmentSlot;
 import me.udnek.itemscoreu.customhelp.CustomHelpCommand;
 import me.udnek.itemscoreu.customhud.CustomHudTicker;
@@ -71,6 +72,7 @@ public final class ItemsCoreU extends JavaPlugin implements ResourcePackablePlug
         getCommand("helpu").setExecutor(CustomHelpCommand.getInstance());
         getCommand("attributeu").setExecutor(new CustomAttributeCommand());
         getCommand("clear_attribute_modifiers").setExecutor(new ClearAttributeCommand());
+        getCommand("custom_entities").setExecutor(new CustomLoadedEntitiesCommand());
 
         // TICKERS
         CustomEntityManager.getInstance().start(this);

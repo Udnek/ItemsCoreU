@@ -24,8 +24,8 @@ public abstract class CustomEntityType<CEntity extends CustomEntity> extends Abs
     }
 
 
-    protected abstract CEntity getNewCustomEntityClass();
-    public CEntity spawn(@NotNull Location location) {
+    protected abstract @NotNull CEntity getNewCustomEntityClass();
+    public @NotNull CEntity spawn(@NotNull Location location) {
         CEntity customEntity = getNewCustomEntityClass();
         Entity entity = customEntity.spawnNewEntity(location);
 
