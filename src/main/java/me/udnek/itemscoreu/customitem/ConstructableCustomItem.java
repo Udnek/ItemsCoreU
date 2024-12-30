@@ -100,14 +100,16 @@ public abstract class ConstructableCustomItem extends OptimizedComponentHolder<C
     }
 
     @ForOverride
-    public @Nullable RepairData initializeRepairData(){return null;}
+    public @Nullable RepairData initializeRepairData(){return RepairData.EMPTY;}
 
     @Override
     public final @Nullable RepairData getRepairData() {return repairData;}
     @Override
     public final @Nullable DataSupplier<Repairable> getRepairable() {
         if (getRepairData() == null) return null;
-        return DataSupplier.of(getRepairData().getSuitableVanillaRepairable());
+        Repairable repairable = getRepairData().getSuitableVanillaRepairable();
+        if (repairable.types().isEmpty()) return DataSupplier.of(null);
+        return DataSupplier.of(repairable);
     }
     @Override
     public @Nullable DataSupplier<Key> getItemModel() {return DataSupplier.of(getKey());}

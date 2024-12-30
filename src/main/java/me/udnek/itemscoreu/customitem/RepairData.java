@@ -17,6 +17,8 @@ import java.util.Set;
 
 public class RepairData {
 
+    public static final RepairData EMPTY = new RepairData(Set.of(), Set.of());
+
     // TODO VANILLA REPLACER
     protected Set<CustomItem> customs;
     protected Set<Material> materials;
