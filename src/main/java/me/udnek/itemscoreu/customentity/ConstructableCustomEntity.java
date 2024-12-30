@@ -12,7 +12,7 @@ public abstract class ConstructableCustomEntity<VanillaEntity extends Entity> im
     public abstract @NotNull EntityType getVanillaEntityType();
 
     @Override
-    public @NotNull Entity spawnNewEntity(Location location){
+    public @NotNull Entity spawnNewEntity(@NotNull Location location){
         this.entity = (VanillaEntity) location.getWorld().spawnEntity(location, getVanillaEntityType());
         return entity;
     }

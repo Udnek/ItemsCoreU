@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 public interface CustomComponentType<HolderType, Component extends CustomComponent<HolderType>> extends Registrable {
 
     CustomComponentType<CustomItem, CustomItemAttributesComponent>
-            CUSTOM_ATTRIBUTED_ITEM = register(new ConstructableComponentType("custom_attributed_item", CustomItemAttributesComponent.EMPTY));
+            CUSTOM_ATTRIBUTED_ITEM = register(new ConstructableComponentType("custom_attributed_item", CustomItemAttributesComponent.DEFAULT_EMPTY));
 
     CustomComponentType<CustomItem, RightClickableItem>
             RIGHT_CLICKABLE_ITEM = register(new ConstructableComponentType("right_clickable_item", RightClickableItem.EMPTY));

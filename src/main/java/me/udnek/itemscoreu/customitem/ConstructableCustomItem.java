@@ -63,6 +63,7 @@ public abstract class ConstructableCustomItem extends OptimizedComponentHolder<C
     public void afterInitialization() {
         ComponentUpdatingCustomItem.super.afterInitialization();
         initializeComponents();
+        repairData = initializeRepairData();
         generateRecipes(this::registerRecipe);
     }
 

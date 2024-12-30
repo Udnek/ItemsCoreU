@@ -27,12 +27,12 @@ public interface CustomEntity {
         PersistentDataContainer dataContainer = entity.getPersistentDataContainer();
         return dataContainer.has(CustomEntityType.NAMESPACED_KEY);
     }
-    static boolean idExists(String id){
+    static boolean idExists(@NotNull String id){
         return getType(id) != null;
     }
 
 
-    @NotNull Entity spawnNewEntity(Location location);
+    @NotNull Entity spawnNewEntity(@NotNull Location location);
     void onSpawn();
     void load(@NotNull Entity entity);
     void unload();

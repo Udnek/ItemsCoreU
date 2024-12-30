@@ -147,42 +147,6 @@ public class Nms {
         return new NmsEnchantmentContainer(enchantment);
     }
 
-/*    public void registerEnchantment(@NotNull){
-        Registry<net.minecraft.world.item.enchantment.Enchantment> registry = NmsUtils.getRegistry(Registries.ENCHANTMENT);
-        // unfreeze
-        Reflex.setFieldValue(registry, "frozen", false);
-        Reflex.setFieldValue(registry, "unregisteredIntrusiveHolders", new IdentityHashMap<>());
-        // resource key
-        String enchantId = "test";
-        ResourceKey<net.minecraft.world.item.enchantment.Enchantment> key = key(enchantId);
-        // properties
-        Component description = net.minecraft.network.chat.Component.literal("test desc");
-        HolderSet<net.minecraft.world.item.enchantment.Enchantment> exclusiveSet = HolderSet.direct();
-        DataComponentMap effects = DataComponentMap.builder().build();
-
-        Registry<Item> itemRegistry = NmsUtils.getRegistry(Registries.ITEM);
-        HolderSet<Item> supportedItems = itemRegistry.getOrThrow(ItemTags.SWORD_ENCHANTABLE);
-        HolderSet<Item> primaryItems = itemRegistry.getOrThrow(ItemTags.SWORD_ENCHANTABLE);
-
-
-
-        EquipmentSlotGroup[] slots = nmsSlots(new EquipmentSlot[]{ EquipmentSlot.HAND});
-
-        // definition
-        int weight = 1;
-        int maxLevel = 5;
-        net.minecraft.world.item.enchantment.Enchantment.Cost minCost = new net.minecraft.world.item.enchantment.Enchantment.Cost(1, 11);
-        net.minecraft.world.item.enchantment.Enchantment.Cost maxCost = new net.minecraft.world.item.enchantment.Enchantment.Cost(12, 11);
-        int anvilCost = 2;
-
-        net.minecraft.world.item.enchantment.Enchantment.EnchantmentDefinition definition = net.minecraft.world.item.enchantment.Enchantment.definition(supportedItems, primaryItems, weight, maxLevel, minCost, maxCost, anvilCost, slots);
-        net.minecraft.world.item.enchantment.Enchantment enchantment = new net.minecraft.world.item.enchantment.Enchantment(description, definition, exclusiveSet, effects);
-        Holder.Reference<net.minecraft.world.item.enchantment.Enchantment> reference = registry.createIntrusiveHolder(enchantment);
-        Registry.register(registry, key, enchantment);
-
-        registry.freeze();
-    }*/
-
 
     ///////////////////////////////////////////////////////////////////////////
     // LOOT
