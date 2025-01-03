@@ -160,15 +160,6 @@ public class ItemUtils {
             }
         }
     }
-
-    public static void setFireworkColor(@NotNull ItemStack itemStack, @NotNull Color color){
-        FireworkEffect.Builder builder = FireworkEffect.builder();
-        builder.withColor(color);
-        itemStack.setData(DataComponentTypes.FIREWORK_EXPLOSION, builder.build());
-    }
-    public static void setFireworkColor(@NotNull ItemStack itemStack, int color){
-        setFireworkColor(itemStack, Color.fromRGB(color));
-    }
 }
 
 

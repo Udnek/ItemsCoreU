@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.Objects;
 
 public class CustomComponentMap<HolderType> implements Iterable<CustomComponent<HolderType>>{
-    private Map<CustomComponentType<HolderType, ?>, CustomComponent<HolderType>> map = null;
+    private @Nullable Map<CustomComponentType<HolderType, ?>, CustomComponent<HolderType>> map = null;
 
     public @NotNull <Type extends CustomComponentType<HolderType, Component>, Component extends CustomComponent<HolderType>> Component getOrDefault(@NotNull Type type) {
         if (map == null) return type.getDefault();

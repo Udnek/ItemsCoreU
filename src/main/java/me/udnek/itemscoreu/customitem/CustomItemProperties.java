@@ -4,6 +4,7 @@ import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.*;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
+import org.bukkit.FireworkEffect;
 import org.bukkit.Material;
 import org.bukkit.MusicInstrument;
 import org.bukkit.attribute.Attribute;
@@ -45,13 +46,12 @@ public interface CustomItemProperties {
     // 2.20 debug_stick_state
     // todo 2.21 death_protection
     @Nullable default DataSupplier<DyedItemColor> getDyedColor(){return null;} //2.22 dyed_color
-    // todo 2.23 enchantable
+    // 2.23 enchantable
     @Nullable default DataSupplier<Boolean> getEnchantmentGlintOverride(){return null;} // 2.24 enchantment_glint_override
     // 2.25 enchantments
     // 2.26 entity_data
     @Nullable default DataSupplier<Equippable> getEquippable(){return null;} // 2.27 equippable
-    // 2.28 fire_resistant
-    // 2.29 firework_explosion
+    @Nullable default DataSupplier<FireworkEffect> getFireworkExplosion(){return null;} // 2.29 firework_explosion
     // 2.30 fireworks
     @Nullable default DataSupplier<FoodProperties> getFood(){return null;} // 2.31 food
     @Nullable default Boolean getGlider(){return null;} // 2.32 glider

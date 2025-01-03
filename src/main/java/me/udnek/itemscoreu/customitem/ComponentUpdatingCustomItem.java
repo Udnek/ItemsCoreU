@@ -37,10 +37,10 @@ public interface ComponentUpdatingCustomItem extends CustomItem{
 
             @Override
             public void accept(DataComponentType.@NotNull NonValued type) {
-                if (finalItemStack.hasData(type) != relevantItem.hasData(type)) {
-                    if (finalItemStack.hasData(type)) finalItemStack.resetData(type);
-                    else finalItemStack.setData(type);
-                }
+                boolean relevantHas = relevantItem.hasData(type);
+                boolean currentHas = finalItemStack.hasData(type);
+                if (currentHas && !relevantHas) finalItemStack.unsetData(type);
+                else if (!currentHas && relevantHas) finalItemStack.setData(type);
             }
         });
         return itemStack;

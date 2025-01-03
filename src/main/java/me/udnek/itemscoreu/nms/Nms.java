@@ -7,6 +7,7 @@ import me.udnek.itemscoreu.customenchantment.NmsEnchantmentContainer;
 import me.udnek.itemscoreu.nms.loot.entry.NmsCustomLootEntryBuilder;
 import me.udnek.itemscoreu.nms.loot.table.NmsDefaultLootTableContainer;
 import me.udnek.itemscoreu.nms.loot.table.NmsLootTableContainer;
+import me.udnek.itemscoreu.nms.loot.util.NmsFields;
 import me.udnek.itemscoreu.util.LogUtils;
 import me.udnek.itemscoreu.util.Reflex;
 import net.minecraft.core.BlockPos;
@@ -53,6 +54,7 @@ import net.minecraft.world.level.storage.loot.entries.LootPoolEntry;
 import net.minecraft.world.level.storage.loot.entries.LootPoolEntryContainer;
 import net.minecraft.world.level.storage.loot.entries.LootPoolSingletonContainer;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_21_R2.CraftChunk;
@@ -69,10 +71,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.MerchantRecipe;
 import org.bukkit.map.MapCursor;
+import org.bukkit.util.BoundingBox;
 import org.bukkit.util.StructureSearchResult;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.sql.Ref;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Predicate;
@@ -178,7 +182,7 @@ public class Nms {
     }
 
 
-    public @NotNull NmsLootTableContainer getLootTableContainer(org.bukkit.loot.LootTable lootTable){
+    public @NotNull NmsLootTableContainer getLootTableContainer(@NotNull org.bukkit.loot.LootTable lootTable){
         return new NmsDefaultLootTableContainer(NmsUtils.toNmsLootTable(lootTable));
     }
 
@@ -198,7 +202,6 @@ public class Nms {
                 }
             });
             if (contains.get()) toReplace.add(container);
-
         }
         for (LootPool pool : NmsUtils.getPools(lootTable)) {
             List<LootPoolEntryContainer> newContainers = new ArrayList<>();
@@ -212,10 +215,11 @@ public class Nms {
             }
             if (changed){
                 LogUtils.pluginLog("Changed loot entry container from: " + lootTable.craftLootTable.getKey().toString());
-                Reflex.setFieldValue(pool, "entries", newContainers);
+                Reflex.setFieldValue(pool, NmsFields.ENTRIES, newContainers);
             }
         }
     }
+
     public @Nullable org.apache.commons.lang3.tuple.Pair<Integer, Integer> getWeightAndQuality(@NotNull org.bukkit.loot.LootTable bukkitLootTable, @NotNull Predicate<ItemStack> predicate){
         LootTable lootTable = NmsUtils.toNmsLootTable(bukkitLootTable);
 
@@ -407,6 +411,18 @@ public class Nms {
     }
     public void resetSpinAttack(@NotNull Player player){
         setSpinAttack(player, 0, 0, null);
+    }
+
+    @Deprecated
+    public void setDimensions(@NotNull org.bukkit.entity.Entity entity, @NotNull EntityDimensions dimensions){
+        Entity nmsEntity = NmsUtils.toNmsEntity(entity);
+        Reflex.setFieldValue(nmsEntity, "dimensions", dimensions.toNms());
+    }
+
+    @Deprecated
+    public @NotNull EntityDimensions getDimensions(@NotNull org.bukkit.entity.Entity entity){
+        Entity nmsEntity = NmsUtils.toNmsEntity(entity);
+        return new EntityDimensions((net.minecraft.world.entity.EntityDimensions) Reflex.getFieldValue(nmsEntity, "dimensions"));
     }
 
     ///////////////////////////////////////////////////////////////////////////

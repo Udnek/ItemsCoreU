@@ -183,6 +183,7 @@ public abstract class ConstructableCustomItem extends OptimizedComponentHolder<C
         setData(CONSUMABLE, getConsumable());
         setData(POTION_CONTENTS, getPotionContents());
         setData(DYED_COLOR, getDyedColor());
+        setData(FIREWORK_EXPLOSION, getFireworkExplosion());
         
         if (getUseRemainderCustom() != null) itemStack.setData(USE_REMAINDER, UseRemainder.useRemainder(getUseRemainderCustom().getItem()));
         if (addDefaultAttributes()) AttributeUtils.addDefaultAttributes(itemStack);
