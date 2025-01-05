@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
-public class ItemModelMerger implements RPFileMerger{
+public class ItemModelMerger implements RpFileMerger {
 
     public static final String CUSTOM_MODEL_DATA = "custom_model_data";
     public static final String OVERRIDES = "overrides";

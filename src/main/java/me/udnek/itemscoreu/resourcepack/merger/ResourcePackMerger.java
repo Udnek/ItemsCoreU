@@ -4,7 +4,7 @@ import com.google.common.base.Preconditions;
 import me.udnek.itemscoreu.resourcepack.FileType;
 import me.udnek.itemscoreu.resourcepack.ResourcePackablePlugin;
 import me.udnek.itemscoreu.resourcepack.VirtualResourcePack;
-import me.udnek.itemscoreu.resourcepack.path.RPPath;
+import me.udnek.itemscoreu.resourcepack.path.RpPath;
 import me.udnek.itemscoreu.resourcepack.path.SamePathsContainer;
 import me.udnek.itemscoreu.resourcepack.path.SortedPathsContainer;
 import me.udnek.itemscoreu.util.LogUtils;
@@ -25,10 +25,10 @@ import java.util.function.Consumer;
 
 public class ResourcePackMerger {
 
-    public static final RPPath LANG_DIRECTORY = new RPPath(null, "assets/minecraft/lang");
-    public static final RPPath ITEM_MODEL_DIRECTORY = new RPPath(null, "assets/minecraft/models/item");
+    public static final RpPath LANG_DIRECTORY = new RpPath(null, "assets/minecraft/lang");
+    public static final RpPath ITEM_MODEL_DIRECTORY = new RpPath(null, "assets/minecraft/models/item");
 
-    private static final RPPath[] MERGE_DIRECTORIES = new RPPath[]{LANG_DIRECTORY, ITEM_MODEL_DIRECTORY};
+    private static final RpPath[] MERGE_DIRECTORIES = new RpPath[]{LANG_DIRECTORY, ITEM_MODEL_DIRECTORY};
 
     private final SortedPathsContainer container = new SortedPathsContainer();
 
@@ -61,14 +61,10 @@ public class ResourcePackMerger {
             LogUtils.pluginLog("Found resourcePackable plugin: " + plugin.getName());
             resourcePacks.add(resourcePackable.getResourcePack());
         }
-        for (VirtualResourcePack resourcePack : resourcePacks) {
-            resourcePack.initialize();
-        }
-        for (VirtualResourcePack resourcePack : resourcePacks) {
-            for (RPPath rpPath : resourcePack.getAllFoundFiles()) {
-                container.add(rpPath);
-            }
-        }
+        resourcePacks.forEach(VirtualResourcePack::initialize);
+
+        resourcePacks.stream().flatMap(resourcePack ->
+                resourcePack.getAllFoundFiles().stream()).forEach(container::add);
 
         for (SamePathsContainer containerSame : container.getSames()) {
             if (isInAutoMerge(containerSame.getExample())){
@@ -77,8 +73,7 @@ public class ResourcePackMerger {
                 manualMergeCopy(containerSame);
             }
         }
-        for (RPPath rpPath : container.getAllExcludingSame()) {
-            //LogUtils.pluginLog("Coping file: " + rpPath);
+        for (RpPath rpPath : container.getAllExcludingSame()) {
             copyFile(rpPath, rpPath);
         }
 
@@ -86,8 +81,8 @@ public class ResourcePackMerger {
 
     }
 
-    public void autoMergeCopy(SamePathsContainer container){
-        RPFileMerger merger;
+    public void autoMergeCopy(@NotNull SamePathsContainer container){
+        RpFileMerger merger;
         if (container.getExample().isBelow(ITEM_MODEL_DIRECTORY)){
             merger = new ItemModelMerger();
         } else if (container.getExample().isBelow(LANG_DIRECTORY)){
@@ -95,22 +90,22 @@ public class ResourcePackMerger {
         } else {
             throw new RuntimeException("Directory can not be merged automatically");
         }
-        for (RPPath rpPath : container.getAll()) {
+        for (RpPath rpPath : container.getAll()) {
             merger.add(newBufferedReader(rpPath));
             LogUtils.pluginLog("Auto merging: " + rpPath);
         }
         merger.merge();
-        RPPath rpPath = container.getExample();
+        RpPath rpPath = container.getExample();
         saveText(rpPath, merger.getMergedAsString());
     }
 
-    public void manualMergeCopy(SamePathsContainer container){
+    public void manualMergeCopy(@NotNull SamePathsContainer container){
         if (extractFileExists(container.getExample())){
             LogUtils.pluginLog("Manual file already exists: " + container.getExample());
             return;
         }
         int mergeId = 0;
-        for (RPPath rpPath : container.getAll()) {
+        for (RpPath rpPath : container.getAll()) {
             copyFile(rpPath, rpPath.withMergeId(mergeId));
             LogUtils.pluginWarning("Should be manually merged: " + rpPath.withMergeId(mergeId));
             mergeId++;
@@ -118,57 +113,76 @@ public class ResourcePackMerger {
 
 
     }
-    public boolean isInAutoMerge(RPPath rpPath){
-        for (RPPath mergeDirectory : MERGE_DIRECTORIES) {
+    public boolean isInAutoMerge(@NotNull RpPath rpPath){
+        for (RpPath mergeDirectory : MERGE_DIRECTORIES) {
             if (rpPath.isBelow(mergeDirectory)) return true;
         }
         return false;
     }
-    public BufferedWriter newBufferedWriter(RPPath rpPath){
+    public BufferedWriter newBufferedWriter(@NotNull RpPath rpPath){
         Path path = Paths.get(rpPath.getExtractPath(extractDirectory));
         try {
             return Files.newBufferedWriter(path, StandardCharsets.UTF_8);
         } catch (IOException e) {throw new RuntimeException(e);}
     }
-    public BufferedReader newBufferedReader(RPPath rpPath){
-        InputStream stream = rpPath.getFile();
+    public BufferedReader newBufferedReader(@NotNull RpPath rpPath){
+        InputStream stream = rpPath.getInputStream();
         return new BufferedReader(new InputStreamReader(stream));
     }
 
-    public boolean extractFileExists(RPPath rpPath){
+    public boolean extractFileExists(@NotNull RpPath rpPath){
         String filePath = rpPath.getExtractPath(extractDirectory);
-        File file = new File(filePath);
-        return file.exists();
+        return new File(filePath).exists();
     }
-    public void createNewFile(RPPath rpPath){
+    public void createNewFile(@NotNull RpPath rpPath){
         if (extractFileExists(rpPath)) return;
         String filePath = rpPath.getExtractPath(extractDirectory);
         String folderPath = rpPath.withLayerUp().getExtractPath(extractDirectory);
         new File(folderPath).mkdirs();
         try {
-            File file = new File(filePath);
-            file.createNewFile();
+            new File(filePath).createNewFile();
         } catch (IOException e) {throw new RuntimeException(e);}
     }
-    public void copyFile(RPPath from, RPPath to){
+    public void copyFile(@NotNull RpPath from, @NotNull RpPath to){
         createNewFile(to);
 
-        if (from.getFileType() == FileType.PNG){
-            copyImage(from, to);
-        } else {
-            copyText(from, to);
+        switch (from.getFileType()) {
+            case PNG -> copyImage(from, to);
+            case OGG -> copySound(from, to);
+            default -> copyText(from, to);
         }
     }
-    public void copyImage(RPPath from, RPPath to){
-        Preconditions.checkArgument(from.getFileType() == FileType.PNG, "File " + to + " is not image!");
+    public void copySound(@NotNull RpPath from, @NotNull RpPath to){
+        Preconditions.checkArgument(from.getFileType() == FileType.OGG, "File " + to + " is not a sound!");
+
         try {
-            BufferedImage image = ImageIO.read(from.getFile());
+            InputStream input = from.getInputStream();
+            OutputStream out = new FileOutputStream(to.getExtractPath(extractDirectory));
+
+            byte[] buf = new byte[1024];
+            int len;
+            while ((len = input.read(buf)) > 0) {
+                out.write(buf, 0, len);
+            }
+
+            input.close();
+            out.close();
+
+        } catch (Exception exception){
+            throw new RuntimeException(exception);
+        }
+
+    }
+    public void copyImage(@NotNull RpPath from, @NotNull RpPath to){
+        Preconditions.checkArgument(from.getFileType() == FileType.PNG, "File " + to + " is not an image!");
+        try {
+            BufferedImage image = ImageIO.read(from.getInputStream());
             ImageIO.write(image, "png", new File(to.getExtractPath(extractDirectory)));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
-    public void saveText(RPPath to, String text){
+    public void saveText(@NotNull RpPath to, @NotNull String text){
         createNewFile(to);
 
         BufferedWriter writer = newBufferedWriter(to);
@@ -180,7 +194,7 @@ public class ResourcePackMerger {
             throw new RuntimeException(e);
         }
     }
-    public void copyText(RPPath from, RPPath to){
+    public void copyText(@NotNull RpPath from, @NotNull RpPath to){
         try {
             BufferedWriter writer = newBufferedWriter(to);
 
@@ -195,7 +209,7 @@ public class ResourcePackMerger {
             lines.forEach(new Consumer<String>() {
 
                 @Override
-                public void accept(String line) {
+                public void accept(@NotNull String line) {
 
                     try {
                         writer.write(line + "\n");
@@ -206,7 +220,7 @@ public class ResourcePackMerger {
                     i[0]++;
                 }
 
-                public void debug(String line){
+                public void debug(@NotNull String line){
                     if (suppress){
                         if(i[0] > 5 && i[0] < count-5) return;
                         LogUtils.pluginLog(line);

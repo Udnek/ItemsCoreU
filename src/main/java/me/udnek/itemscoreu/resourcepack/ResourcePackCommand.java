@@ -4,10 +4,13 @@ import me.udnek.itemscoreu.ItemsCoreU;
 import me.udnek.itemscoreu.resourcepack.merger.ResourcePackMerger;
 import me.udnek.itemscoreu.serializabledata.SerializableDataManager;
 import me.udnek.itemscoreu.util.LogUtils;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.inject.Named;
 import java.util.List;
 
 public class ResourcePackCommand implements TabExecutor, CommandExecutor {
@@ -46,6 +49,8 @@ public class ResourcePackCommand implements TabExecutor, CommandExecutor {
         SerializableDataManager.write(new ResourcepackSettings(directory), ItemsCoreU.getInstance());
 
         merger.startGlobalMerging(directory);
+
+        LogUtils.pluginWarning("If your sound does not play, remove '<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>' in plugin's pom!");
         return true;
     }
 

@@ -6,7 +6,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.BufferedReader;
 
-public interface RPFileMerger {
+public interface RpFileMerger {
     void add(@NotNull JsonObject jsonObject);
     default void add(@NotNull BufferedReader reader){
        add((JsonObject) JsonParser.parseReader(reader));

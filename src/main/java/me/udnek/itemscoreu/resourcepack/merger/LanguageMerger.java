@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class LanguageMerger implements RPFileMerger {
+public class LanguageMerger implements RpFileMerger {
     private final List<JsonObject> jsons = new ArrayList<>();
     private JsonObject merged = null;
 

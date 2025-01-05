@@ -10,37 +10,37 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RPPath {
+public class RpPath {
 
     protected final VirtualResourcePack resourcePack;
     protected final String path;
 
-    public RPPath(@Nullable VirtualResourcePack resourcePack, @NotNull String path){
+    public RpPath(@Nullable VirtualResourcePack resourcePack, @NotNull String path){
         this.resourcePack = resourcePack;
         this.path = FileManager.removeSlashes(path);
     }
 
-    public @NotNull RPPath withAdded(@NotNull String added){
+    public @NotNull RpPath withAdded(@NotNull String added){
         String newPath = FileManager.joinPaths(path, added);
-        return new RPPath(resourcePack, newPath);
+        return new RpPath(resourcePack, newPath);
     }
 
-    public @NotNull RPPath withRenamedLast(@NotNull String newName){
+    public @NotNull RpPath withRenamedLast(@NotNull String newName){
         if (path.isEmpty()) return this;
         return withLayerUp().withAdded(newName);
     }
 
-    public @NotNull RPPath withLayerUp(){
+    public @NotNull RpPath withLayerUp(){
         String newPath = FileManager.layerUp(path);
-        return new RPPath(resourcePack, newPath);
+        return new RpPath(resourcePack, newPath);
     }
 
-    public @NotNull RPPath withMergeId(@Nullable Integer mergeId){
+    public @NotNull RpPath withMergeId(@Nullable Integer mergeId){
         if (mergeId == null) return this;
         return withRenamedLast("(MANUAL_MERGE_" + resourcePack.getName() + "_" + mergeId + ")" + getLast());
     }
 
-    public @NotNull List<RPPath> findFiles(){
+    public @NotNull List<RpPath> findFiles(){
         //LogUtils.pluginLog(this);
         //LogUtils.pluginLog("Checking is file");
         if (resourcePack.isFile(this)) return List.of(this);
@@ -50,14 +50,14 @@ public class RPPath {
         //LogUtils.pluginLog("Checking for subdirectories");
         List<String> resources = resourcePack.getResources(this);
         //LogUtils.pluginLog("Found resources: " + resources);
-        List<RPPath> subFiles = new ArrayList<>();
+        List<RpPath> subFiles = new ArrayList<>();
         for (String resource : resources) {
             subFiles.addAll(withAdded(resource).findFiles());
         }
         return subFiles;
     }
 
-    public boolean isBelow(@NotNull RPPath other){
+    public boolean isBelow(@NotNull RpPath other){
         return  (path.startsWith(other.path));
     }
 
@@ -79,15 +79,15 @@ public class RPPath {
         return "RPPath{ " + path + " (" + resourcePack.getName() + ") }";
     }
 
-    public @NotNull InputStream getFile(){
-        return resourcePack.getFile(this);
+    public @NotNull InputStream getInputStream(){
+        return resourcePack.getInputStream(this);
     }
 
     public @NotNull String getExtractPath(@NotNull String extract){
         return FileManager.joinPaths(extract, path);
     }
 
-    public boolean isSame(@NotNull RPPath other){
+    public boolean isSame(@NotNull RpPath other){
         return this.path.equals(other.path);
     }
 }

@@ -1,8 +1,11 @@
 package me.udnek.itemscoreu.serializabledata;
 
-public interface SerializableData{
-    String serialize();
-    void deserialize(String data);
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-    String getDataName();
+public interface SerializableData{
+    @NotNull String serialize();
+    void deserialize(@Nullable String data);
+
+    @NotNull String getDataName();
 }

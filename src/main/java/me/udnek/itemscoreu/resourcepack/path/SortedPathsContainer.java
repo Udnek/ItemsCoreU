@@ -8,12 +8,12 @@ import java.util.List;
 
 public class SortedPathsContainer {
 
-    private final List<RPPath> all = new ArrayList<>();
+    private final List<RpPath> all = new ArrayList<>();
     private final List<SamePathsContainer> sames = new ArrayList<>();
 
     public SortedPathsContainer(){}
 
-    public void add(@NotNull RPPath newPath){
+    public void add(@NotNull RpPath newPath){
         if (all.contains(newPath)) return;
 
         for (SamePathsContainer container : sames) {
@@ -24,7 +24,7 @@ public class SortedPathsContainer {
                 return;
             }
         }
-        for (RPPath path : all) {
+        for (RpPath path : all) {
             if (path.isSame(newPath)){
                 //LogUtils.pluginWarning("Found new same paths: " + newPath + ", " + path);
                 sames.add(new SamePathsContainer(path, newPath));
@@ -45,16 +45,16 @@ public class SortedPathsContainer {
         LogUtils.pluginLog("Total: " + all.size());
         LogUtils.pluginLog("Same:");
         for (SamePathsContainer samePathsContainer : sames) {
-            for (RPPath path : samePathsContainer.getAll()) {
+            for (RpPath path : samePathsContainer.getAll()) {
                 LogUtils.pluginLog(path);
             }
             LogUtils.pluginLog("----------");
         }
     }
 
-    public List<RPPath> getAllExcludingSame(){
-        List<RPPath> toExclude = new ArrayList<>();
-        for (RPPath path : all) {
+    public List<RpPath> getAllExcludingSame(){
+        List<RpPath> toExclude = new ArrayList<>();
+        for (RpPath path : all) {
             for (SamePathsContainer same : sames) {
                 if (same.getExample().isSame(path)) {
                     LogUtils.pluginLog("Excluding: " + path );
