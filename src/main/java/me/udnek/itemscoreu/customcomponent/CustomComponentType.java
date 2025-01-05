@@ -1,7 +1,7 @@
 package me.udnek.itemscoreu.customcomponent;
 
 import me.udnek.itemscoreu.ItemsCoreU;
-import me.udnek.itemscoreu.customblock.CustomBlock;
+import me.udnek.itemscoreu.customblock.CustomBlockType;
 import me.udnek.itemscoreu.customcomponent.instance.*;
 import me.udnek.itemscoreu.customitem.CustomItem;
 import me.udnek.itemscoreu.customregistry.CustomRegistries;
@@ -16,7 +16,7 @@ public interface CustomComponentType<HolderType, Component extends CustomCompone
     CustomComponentType<CustomItem, RightClickableItem>
             RIGHT_CLICKABLE_ITEM = register(new ConstructableComponentType("right_clickable_item", RightClickableItem.EMPTY));
 
-    CustomComponentType<CustomBlock, RightClickableBlock>
+    CustomComponentType<CustomBlockType, RightClickableBlock>
             RIGHT_CLICKABLE_BLOCK = register(new ConstructableComponentType("right_clickable_block", RightClickableBlock.EMPTY));
 
     CustomComponentType<CustomItem, VanillaAttributesComponent>

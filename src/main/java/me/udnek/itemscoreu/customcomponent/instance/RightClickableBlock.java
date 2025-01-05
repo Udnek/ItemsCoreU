@@ -1,22 +1,22 @@
 package me.udnek.itemscoreu.customcomponent.instance;
 
-import me.udnek.itemscoreu.customblock.CustomBlock;
+import me.udnek.itemscoreu.customblock.CustomBlockType;
 import me.udnek.itemscoreu.customcomponent.CustomComponent;
 import me.udnek.itemscoreu.customcomponent.CustomComponentType;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.jetbrains.annotations.NotNull;
 
-public interface RightClickableBlock extends CustomComponent<CustomBlock> {
+public interface RightClickableBlock extends CustomComponent<CustomBlockType> {
 
     RightClickableBlock EMPTY = new RightClickableBlock() {
         @Override
-        public void onRightClick(@NotNull CustomBlock block, @NotNull PlayerInteractEvent event) {}
+        public void onRightClick(@NotNull CustomBlockType block, @NotNull PlayerInteractEvent event) {}
     };
 
-    void onRightClick(@NotNull CustomBlock block, @NotNull PlayerInteractEvent event);
+    void onRightClick(@NotNull CustomBlockType block, @NotNull PlayerInteractEvent event);
 
     @Override
-    default @NotNull CustomComponentType<CustomBlock, ?> getType(){
+    default @NotNull CustomComponentType<CustomBlockType, ?> getType(){
         return CustomComponentType.RIGHT_CLICKABLE_BLOCK;
     }
 }

@@ -2,7 +2,7 @@ package me.udnek.itemscoreu;
 
 import me.udnek.itemscoreu.customattribute.ClearAttributeCommand;
 import me.udnek.itemscoreu.customattribute.CustomAttributeCommand;
-import me.udnek.itemscoreu.customblock.CustomBlock;
+import me.udnek.itemscoreu.customblock.CustomBlockType;
 import me.udnek.itemscoreu.customblock.CustomBlockListener;
 import me.udnek.itemscoreu.customentity.CustomEntityCommand;
 import me.udnek.itemscoreu.customentity.CustomEntityManager;
@@ -25,8 +25,6 @@ import me.udnek.itemscoreu.resourcepack.ResourcePackablePlugin;
 import me.udnek.itemscoreu.serializabledata.SerializableDataManager;
 import me.udnek.itemscoreu.util.InitializationProcess;
 import me.udnek.itemscoreu.util.VanillaItemManager;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -42,7 +40,7 @@ public final class ItemsCoreU extends JavaPlugin implements ResourcePackablePlug
         instance = this;
 
         CustomRegistry<CustomItem> item = CustomRegistries.ITEM;
-        CustomRegistry<CustomBlock> block = CustomRegistries.BLOCK;
+        CustomRegistry<CustomBlockType> block = CustomRegistries.BLOCK_TYPE;
         CustomRegistry<CustomEquipmentSlot> equipmentSlot = CustomRegistries.EQUIPMENT_SLOT;
 
         // EVENTS

@@ -1,6 +1,5 @@
 package me.udnek.itemscoreu.customentity;
 
-import jdk.jshell.execution.Util;
 import me.udnek.itemscoreu.util.Utils;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
@@ -15,9 +14,9 @@ import java.util.List;
 public class CustomLoadedEntitiesCommand implements TabExecutor, CommandExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
-        for (CustomEntityHolder loadedEntity : CustomEntityManager.getInstance().loadedEntities) {
-            Location location = loadedEntity.realEntity.getLocation();
-            commandSender.sendMessage(loadedEntity.realEntity.getType() +" " +loadedEntity.customEntity.getType().getId() + " " +
+        for (CustomEntityManager.Holder loadedEntity : CustomEntityManager.getInstance().getAllLoaded()) {
+            Location location = loadedEntity.realEntity().getLocation();
+            commandSender.sendMessage(loadedEntity.realEntity().getType() +" " +loadedEntity.customEntity().getType().getId() + " " +
                     Utils.roundToTwoDigits(location.x()) + " " + Utils.roundToTwoDigits(location.y()) + Utils.roundToTwoDigits(location.z()) + " " + location.getWorld().getName());
         }
         return true;

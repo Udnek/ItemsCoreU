@@ -3,7 +3,7 @@ package me.udnek.itemscoreu.customregistry;
 import com.google.common.base.Preconditions;
 import me.udnek.itemscoreu.ItemsCoreU;
 import me.udnek.itemscoreu.customattribute.CustomAttribute;
-import me.udnek.itemscoreu.customblock.CustomBlock;
+import me.udnek.itemscoreu.customblock.CustomBlockType;
 import me.udnek.itemscoreu.customcomponent.CustomComponentType;
 import me.udnek.itemscoreu.customeffect.CustomEffect;
 import me.udnek.itemscoreu.customenchantment.CustomEnchantment;
@@ -11,14 +11,11 @@ import me.udnek.itemscoreu.customentity.CustomEntityType;
 import me.udnek.itemscoreu.customequipmentslot.CustomEquipmentSlot;
 import me.udnek.itemscoreu.customitem.CustomItem;
 import me.udnek.itemscoreu.customloot.LootTableRegistry;
-import net.minecraft.core.registries.Registries;
 import org.bukkit.NamespacedKey;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class CustomRegistries {
@@ -26,7 +23,7 @@ public class CustomRegistries {
     private static final HashMap<NamespacedKey, CustomRegistry<?>> registries = new HashMap<>();
 
     public static final CustomRegistry<CustomItem> ITEM = addRegistry("item", new MappedCustomRegistry<>("Item"));
-    public static final CustomRegistry<CustomBlock> BLOCK = addRegistry("bloc", new MappedCustomRegistry<>("Block"));
+    public static final CustomRegistry<CustomBlockType> BLOCK_TYPE = addRegistry("block_type", new MappedCustomRegistry<>("Block"));
     public static final CustomRegistry<CustomAttribute> ATTRIBUTE = addRegistry("attribute", new MappedCustomRegistry<>("Attribute"));
     public static final CustomRegistry<CustomEquipmentSlot> EQUIPMENT_SLOT = addRegistry("equipment_slot", new MappedCustomRegistry<>("EquipmentSlot"));
     public static final CustomRegistry<CustomComponentType<?, ?>> COMPONENT_TYPE = addRegistry("component_type", new MappedCustomRegistry<>("ComponentType"));

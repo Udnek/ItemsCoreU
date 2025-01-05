@@ -21,10 +21,11 @@ import java.util.UUID;
 
 public class CustomEntityManager extends TickingTask implements Listener {
     private static CustomEntityManager instance;
-    protected final List<CustomEntityHolder> loadedEntities = new ArrayList<>();
-    protected final List<CustomEntityHolder> toRemove = new ArrayList<>();
-    private CustomEntityManager(){}
-    public static CustomEntityManager getInstance() {
+
+    private final List<Holder> loaded = new ArrayList<>();
+    private final List<Holder> toRemove = new ArrayList<>();
+
+    public static @NotNull CustomEntityManager getInstance() {
         if (instance == null) {
             instance = new CustomEntityManager();
             Bukkit.getPluginManager().registerEvents(instance, ItemsCoreU.getInstance());
@@ -32,19 +33,26 @@ public class CustomEntityManager extends TickingTask implements Listener {
         return instance;
     }
 
-    public void add(@NotNull Entity entity, @NotNull CustomEntity customEntity){
-        if (isLoaded(entity)) return;
-        loadedEntities.add(new CustomEntityHolder(entity, customEntity));
+    private CustomEntityManager(){}
+
+    public @NotNull List<Holder> getAllLoaded() {
+        return loaded;
     }
 
-    public void remove(@NotNull Entity entity){
-        CustomEntityHolder holder = getHolder(entity);
-        if (holder == null) return;
-        loadedEntities.remove(holder);
+    public void load(@NotNull Entity entity, @NotNull CustomEntity customEntity){
+        if (isLoaded(entity)) return;
+        loaded.add(new Holder(entity, customEntity));
     }
-    protected @Nullable CustomEntityHolder getHolder(Entity entity){
+
+    public void unload(@NotNull Entity entity){
+        Holder holder = getHolder(entity);
+        if (holder == null) return;
+        loaded.remove(holder);
+    }
+
+    protected @Nullable Holder getHolder(@NotNull Entity entity){
         UUID uniqueId = entity.getUniqueId();
-        for (CustomEntityHolder loadedEntity : loadedEntities) {
+        for (Holder loadedEntity : loaded) {
             if (loadedEntity.realEntity.getUniqueId().equals(uniqueId)){
                 return loadedEntity;
             }
@@ -52,38 +60,32 @@ public class CustomEntityManager extends TickingTask implements Listener {
         return null;
     }
 
-    public @Nullable CustomEntity get(Entity entity){
-        UUID uniqueId = entity.getUniqueId();
-        for (CustomEntityHolder loadedEntity : loadedEntities) {
-            if (loadedEntity.realEntity.getUniqueId().equals(uniqueId)){
-                return loadedEntity.customEntity;
-            }
-        }
-        return null;
+    public @Nullable CustomEntity getCustom(@NotNull Entity entity){
+        Holder holder = getHolder(entity);
+        return holder == null ? null : holder.customEntity;
     }
+
     public boolean isLoaded(@NotNull Entity entity){
-        return get(entity) != null;
+        return getCustom(entity) != null;
     }
 
     @Override
     public int getDelay() {return 1;}
     @Override
     public void run() {
-        for (CustomEntityHolder loadedEntity : loadedEntities) {
+        for (Holder loadedEntity : loaded) {
             if (loadedEntity.realEntity.isValid() && loadedEntity.realEntity.getChunk().isEntitiesLoaded()){
                 loadedEntity.customEntity.tick();
             } else {
                 toRemove.add(loadedEntity);
             }
         }
-        for (CustomEntityHolder holder : toRemove) {
-            holder.customEntity.unload();
-        }
-        loadedEntities.removeAll(toRemove);
+        toRemove.forEach(holder -> holder.customEntity.unload());
+        loaded.removeAll(toRemove);
         toRemove.clear();
     }
 
-    public void loadEntities(@NotNull List<Entity> entities){
+    private void loadEntities(@NotNull List<Entity> entities){
         for (Entity entity : entities) {
             CustomEntityType<?> entityType = CustomEntity.getType(entity);
             if (entityType != null) entityType.load(entity);
@@ -91,9 +93,9 @@ public class CustomEntityManager extends TickingTask implements Listener {
     }
 
     @EventHandler
-    public void onEntitiesUnload(@NotNull EntitiesUnloadEvent event){
+    public void onEntitiesUnload(EntitiesUnloadEvent event){
         for (Entity entity : event.getEntities()) {
-            CustomEntityHolder holder = getHolder(entity);
+            Holder holder = getHolder(entity);
             if (holder != null) toRemove.add(holder);
         }
     }
@@ -110,5 +112,13 @@ public class CustomEntityManager extends TickingTask implements Listener {
                 loadEntities(Arrays.asList(loadedChunk.getEntities()));
             }
         }
+    }
+
+    public record Holder(@NotNull Entity realEntity, @NotNull CustomEntity customEntity){
+        @Override
+        public @NotNull Entity realEntity() {return realEntity;}
+
+        @Override
+        public @NotNull CustomEntity customEntity() {return customEntity;}
     }
 }

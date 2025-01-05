@@ -15,18 +15,12 @@ import java.util.List;
 public class CustomEntityCommand implements CommandExecutor, TabExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        if (!(commandSender instanceof Player player)) {
-            return false;
-        }
-        if (args.length != 1) {
-            return false;
-        }
-        String id = args[0];
+        if (!(commandSender instanceof Player player)) return false;
+        if (args.length != 1) return false;
 
-        if (!CustomEntity.idExists(id)) {
-            return false;
-        }
-        CustomEntityType<?> entityType = CustomEntity.getType(id);
+        CustomEntityType<?> entityType = CustomEntityType.get(args[0]);
+        if (entityType == null) return false;
+
         entityType.spawn(player.getLocation());
         return true;
     }

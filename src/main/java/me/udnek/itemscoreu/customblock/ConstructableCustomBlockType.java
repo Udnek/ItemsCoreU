@@ -20,7 +20,7 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.OverridingMethodsMustInvokeSuper;
 
-public abstract class ConstructableCustomBlock extends OptimizedComponentHolder<CustomBlock> implements CustomBlock{
+public abstract class ConstructableCustomBlockType extends OptimizedComponentHolder<CustomBlockType> implements CustomBlockType {
     private String id;
     protected EntitySnapshot visualRepresentation;
 
@@ -32,7 +32,7 @@ public abstract class ConstructableCustomBlock extends OptimizedComponentHolder<
 
     @Override
     public void afterInitialization() {
-        CustomBlock.super.afterInitialization();
+        CustomBlockType.super.afterInitialization();
         initializeComponents();
     }
 
@@ -45,44 +45,33 @@ public abstract class ConstructableCustomBlock extends OptimizedComponentHolder<
     public @NotNull String getId() {return id;}
 
     @Override
-    public void place(Location location){
+    @OverridingMethodsMustInvokeSuper
+    public void place(@NotNull Location location){
         CreatureSpawner blockState = (CreatureSpawner) Material.SPAWNER.createBlockData().createBlockState().copy(location);
         blockState.getLocation(location);
         blockState.setRequiredPlayerRange(0);
         blockState.setSpawnedEntity(getVisualRepresentation());
         blockState.getPersistentDataContainer().set(PERSISTENT_DATA_CONTAINER_NAMESPACE, PersistentDataType.STRING, getId());
         blockState.update(true, false);
-
     }
 
     @Override
-    public void onLoad(BlockState blockState) {}
-    @Override
-    public void onUnload(BlockState blockState) {}
-    @Override
-    public void destroy(Location location) {
+    public void destroy(@NotNull Location location) {
         location.getWorld().getBlockAt(location).setType(Material.AIR);
         onDestroy(location.getBlock());
     }
     @Override
-    public void onDestroy(BlockDestroyEvent event){
+    public void onDestroy(@NotNull BlockDestroyEvent event){
         event.setExpToDrop(0);
         onDestroy(event.getBlock());
     }
     @Override
-    public void onDestroy(BlockBreakEvent event){
+    public void onDestroy(@NotNull BlockBreakEvent event){
         event.setExpToDrop(0);
         onDestroy(event.getBlock());
     }
-    public void onDestroy(Block block){
+    public void onDestroy(@NotNull Block block){
         Location centerLocation = block.getLocation().toCenterLocation();
-/*        centerLocation.getWorld().spawnParticle(
-                Particle.ITEM,
-                centerLocation,
-                10,
-                0.2, 0.2, 0.2,
-                0,
-                getVisualItem());*/
         // TODO: 7/22/2024 FIX PARTICLES
         ParticleBuilder builder = new ParticleBuilder(Particle.ITEM);
         builder.location(centerLocation);
@@ -96,12 +85,13 @@ public abstract class ConstructableCustomBlock extends OptimizedComponentHolder<
     ///////////////////////////////////////////////////////////////////////////
     // PROPERTIES
     ///////////////////////////////////////////////////////////////////////////
-    public abstract ItemStack getVisualItem();
+
+    public abstract @NotNull ItemStack getVisualItem();
 
     ///////////////////////////////////////////////////////////////////////////
     // CREATING
     ///////////////////////////////////////////////////////////////////////////
-    public EntitySnapshot getVisualRepresentation(){
+    public @NotNull EntitySnapshot getVisualRepresentation(){
         if (visualRepresentation == null){
             Location location = new Location(Bukkit.getWorld("world"), 0, 0, 0);
             ArmorStand armorStand = (ArmorStand) location.getWorld().spawnEntity(location, EntityType.ARMOR_STAND);
