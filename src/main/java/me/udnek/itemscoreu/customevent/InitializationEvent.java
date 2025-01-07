@@ -1,6 +1,6 @@
 package me.udnek.itemscoreu.customevent;
 
-import me.udnek.itemscoreu.util.InitializationProcess;
+import me.udnek.itemscoreu.customregistry.InitializationProcess;
 import org.jetbrains.annotations.NotNull;
 
 public class InitializationEvent extends CustomEvent{

@@ -1,7 +1,7 @@
 package me.udnek.itemscoreu.customcomponent;
 
 import me.udnek.itemscoreu.ItemsCoreU;
-import me.udnek.itemscoreu.customblock.CustomBlockType;
+import me.udnek.itemscoreu.customblock.type.CustomBlockType;
 import me.udnek.itemscoreu.customcomponent.instance.*;
 import me.udnek.itemscoreu.customitem.CustomItem;
 import me.udnek.itemscoreu.customregistry.CustomRegistries;

@@ -1,10 +1,8 @@
 package me.udnek.itemscoreu.customitem;
 
-import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.Repairable;
 import io.papermc.paper.registry.RegistryKey;
 import io.papermc.paper.registry.set.RegistrySet;
-import me.udnek.itemscoreu.util.ItemUtils;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ItemType;

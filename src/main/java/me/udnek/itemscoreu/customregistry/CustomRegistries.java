@@ -3,7 +3,7 @@ package me.udnek.itemscoreu.customregistry;
 import com.google.common.base.Preconditions;
 import me.udnek.itemscoreu.ItemsCoreU;
 import me.udnek.itemscoreu.customattribute.CustomAttribute;
-import me.udnek.itemscoreu.customblock.CustomBlockType;
+import me.udnek.itemscoreu.customblock.type.CustomBlockType;
 import me.udnek.itemscoreu.customcomponent.CustomComponentType;
 import me.udnek.itemscoreu.customeffect.CustomEffect;
 import me.udnek.itemscoreu.customenchantment.CustomEnchantment;
@@ -11,43 +11,49 @@ import me.udnek.itemscoreu.customentity.CustomEntityType;
 import me.udnek.itemscoreu.customequipmentslot.CustomEquipmentSlot;
 import me.udnek.itemscoreu.customitem.CustomItem;
 import me.udnek.itemscoreu.customloot.LootTableRegistry;
+import net.minecraft.server.commands.PlaySoundCommand;
 import org.bukkit.NamespacedKey;
+import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Collection;
 
 public class CustomRegistries {
 
-    private static final HashMap<NamespacedKey, CustomRegistry<?>> registries = new HashMap<>();
 
-    public static final CustomRegistry<CustomItem> ITEM = addRegistry("item", new MappedCustomRegistry<>("Item"));
-    public static final CustomRegistry<CustomBlockType> BLOCK_TYPE = addRegistry("block_type", new MappedCustomRegistry<>("Block"));
-    public static final CustomRegistry<CustomAttribute> ATTRIBUTE = addRegistry("attribute", new MappedCustomRegistry<>("Attribute"));
-    public static final CustomRegistry<CustomEquipmentSlot> EQUIPMENT_SLOT = addRegistry("equipment_slot", new MappedCustomRegistry<>("EquipmentSlot"));
-    public static final CustomRegistry<CustomComponentType<?, ?>> COMPONENT_TYPE = addRegistry("component_type", new MappedCustomRegistry<>("ComponentType"));
-    public static final CustomRegistry<CustomEntityType<?>> ENTITY_TYPE = addRegistry("entity_type", new MappedCustomRegistry<>("EntityType"));
-    public static final LootTableRegistry LOOT_TABLE = (LootTableRegistry) addRegistry("loot_table", new LootTableRegistry());
-    public static final CustomRegistry<CustomEffect> EFFECT = addRegistry("effect", new MappedCustomRegistry<>("Effect"));
-    public static final CustomRegistry<CustomEnchantment> ENCHANTMENT = addRegistry("enchantment", new MappedCustomRegistry<>("Enchantment"));
+    public static final CustomRegistry<CustomRegistry<?>> REGISTRY;
+    public static final CustomRegistry<CustomItem> ITEM;
+    public static final CustomRegistry<CustomBlockType> BLOCK_TYPE;
+    public static final CustomRegistry<CustomAttribute> ATTRIBUTE;
+    public static final CustomRegistry<CustomEquipmentSlot> EQUIPMENT_SLOT;
+    public static final CustomRegistry<CustomComponentType<?, ?>> COMPONENT_TYPE;
+    public static final CustomRegistry<CustomEntityType<?>> ENTITY_TYPE;
+    public static final LootTableRegistry LOOT_TABLE;
+    public static final CustomRegistry<CustomEffect> EFFECT;
+    public static final CustomRegistry<CustomEnchantment> ENCHANTMENT;
 
+    static {
+        REGISTRY = new MappedCustomRegistry<>("Registry");
+        addRegistry(REGISTRY);
 
-    public static @NotNull <T extends Registrable> CustomRegistry<T> addRegistry(@NotNull NamespacedKey key, @NotNull CustomRegistry<T> registry){
-        Preconditions.checkArgument(!registries.containsKey(key), "Registry already exists: " + key.asString());
-        registries.put(key, registry);
+        COMPONENT_TYPE = addRegistry(new MappedCustomRegistry<>("component_type"));
+        ENCHANTMENT = addRegistry(new MappedCustomRegistry<>("enchantment"));
+        ITEM = addRegistry(new MappedCustomRegistry<>("item"));
+        BLOCK_TYPE = addRegistry(new MappedCustomRegistry<>("block_type"));
+        ATTRIBUTE = addRegistry(new MappedCustomRegistry<>("attribute"));
+        EQUIPMENT_SLOT = addRegistry(new MappedCustomRegistry<>("equipment_slot"));
+        ENTITY_TYPE = addRegistry(new MappedCustomRegistry<>("entity_typ"));
+        LOOT_TABLE = (LootTableRegistry) addRegistry(new LootTableRegistry("loot_table"));
+        EFFECT = addRegistry(new MappedCustomRegistry<>("effect"));
+    }
+
+    public static @NotNull <T extends Registrable> CustomRegistry<T> addRegistry(@NotNull Plugin plugin, @NotNull CustomRegistry<T> registry){
+        REGISTRY.register(plugin, registry);
         return registry;
     }
 
-    public static @Nullable CustomRegistry<?> getRegistry(@NotNull NamespacedKey key){
-        return registries.get(key);
-    }
-
-    public static @NotNull <T extends Registrable> CustomRegistry<T> addRegistry(@NotNull String name, @NotNull CustomRegistry<T> registry){
-        return addRegistry(new NamespacedKey(ItemsCoreU.getInstance(), name), registry);
-    }
-
-    public static @NotNull Map<@NotNull NamespacedKey, @NotNull CustomRegistry<?>> getRegistries() {
-        return new HashMap<>(registries);
+    private static @NotNull <T extends Registrable> CustomRegistry<T> addRegistry(@NotNull CustomRegistry<T> registry){
+        return addRegistry(ItemsCoreU.getInstance(), registry);
     }
 }

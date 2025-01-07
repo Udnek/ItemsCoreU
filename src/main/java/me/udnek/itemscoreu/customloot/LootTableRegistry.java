@@ -18,8 +18,8 @@ public class LootTableRegistry extends MappedCustomRegistry<CustomLootTable> {
 
     final List<String> vanillaReplaced = new ArrayList<>();
 
-    public LootTableRegistry(){
-        super("LootTable");
+    public LootTableRegistry(@NotNull String rawId) {
+        super(rawId);
     }
 
     @Override

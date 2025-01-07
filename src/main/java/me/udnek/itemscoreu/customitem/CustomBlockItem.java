@@ -1,6 +1,6 @@
 package me.udnek.itemscoreu.customitem;
 
-import me.udnek.itemscoreu.customblock.CustomBlockType;
+import me.udnek.itemscoreu.customblock.type.CustomBlockType;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.jetbrains.annotations.NotNull;
 

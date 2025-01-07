@@ -1,10 +1,7 @@
-package me.udnek.itemscoreu.util;
+package me.udnek.itemscoreu.customitem;
 
 import com.google.common.base.Preconditions;
-import com.mojang.datafixers.types.Func;
 import me.udnek.itemscoreu.ItemsCoreU;
-import me.udnek.itemscoreu.customitem.CustomItem;
-import me.udnek.itemscoreu.customitem.VanillaBasedCustomItem;
 import me.udnek.itemscoreu.customloot.LootTableUtils;
 import me.udnek.itemscoreu.customloot.table.CustomLootTable;
 import me.udnek.itemscoreu.customrecipe.CustomRecipe;
@@ -13,6 +10,8 @@ import me.udnek.itemscoreu.customregistry.CustomRegistries;
 import me.udnek.itemscoreu.nms.Nms;
 import me.udnek.itemscoreu.nms.loot.entry.NmsCustomLootEntryBuilder;
 import me.udnek.itemscoreu.nms.loot.util.ItemStackCreator;
+import me.udnek.itemscoreu.util.LogUtils;
+import me.udnek.itemscoreu.util.SelfRegisteringListener;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.apache.commons.lang3.tuple.Pair;
@@ -32,7 +31,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-public class VanillaItemManager extends SelfRegisteringListener{
+public class VanillaItemManager extends SelfRegisteringListener {
 
     private static final EquipmentSlot[] ENTITY_SLOTS = new EquipmentSlot[]{EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET, EquipmentSlot.HAND, EquipmentSlot.OFF_HAND};
     private final Set<Material> disabled = new HashSet<>();
@@ -152,7 +151,7 @@ public class VanillaItemManager extends SelfRegisteringListener{
     }
     public static @NotNull ItemStack replace(@NotNull ItemStack itemStack){
         if (!isReplaced(itemStack)) return itemStack;
-        return getInstance().replacedByMaterial.get(itemStack.getType()).getFrom(itemStack);
+        return getInstance().replacedByMaterial.get(itemStack.getType()).update(itemStack);
     }
     public static @Nullable VanillaBasedCustomItem getReplaced(@NotNull ItemStack itemStack){
         if (!isReplaced(itemStack)) return null;
@@ -300,7 +299,7 @@ public class VanillaItemManager extends SelfRegisteringListener{
         return Objects.requireNonNull(copyRecipeWithReplacedItem(recipe, new NotNullToNullFunction<ItemStack>() {
             @Override
             public @NotNull ItemStack apply(@NotNull ItemStack itemStack) {
-                return VanillaItemManager.isReplaced(itemStack) && itemStack.getType() == oldMaterial ? newItem.getFrom(itemStack) : itemStack;
+                return VanillaItemManager.isReplaced(itemStack) && itemStack.getType() == oldMaterial ? newItem.update(itemStack) : itemStack;
             }
         }, new NotNullToNullFunction<RecipeChoice>() {
             @Override

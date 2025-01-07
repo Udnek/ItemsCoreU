@@ -30,7 +30,6 @@ public class VanillaBasedCustomItem extends OptimizedComponentHolder<CustomItem>
     private String id;
 
     public VanillaBasedCustomItem(@NotNull Material material){
-        Preconditions.checkArgument(material != null, "Material can not be null!");
         this.material = material;
     }
 
@@ -50,19 +49,6 @@ public class VanillaBasedCustomItem extends OptimizedComponentHolder<CustomItem>
             if (repairData != null) itemStack.setData(DataComponentTypes.REPAIRABLE, repairData.getSuitableVanillaRepairable());
         }
         return itemStack.clone();
-    }
-
-    public @NotNull ItemStack getFrom(@NotNull ItemStack original){
-        // TODO: 8/19/2024 MAKE ITEM MODIFICATORS
-        Preconditions.checkArgument(original.getType() == material, "Can not create from different material!");
-        ItemStack newItem = getItem();
-        newItem.setAmount(original.getAmount());
-        newItem.editMeta(itemMeta -> {
-            for (Map.Entry<Enchantment, Integer> entry : original.getEnchantments().entrySet()) {
-                itemMeta.addEnchant(entry.getKey(), entry.getValue(), true);
-            }
-        });
-        return newItem;
     }
 
     @Override

@@ -5,7 +5,7 @@ import me.udnek.itemscoreu.ItemsCoreU;
 import me.udnek.itemscoreu.customloot.table.CustomLootTable;
 import me.udnek.itemscoreu.customregistry.CustomRegistries;
 import me.udnek.itemscoreu.nms.Nms;
-import me.udnek.itemscoreu.util.ItemUtils;
+import me.udnek.itemscoreu.customitem.ItemUtils;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Mob;
 import org.bukkit.event.EventHandler;

@@ -2,16 +2,9 @@ package me.udnek.itemscoreu.customitem;
 
 import com.google.common.base.Preconditions;
 import io.papermc.paper.datacomponent.DataComponentTypes;
-import io.papermc.paper.datacomponent.item.Repairable;
-import io.papermc.paper.registry.RegistryKey;
-import io.papermc.paper.registry.TypedKey;
-import me.udnek.itemscoreu.customcomponent.CustomComponentType;
-import me.udnek.itemscoreu.util.ItemUtils;
 import me.udnek.itemscoreu.util.SelfRegisteringListener;
 import me.udnek.itemscoreu.util.Utils;
-import me.udnek.itemscoreu.util.VanillaItemManager;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_21_R2.inventory.CraftComplexRecipe;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.inventory.FurnaceSmeltEvent;
 import org.bukkit.event.inventory.PrepareAnvilEvent;

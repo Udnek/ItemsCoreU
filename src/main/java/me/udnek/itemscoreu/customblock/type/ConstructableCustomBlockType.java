@@ -1,4 +1,4 @@
-package me.udnek.itemscoreu.customblock;
+package me.udnek.itemscoreu.customblock.type;
 
 import com.destroystokyo.paper.ParticleBuilder;
 import com.destroystokyo.paper.event.block.BlockDestroyEvent;
@@ -6,7 +6,6 @@ import com.google.common.base.Preconditions;
 import me.udnek.itemscoreu.customcomponent.OptimizedComponentHolder;
 import org.bukkit.*;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockState;
 import org.bukkit.block.CreatureSpawner;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.EntitySnapshot;
@@ -29,6 +28,7 @@ public abstract class ConstructableCustomBlockType extends OptimizedComponentHol
         Preconditions.checkArgument(id == null, "Registrable already initialized!");
         id = new NamespacedKey(plugin, getRawId()).asString();
     }
+
 
     @Override
     public void afterInitialization() {
@@ -91,6 +91,7 @@ public abstract class ConstructableCustomBlockType extends OptimizedComponentHol
     ///////////////////////////////////////////////////////////////////////////
     // CREATING
     ///////////////////////////////////////////////////////////////////////////
+
     public @NotNull EntitySnapshot getVisualRepresentation(){
         if (visualRepresentation == null){
             Location location = new Location(Bukkit.getWorld("world"), 0, 0, 0);

@@ -4,7 +4,6 @@ import me.udnek.itemscoreu.ItemsCoreU;
 import me.udnek.itemscoreu.customcomponent.ComponentHolder;
 import me.udnek.itemscoreu.customregistry.CustomRegistries;
 import me.udnek.itemscoreu.customregistry.Registrable;
-import me.udnek.itemscoreu.util.VanillaItemManager;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Tag;
@@ -71,7 +70,7 @@ public interface CustomItem extends Registrable, ComponentHolder<CustomItem> {
     void getRecipes(@NotNull Consumer<@NotNull Recipe> consumer);
     void registerRecipe(@NotNull Recipe recipe);
     boolean isTagged(@NotNull Tag<Material> tag);
-    @Nullable ItemStack update(@NotNull ItemStack itemStack);
+    @NotNull ItemStack update(@NotNull ItemStack itemStack);
     @Nullable RepairData getRepairData();
     ///////////////////////////////////////////////////////////////////////////
     // EVENTS

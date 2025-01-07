@@ -1,5 +1,6 @@
 package me.udnek.itemscoreu.customregistry;
 
+import com.google.common.base.Preconditions;
 import me.udnek.itemscoreu.util.LogUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
@@ -11,18 +12,22 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.function.Consumer;
 
-public class MappedCustomRegistry<T extends Registrable> implements CustomRegistry<T>{
+public class MappedCustomRegistry<T extends Registrable> extends AbstractRegistrable implements CustomRegistry<T>{
 
     protected HashMap<String, T> map = new HashMap<>();
-    protected String category;
+    protected String rawId;
 
-    public MappedCustomRegistry(@NotNull String category){
-        this.category = category;
+    public MappedCustomRegistry(@NotNull String rawId){
+        this.rawId = rawId;
     }
+
+    @Override
+    public @NotNull String getRawId() {return rawId;}
 
     @Override
     public @NotNull T register(@NotNull Plugin plugin, @NotNull T custom){
         custom.initialize(plugin);
+        Preconditions.checkArgument(!map.containsKey(custom.getId()), "Registry already contains key " + custom.getId());
         map.put(custom.getId(), custom);
         logRegistered(custom);
         if (custom instanceof Listener listener){
@@ -46,7 +51,7 @@ public class MappedCustomRegistry<T extends Registrable> implements CustomRegist
         return map.keySet();
     }
     protected void logRegistered(T custom){
-        LogUtils.pluginLog("("+category+") " + custom.getId());
+        LogUtils.pluginLog("("+ getId() +") " + custom.getId());
     }
 
     @Override

@@ -2,8 +2,8 @@ package me.udnek.itemscoreu.customrecipe.choice;
 
 import com.google.common.base.Preconditions;
 import me.udnek.itemscoreu.customitem.CustomItem;
-import me.udnek.itemscoreu.util.ItemUtils;
-import me.udnek.itemscoreu.util.VanillaItemManager;
+import me.udnek.itemscoreu.customitem.ItemUtils;
+import me.udnek.itemscoreu.customitem.VanillaItemManager;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.RecipeChoice;

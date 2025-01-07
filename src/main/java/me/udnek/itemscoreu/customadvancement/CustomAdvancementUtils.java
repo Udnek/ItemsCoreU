@@ -1,7 +1,7 @@
 package me.udnek.itemscoreu.customadvancement;
 
 import com.google.common.collect.ImmutableMap;
-import me.udnek.itemscoreu.util.ItemUtils;
+import me.udnek.itemscoreu.customitem.ItemUtils;
 import me.udnek.itemscoreu.util.Reflex;
 import net.kyori.adventure.key.Key;
 import net.minecraft.advancements.*;

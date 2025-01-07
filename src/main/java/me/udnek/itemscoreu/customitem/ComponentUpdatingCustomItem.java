@@ -3,7 +3,6 @@ package me.udnek.itemscoreu.customitem;
 import io.papermc.paper.datacomponent.DataComponentType;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import static io.papermc.paper.datacomponent.DataComponentTypes.*;
 
@@ -22,8 +21,7 @@ public interface ComponentUpdatingCustomItem extends CustomItem{
     }
 
     @Override
-    @Nullable
-    default ItemStack update(@NotNull ItemStack itemStack) {
+    default @NotNull ItemStack update(@NotNull ItemStack itemStack) {
         ItemStack relevantItem = getItem();
         itemStack = itemStack.withType(relevantItem.getType());
         @NotNull ItemStack finalItemStack = itemStack;

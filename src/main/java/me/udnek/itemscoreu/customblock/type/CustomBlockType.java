@@ -1,4 +1,4 @@
-package me.udnek.itemscoreu.customblock;
+package me.udnek.itemscoreu.customblock.type;
 
 import com.destroystokyo.paper.event.block.BlockDestroyEvent;
 import me.udnek.itemscoreu.ItemsCoreU;
@@ -44,7 +44,6 @@ public interface CustomBlockType extends Registrable, ComponentHolder<CustomBloc
     static @Nullable CustomBlockType get(@NotNull String id){
         return CustomRegistries.BLOCK_TYPE.get(id);
     }
-
 
     void place(@NotNull Location location);
     void destroy(@NotNull Location location);

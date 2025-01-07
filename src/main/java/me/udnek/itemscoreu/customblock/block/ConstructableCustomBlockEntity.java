@@ -1,20 +1,22 @@
-package me.udnek.itemscoreu.customblock;
+package me.udnek.itemscoreu.customblock.block;
 
+import com.google.common.base.Preconditions;
+import me.udnek.itemscoreu.serializabledata.SerializableData;
 import org.bukkit.Bukkit;
 import org.bukkit.block.TileState;
 import org.jetbrains.annotations.MustBeInvokedByOverriders;
 import org.jetbrains.annotations.NotNull;
 
-public abstract class ConstructableCustomBlockEntity implements CustomBlockEntity{
+public abstract class ConstructableCustomBlockEntity<T extends TileState> implements CustomBlockEntity {
 
-    private TileState state;
+    private T state;
 
     public int getTickDelay(){return 5;}
 
     @Override
     @MustBeInvokedByOverriders
     public void load(@NotNull TileState block) {
-        this.state = block;
+        this.state = (T) block;
     }
 
     @Override

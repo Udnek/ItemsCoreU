@@ -1,6 +1,6 @@
 package me.udnek.itemscoreu.customcomponent.instance;
 
-import me.udnek.itemscoreu.customblock.CustomBlockType;
+import me.udnek.itemscoreu.customblock.type.CustomBlockType;
 import me.udnek.itemscoreu.customcomponent.CustomComponent;
 import me.udnek.itemscoreu.customcomponent.CustomComponentType;
 import org.bukkit.event.player.PlayerInteractEvent;

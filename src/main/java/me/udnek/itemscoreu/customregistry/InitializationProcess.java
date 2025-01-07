@@ -1,16 +1,15 @@
-package me.udnek.itemscoreu.util;
+package me.udnek.itemscoreu.customregistry;
 
 import me.udnek.itemscoreu.customevent.InitializationEvent;
-import me.udnek.itemscoreu.customregistry.CustomRegistries;
-import me.udnek.itemscoreu.customregistry.CustomRegistry;
-import me.udnek.itemscoreu.customregistry.Registrable;
+import me.udnek.itemscoreu.util.LogUtils;
+import me.udnek.itemscoreu.customitem.VanillaItemManager;
 
 public class InitializationProcess {
 
     public static void start(){
         new InitializationEvent(Step.BEFORE_REGISTRIES_INITIALIZATION).callEvent();
         LogUtils.pluginLog("Registries After Initialization started");
-        for (CustomRegistry<?> registry : CustomRegistries.getRegistries().values()) {
+        for (CustomRegistry<?> registry : CustomRegistries.REGISTRY.getAll()) {
             for (Registrable registrable : registry.getAll()) {
                 registrable.afterInitialization();
             }

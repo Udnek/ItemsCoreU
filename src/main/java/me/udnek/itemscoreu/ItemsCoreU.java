@@ -2,8 +2,8 @@ package me.udnek.itemscoreu;
 
 import me.udnek.itemscoreu.customattribute.ClearAttributeCommand;
 import me.udnek.itemscoreu.customattribute.CustomAttributeCommand;
-import me.udnek.itemscoreu.customblock.CustomBlockType;
 import me.udnek.itemscoreu.customblock.CustomBlockListener;
+import me.udnek.itemscoreu.customblock.type.CustomBlockType;
 import me.udnek.itemscoreu.customentity.CustomEntityCommand;
 import me.udnek.itemscoreu.customentity.CustomEntityManager;
 import me.udnek.itemscoreu.customentity.CustomLoadedEntitiesCommand;
@@ -23,22 +23,24 @@ import me.udnek.itemscoreu.nms.PacketHandler;
 import me.udnek.itemscoreu.resourcepack.ResourcePackCommand;
 import me.udnek.itemscoreu.resourcepack.ResourcePackablePlugin;
 import me.udnek.itemscoreu.serializabledata.SerializableDataManager;
-import me.udnek.itemscoreu.util.InitializationProcess;
-import me.udnek.itemscoreu.util.VanillaItemManager;
+import me.udnek.itemscoreu.customregistry.InitializationProcess;
+import me.udnek.itemscoreu.customitem.VanillaItemManager;
 import org.bukkit.Bukkit;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class ItemsCoreU extends JavaPlugin implements ResourcePackablePlugin {
-    private static JavaPlugin instance;
+    private static Plugin instance;
 
 
-
-    public static JavaPlugin getInstance(){
+    public static Plugin getInstance(){
         return instance;
     }
+
     public void onEnable() {
         instance = this;
 
+        CustomRegistry<CustomRegistry<?>> registry = CustomRegistries.REGISTRY;
         CustomRegistry<CustomItem> item = CustomRegistries.ITEM;
         CustomRegistry<CustomBlockType> block = CustomRegistries.BLOCK_TYPE;
         CustomRegistry<CustomEquipmentSlot> equipmentSlot = CustomRegistries.EQUIPMENT_SLOT;

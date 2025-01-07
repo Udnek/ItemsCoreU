@@ -1,9 +1,10 @@
 package me.udnek.itemscoreu.customblock;
 
-import com.google.common.base.Preconditions;
 import me.udnek.itemscoreu.ItemsCoreU;
+import me.udnek.itemscoreu.customblock.block.CustomBlockEntity;
+import me.udnek.itemscoreu.customblock.type.CustomBlockEntityType;
+import me.udnek.itemscoreu.customblock.type.CustomBlockType;
 import me.udnek.itemscoreu.util.TickingTask;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.World;
@@ -33,7 +34,6 @@ public class CustomBlockManager extends TickingTask implements Listener {
         }
         return instance;
     }
-
 
     private CustomBlockManager(){}
 

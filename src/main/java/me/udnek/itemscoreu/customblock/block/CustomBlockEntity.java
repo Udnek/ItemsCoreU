@@ -1,6 +1,5 @@
-package me.udnek.itemscoreu.customblock;
+package me.udnek.itemscoreu.customblock.block;
 
-import org.bukkit.block.BlockState;
 import org.bukkit.block.TileState;
 import org.jetbrains.annotations.NotNull;
 
