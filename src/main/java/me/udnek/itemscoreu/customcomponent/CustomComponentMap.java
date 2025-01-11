@@ -3,10 +3,7 @@ package me.udnek.itemscoreu.customcomponent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 public class CustomComponentMap<HolderType> implements Iterable<CustomComponent<HolderType>>{
     private @Nullable Map<CustomComponentType<HolderType, ?>, CustomComponent<HolderType>> map = null;
@@ -38,6 +35,7 @@ public class CustomComponentMap<HolderType> implements Iterable<CustomComponent<
 
     @Override
     public @NotNull Iterator<CustomComponent<HolderType>> iterator() {
+        if (map == null) return Collections.emptyIterator();
         return map.values().iterator();
     }
 }

@@ -8,15 +8,19 @@ import net.kyori.adventure.key.Keyed;
 import net.kyori.adventure.text.serializer.json.JSONComponentSerializer;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
+import net.minecraft.core.MappedRegistry;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.Packet;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.ReloadableServerRegistries;
+import net.minecraft.server.commands.TagCommand;
 import net.minecraft.server.dedicated.DedicatedServer;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -48,10 +52,12 @@ import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 public class NmsUtils {
 
@@ -79,14 +85,37 @@ public class NmsUtils {
 
     public static <T> void editRegistry(@NotNull Registry<T> registry, @NotNull Consumer<Registry<T>> consumer){
         Reflex.setFieldValue(registry, "frozen", false);
+
+        //Reflex.setFieldValue(registry, "frozenTags", new IdentityHashMap<TagKey<T>, HolderSet.Named<T>>());
+
+        Object frozenTags = Reflex.getFieldValue(registry, "frozenTags");
+        Object allTags = Reflex.getFieldValue(registry, "allTags");
+
         Class<?> tagSetClass;
         try {tagSetClass = Class.forName("net.minecraft.core.MappedRegistry$TagSet");
         } catch (ClassNotFoundException e) {throw new RuntimeException(e);}
         Method unboundMethod = Reflex.getMethod(tagSetClass, "unbound");
         Object tags = Reflex.invokeMethod(null, unboundMethod);
         Reflex.setFieldValue(registry, "allTags", tags);
+
         consumer.accept(registry);
         registry.freeze();
+
+        Reflex.setFieldValue(registry, "frozenTags", frozenTags);
+        Reflex.setFieldValue(registry, "allTags", allTags);
+        Reflex.invokeMethod(registry, Reflex.getMethod(MappedRegistry.class, "refreshTagsInHolders"));
+    }
+
+    public static <T> Holder<T> registerInIntrusiveRegistry(@NotNull Registry<T> registry, @NotNull Supplier<T> supplier, @NotNull Key key){
+        final Holder<T>[] holder = new Holder[1];
+        editRegistry(registry, new Consumer<>() {
+            @Override
+            public void accept(Registry<T> registry) {
+                Reflex.setFieldValue(registry, "unregisteredIntrusiveHolders", new IdentityHashMap<T, Holder.Reference<T>>());
+                holder[0] = Registry.registerForHolder(registry, toNmsResourceLocation(key), supplier.get());
+            }
+        });
+        return holder[0];
     }
 
     public static <T> Holder<T> registerInRegistry(@NotNull Registry<T> registry, @NotNull T object, @NotNull Key key){
@@ -111,7 +140,7 @@ public class NmsUtils {
 
     // ITEM
     @Contract("null -> null")
-    public static @Nullable net.minecraft.world.item.ItemStack toNmsItemStack(@Nullable ItemStack itemStack){
+    public static net.minecraft.world.item.ItemStack toNmsItemStack(@Nullable ItemStack itemStack){
         if (itemStack == null) return null;
         return CraftItemStack.asNMSCopy(itemStack);
     }

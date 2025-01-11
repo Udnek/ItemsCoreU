@@ -1,5 +1,7 @@
 package me.udnek.itemscoreu;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.udnek.itemscoreu.customattribute.ClearAttributeCommand;
 import me.udnek.itemscoreu.customattribute.CustomAttributeCommand;
 import me.udnek.itemscoreu.customblock.CustomBlockListener;
@@ -20,11 +22,16 @@ import me.udnek.itemscoreu.customrecipe.RecipeManager;
 import me.udnek.itemscoreu.customregistry.CustomRegistries;
 import me.udnek.itemscoreu.customregistry.CustomRegistry;
 import me.udnek.itemscoreu.customregistry.InitializationProcess;
+import me.udnek.itemscoreu.nms.Nms;
 import me.udnek.itemscoreu.nms.PacketHandler;
 import me.udnek.itemscoreu.resourcepack.ResourcePackCommand;
 import me.udnek.itemscoreu.resourcepack.ResourcePackablePlugin;
 import me.udnek.itemscoreu.serializabledata.SerializableDataManager;
+import me.udnek.itemscoreu.util.Reflex;
+import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -65,6 +72,22 @@ public final class ItemsCoreU extends JavaPlugin implements ResourcePackablePlug
         getCommand("custom_entities").setExecutor(new LoadedCustomEntitiesCommand());
         getCommand("set_blocku").setExecutor(new SetCustomBlockCommand());
         getCommand("custom_block_entities").setExecutor(new LoadedCustomBlocksCommand());
+
+        //Nms.get().registerItem();
+
+
+/*        Codec<ItemStack> codec = Codec.lazyInitialized(() -> {
+            return RecordCodecBuilder.create((instance) -> {
+                return instance.group(Item.CODEC.fieldOf("id").forGetter(ItemStack::getItemHolder), DataComponentPatch.CODEC.optionalFieldOf("components", DataComponentPatch.EMPTY).forGetter((itemstack) -> {
+                    return itemstack.getComponentsPatch();
+                })).apply(instance, (holder, datacomponentpatch) -> {
+                    return new ItemStack(holder, 5, datacomponentpatch);
+                });
+            });
+        });
+
+        Reflex.setFieldValue(ItemStack.class, "CODEC", codec);*/
+
 
         // TICKERS
         CustomEntityManager.getInstance().start(this);

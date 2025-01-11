@@ -5,10 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import sun.misc.Unsafe;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import java.lang.reflect.*;
 
 public class Reflex {
     public static @NotNull Field getField(@NotNull Class<?> source, @NotNull String name) {
@@ -22,21 +19,17 @@ public class Reflex {
         }
     }
 
-    public static @NotNull Object getFieldValue(@NotNull Object source, @NotNull String name) {
+    public static @Nullable <T> T getFieldValue(@NotNull Object source, @NotNull String name) {
         Class<?> clazz = source instanceof Class<?> ? (Class<?>) source : source.getClass();
         Field field = getField(clazz, name);
 
         field.setAccessible(true);
         try {
-            return field.get(source);
+            return (T) field.get(source);
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
         }
 
-    }
-
-    public static <T> T getFieldValue(@NotNull Object source, @NotNull String name, Class<T> tClass) {
-        return (T) getFieldValue(source, name);
     }
 
 
@@ -47,6 +40,16 @@ public class Reflex {
 
             Field field = getField(clazz, name);
             field.setAccessible(true);
+
+/*
+            if (Modifier.isFinal(field.getModifiers())) {
+                Field modifiersField = Field.class.getDeclaredField("modifiers");
+                modifiersField.setAccessible(true);
+                modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
+            }
+*/
+
+
             field.set(isStatic ? null : source, value);
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
@@ -70,7 +73,7 @@ public class Reflex {
 
             unsafe.putObject(instance, (long) offset.invoke(theInternalUnsafe, f), value);
         } catch (IllegalAccessException | NoSuchFieldException | ClassNotFoundException | NoSuchMethodException | InvocationTargetException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 
@@ -92,7 +95,7 @@ public class Reflex {
                 return method;
             }
         }
-        throw new RuntimeException(new NoSuchFieldException(name));
+        throw new RuntimeException(new NoSuchMethodException(name));
     }
 
     public static @Nullable Object invokeMethod(@Nullable Object object, @NotNull Method method, @Nullable Object ...args){

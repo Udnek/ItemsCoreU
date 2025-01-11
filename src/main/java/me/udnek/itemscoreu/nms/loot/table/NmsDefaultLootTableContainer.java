@@ -37,7 +37,7 @@ public class NmsDefaultLootTableContainer extends NmsContainer<LootTable> implem
 
     @Override
     public void addPool(@NotNull NmsLootPoolContainer container) {
-        List<LootPool> pools = new ArrayList<>(Reflex.getFieldValue(supply, NmsFields.POOLS, List.class));
+        List<LootPool> pools = new ArrayList<>(Reflex.getFieldValue(supply, NmsFields.POOLS));
         pools.add(container.get());
         Reflex.setFieldValue(supply, NmsFields.POOLS, pools);
     }
@@ -49,14 +49,14 @@ public class NmsDefaultLootTableContainer extends NmsContainer<LootTable> implem
 
     @Override
     public void removePool(int n) {
-        List<LootPool> pools = new ArrayList<>(Reflex.getFieldValue(supply, NmsFields.POOLS, List.class));
+        List<LootPool> pools = new ArrayList<>(Reflex.getFieldValue(supply, NmsFields.POOLS));
         pools.remove(n);
         Reflex.setFieldValue(supply, NmsFields.POOLS, pools);
     }
 
     @Override
     public @NotNull NmsLootFunctionsContainer getFunctions() {
-        return (NmsLootFunctionsContainer) Reflex.getFieldValue(supply, NmsFields.FUNCTIONS);
+        return Reflex.getFieldValue(supply, NmsFields.FUNCTIONS);
     }
 
 

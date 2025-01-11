@@ -72,10 +72,10 @@ public class CustomAdvancementUtils {
             CustomAdvancementContainer fake = entry.getKey();
             CustomAdvancementContainer real = entry.getValue();
 
-            DisplayInfo fakeDisplay = (DisplayInfo) Reflex.getFieldValue(fake.get().value(), "display", Optional.class).orElse(null);
+            DisplayInfo fakeDisplay = (DisplayInfo) Reflex.<Optional<?>>getFieldValue(fake.get().value(), "display").orElse(null);
             if (fakeDisplay == null) continue;
 
-            DisplayInfo realDisplay = (DisplayInfo) Reflex.getFieldValue(real.get().value(), "display", Optional.class).orElse(null);
+            DisplayInfo realDisplay = (DisplayInfo) Reflex.<Optional<?>>getFieldValue(real.get().value(), "display").orElse(null);
             if (realDisplay == null) return;
 
             fakeDisplay.setLocation(realDisplay.getX(), realDisplay.getY());
