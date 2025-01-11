@@ -1,8 +1,8 @@
 package me.udnek.itemscoreu.customregistry;
 
-import com.google.common.base.Preconditions;
 import me.udnek.itemscoreu.ItemsCoreU;
 import me.udnek.itemscoreu.customattribute.CustomAttribute;
+import me.udnek.itemscoreu.customblock.type.CustomBlockEntityType;
 import me.udnek.itemscoreu.customblock.type.CustomBlockType;
 import me.udnek.itemscoreu.customcomponent.CustomComponentType;
 import me.udnek.itemscoreu.customeffect.CustomEffect;
@@ -11,13 +11,8 @@ import me.udnek.itemscoreu.customentity.CustomEntityType;
 import me.udnek.itemscoreu.customequipmentslot.CustomEquipmentSlot;
 import me.udnek.itemscoreu.customitem.CustomItem;
 import me.udnek.itemscoreu.customloot.LootTableRegistry;
-import net.minecraft.server.commands.PlaySoundCommand;
-import org.bukkit.NamespacedKey;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.Collection;
 
 public class CustomRegistries {
 
@@ -34,7 +29,7 @@ public class CustomRegistries {
     public static final CustomRegistry<CustomEnchantment> ENCHANTMENT;
 
     static {
-        REGISTRY = new MappedCustomRegistry<>("Registry");
+        REGISTRY = new MappedCustomRegistry<>("registry");
         addRegistry(REGISTRY);
 
         COMPONENT_TYPE = addRegistry(new MappedCustomRegistry<>("component_type"));

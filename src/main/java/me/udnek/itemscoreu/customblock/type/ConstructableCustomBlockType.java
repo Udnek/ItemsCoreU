@@ -3,10 +3,12 @@ package me.udnek.itemscoreu.customblock.type;
 import com.destroystokyo.paper.ParticleBuilder;
 import com.destroystokyo.paper.event.block.BlockDestroyEvent;
 import com.google.common.base.Preconditions;
+import me.udnek.itemscoreu.customblock.CustomBlockManager;
 import me.udnek.itemscoreu.customcomponent.OptimizedComponentHolder;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.CreatureSpawner;
+import org.bukkit.block.TileState;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.EntitySnapshot;
 import org.bukkit.entity.EntityType;
@@ -51,8 +53,11 @@ public abstract class ConstructableCustomBlockType extends OptimizedComponentHol
         blockState.getLocation(location);
         blockState.setRequiredPlayerRange(0);
         blockState.setSpawnedEntity(getVisualRepresentation());
-        blockState.getPersistentDataContainer().set(PERSISTENT_DATA_CONTAINER_NAMESPACE, PersistentDataType.STRING, getId());
+        blockState.getPersistentDataContainer().set(PDC_NAMESPACE_TYPE, PersistentDataType.STRING, getId());
         blockState.update(true, false);
+        if (this instanceof CustomBlockEntityType<?> blockEntityType){
+            CustomBlockManager.getInstance().load(blockEntityType, blockState);
+        }
     }
 
     @Override
@@ -71,6 +76,10 @@ public abstract class ConstructableCustomBlockType extends OptimizedComponentHol
         onDestroy(event.getBlock());
     }
     public void onDestroy(@NotNull Block block){
+        if (this instanceof CustomBlockEntityType<?>){
+            CustomBlockManager.getInstance().unload((TileState) block.getState());
+        }
+
         Location centerLocation = block.getLocation().toCenterLocation();
         // TODO: 7/22/2024 FIX PARTICLES
         ParticleBuilder builder = new ParticleBuilder(Particle.ITEM);

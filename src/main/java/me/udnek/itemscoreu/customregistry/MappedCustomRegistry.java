@@ -24,8 +24,9 @@ public class MappedCustomRegistry<T extends Registrable> extends AbstractRegistr
     @Override
     public @NotNull String getRawId() {return rawId;}
 
+
     @Override
-    public @NotNull T register(@NotNull Plugin plugin, @NotNull T custom){
+    public <V extends T> @NotNull V register(@NotNull Plugin plugin, @NotNull V custom) {
         custom.initialize(plugin);
         Preconditions.checkArgument(!map.containsKey(custom.getId()), "Registry already contains key " + custom.getId());
         map.put(custom.getId(), custom);
@@ -36,6 +37,7 @@ public class MappedCustomRegistry<T extends Registrable> extends AbstractRegistr
         }
         return custom;
     }
+
     @Override
     public T get(@Nullable String id) {
         return map.get(id);

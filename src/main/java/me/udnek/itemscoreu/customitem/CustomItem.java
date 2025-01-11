@@ -7,7 +7,9 @@ import me.udnek.itemscoreu.customregistry.Registrable;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Tag;
+import org.bukkit.block.Crafter;
 import org.bukkit.entity.Player;
+import org.bukkit.event.block.CrafterCraftEvent;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
@@ -78,7 +80,13 @@ public interface CustomItem extends Registrable, ComponentHolder<CustomItem> {
     default void onPrepareCraft(@NotNull PrepareItemCraftEvent event, @Nullable ItemStack newResult){
         event.getInventory().setResult(getItemFromCraftingMatrix(newResult, event.getInventory().getMatrix(), event.getRecipe()));
     }
-    default @Nullable ItemStack getItemFromCraftingMatrix(@Nullable ItemStack result, @NotNull ItemStack[] matrix, @NotNull Recipe recipe){
+
+    default void onCrafterCraft(@NotNull CrafterCraftEvent event){
+        ItemStack item = getItemFromCraftingMatrix(event.getResult(), ((Crafter) event.getBlock().getState()).getInventory().getContents(), event.getRecipe());
+        event.setResult(item == null ? new ItemStack(Material.AIR) : item);
+    }
+
+    default @Nullable ItemStack getItemFromCraftingMatrix(@Nullable ItemStack result, @Nullable ItemStack[] matrix, @NotNull Recipe recipe){
         return result;
     }
 

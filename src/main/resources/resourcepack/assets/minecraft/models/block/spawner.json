@@ -2,7 +2,7 @@
 	"credit": "Made with Blockbench",
 	"textures": {
 		"0": "block/spawner",
-		"particle": "itemscoreu:empty"
+		"particle": "itemscoreu:item/empty"
 	},
 	"elements": [
 		{

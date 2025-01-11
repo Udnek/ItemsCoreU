@@ -1,5 +1,6 @@
-package me.udnek.itemscoreu.customentity;
+package me.udnek.itemscoreu.customblock;
 
+import me.udnek.itemscoreu.customblock.block.CustomBlockEntity;
 import me.udnek.itemscoreu.util.Utils;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
@@ -11,12 +12,12 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class CustomLoadedEntitiesCommand implements TabExecutor, CommandExecutor {
+public class LoadedCustomBlocksCommand implements CommandExecutor, TabExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
-        for (CustomEntityManager.Holder loadedEntity : CustomEntityManager.getInstance().getAllLoaded()) {
-            Location location = loadedEntity.realEntity().getLocation();
-            commandSender.sendMessage(loadedEntity.realEntity().getType() +" " +loadedEntity.customEntity().getType().getId() + " " +
+        for (CustomBlockEntity block : CustomBlockManager.getInstance().getAllLoaded()) {
+            Location location = block.getState().getLocation();
+            commandSender.sendMessage(block +" " +block.getType().getId() + " " +
                     Utils.roundToTwoDigits(location.x()) + " " + Utils.roundToTwoDigits(location.y()) + Utils.roundToTwoDigits(location.z()) + " " + location.getWorld().getName());
         }
         return true;

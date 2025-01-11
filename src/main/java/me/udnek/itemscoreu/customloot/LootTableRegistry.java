@@ -23,7 +23,7 @@ public class LootTableRegistry extends MappedCustomRegistry<CustomLootTable> {
     }
 
     @Override
-    public @NotNull CustomLootTable register(@NotNull Plugin plugin, @NotNull CustomLootTable lootTable) {
+    public <V extends CustomLootTable> @NotNull V register(@NotNull Plugin plugin, @NotNull V lootTable) {
         Preconditions.checkArgument(
                 !map.containsKey(lootTable.getKey().asString()),
                 "LootTable already registered: " + lootTable.getKey().asString() + "!");

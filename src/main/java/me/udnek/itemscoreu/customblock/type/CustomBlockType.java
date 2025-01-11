@@ -17,15 +17,19 @@ import org.jetbrains.annotations.Nullable;
 
 public interface CustomBlockType extends Registrable, ComponentHolder<CustomBlockType> {
 
-    NamespacedKey PERSISTENT_DATA_CONTAINER_NAMESPACE = new NamespacedKey(ItemsCoreU.getInstance(), "custom_block_type");
+    NamespacedKey PDC_NAMESPACE_TYPE = new NamespacedKey(ItemsCoreU.getInstance(), "custom_block_type");
+    NamespacedKey PDC_NAMESPACE_ENTITY_TYPE = new NamespacedKey(ItemsCoreU.getInstance(), "custom_block_type");
 
     static @Nullable String getId(@NotNull Block block){
-        return getId(block.getState());
+        BlockState state = block.getState();
+        if (state instanceof TileState tileState) return getId(tileState);
+        return null;
     }
 
-    static @Nullable String getId(@NotNull BlockState blockState){
-        if (!(blockState instanceof TileState tileState)) return null;
-        return tileState.getPersistentDataContainer().get(PERSISTENT_DATA_CONTAINER_NAMESPACE, PersistentDataType.STRING);
+    static @Nullable String getId(@NotNull TileState blockState){
+        String normal = blockState.getPersistentDataContainer().get(PDC_NAMESPACE_TYPE, PersistentDataType.STRING);
+        String entity = blockState.getPersistentDataContainer().get(PDC_NAMESPACE_ENTITY_TYPE, PersistentDataType.STRING);
+        return normal == null ? entity : normal;
     }
 
     static @Nullable String getId(@NotNull Location location){
@@ -35,11 +39,8 @@ public interface CustomBlockType extends Registrable, ComponentHolder<CustomBloc
     static @Nullable CustomBlockType get(@NotNull Block block){
         return CustomRegistries.BLOCK_TYPE.get(getId(block));
     }
-    static @Nullable CustomBlockType get(@NotNull BlockState blockState){
+    static @Nullable CustomBlockType get(@NotNull TileState blockState){
         return CustomRegistries.BLOCK_TYPE.get(getId(blockState));
-    }
-    static @Nullable CustomBlockType get(@NotNull Location location){
-        return CustomRegistries.BLOCK_TYPE.get(getId(location));
     }
     static @Nullable CustomBlockType get(@NotNull String id){
         return CustomRegistries.BLOCK_TYPE.get(id);

@@ -16,28 +16,23 @@ import java.util.List;
 public class CustomItemCommand implements CommandExecutor, TabExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        if (!(commandSender instanceof Player)){
-            return false;
-        }
-        if (args.length != 1){
-            return false;
-        }
-        String id = args[0];
+        if (!(commandSender instanceof Player player)) return false;
 
-        if (!CustomItem.idExists(id)){
-            return false;
-        }
+        if (args.length != 1) return false;
+
+        String id = args[0];
+        if (!CustomItem.idExists(id)) return false;
 
         ItemStack itemStack = CustomItem.get(id).getItem();
 
-        ((Player) commandSender).getInventory().addItem(itemStack);
+        player.getInventory().addItem(itemStack);
         return true;
     }
 
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
 
-        if (args.length > 1) return new ArrayList<>();
+        if (args.length > 1) return List.of();
 
         List<String> ids = new ArrayList<>(CustomRegistries.ITEM.getIds());
         ids.removeIf(id -> !id.contains(args[0]));

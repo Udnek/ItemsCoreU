@@ -5,7 +5,6 @@ import me.udnek.itemscoreu.util.LogUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 

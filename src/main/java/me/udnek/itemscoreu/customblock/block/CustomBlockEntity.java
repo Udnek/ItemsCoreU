@@ -1,5 +1,6 @@
 package me.udnek.itemscoreu.customblock.block;
 
+import me.udnek.itemscoreu.customblock.type.CustomBlockEntityType;
 import org.bukkit.block.TileState;
 import org.jetbrains.annotations.NotNull;
 
@@ -8,4 +9,5 @@ public interface CustomBlockEntity {
     void unload();
     void tick();
     @NotNull TileState getState();
+    @NotNull CustomBlockEntityType<?> getType();
 }

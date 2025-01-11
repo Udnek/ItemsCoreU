@@ -8,18 +8,18 @@ commands:
   helpu:
     description: "helpu"
     usage: "/helpu"
-    aliases: [ itemscoreuhelp, ?, h ]
+    aliases: [ itemscoreu_help, ?, h ]
     permission-message: "You do not have permission to use this command"
   giveu:
     description: "giveu"
     usage: "/giveu <item>"
-    aliases: [itemscoreugive]
+    aliases: [itemscoreu_give]
     permission: itemscoreu.admin
     permission-message: "You do not have permission to use this command"
   summonu:
     description: "summonu"
     usage: "/summonu <entity>"
-    aliases: [itemscoreusummon]
+    aliases: [itemscoreu_summon]
     permission: itemscoreu.admin
     permission-message: "You do not have permission to use this command"
   custom_entities:
@@ -31,18 +31,30 @@ commands:
   resourcepacku:
     description: "resourcepacku"
     usage: "/resourcepacku <directory>"
-    aliases: [ itemscoreuresourcepack ]
+    aliases: [ itemscoreu_resourcepack ]
     permission: itemscoreu.admin
     permission-message: "You do not have permission to use this command"
   attributeu:
       description: "attributeu"
       usage: "/attributeu <attribute>"
-      aliases: [ itemscoreuattributeu ]
+      aliases: [ itemscoreu_attribute ]
       permission: itemscoreu.admin
       permission-message: "You do not have permission to use this command"
   clear_attribute_modifiers:
       description: "cleat_attribute_modifiers"
       usage: "/cleat_attribute_modifiers"
+      aliases: []
+      permission: itemscoreu.admin
+      permission-message: "You do not have permission to use this command"
+  set_blocku:
+      description: "set_blocku"
+      usage: "/set_blocku <block>"
+      aliases: [itemscoreu_set_block]
+      permission: itemscoreu.admin
+      permission-message: "You do not have permission to use this command"
+  custom_block_entities:
+      description: "custom_block_entities"
+      usage: "/custom_block_entities"
       aliases: []
       permission: itemscoreu.admin
       permission-message: "You do not have permission to use this command"

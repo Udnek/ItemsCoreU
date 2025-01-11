@@ -4,7 +4,6 @@ import me.udnek.itemscoreu.ItemsCoreU;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
 public class SerializableDataManager {

@@ -37,26 +37,31 @@ public class CustomBlockManager extends TickingTask implements Listener {
 
     private CustomBlockManager(){}
 
-
-    private void load(@NotNull CustomBlockEntityType<?> type, @NotNull TileState blockState){
-        CustomBlockEntity block = type.createNewBlockClass();
-        loaded.add(block);
-        block.load(blockState);
+    @NotNull List<CustomBlockEntity> getAllLoaded() {
+        return loaded;
     }
 
-    private void unload(@NotNull TileState block){
+    public void load(@NotNull CustomBlockEntityType<?> type, @NotNull TileState blockState){
+        CustomBlockEntity newBlock = type.createNewBlockClass();
+        loaded.add(newBlock);
+        newBlock.load(blockState);
+    }
+
+    public void unload(@NotNull TileState targetState){
         for (CustomBlockEntity customBlock : loaded) {
-            if (customBlock.getState() != block) continue;
+            if (!customBlock.getState().equals(targetState)) continue;
             removeTickets.add(customBlock);
             return;
         }
-        throw new RuntimeException("Trying to unload not loaded block entity: " + block);
+        throw new RuntimeException("Trying to unload not loaded target entity: " + targetState);
     }
 
 
     @Override
     public void run() {
-        removeTickets.forEach(CustomBlockEntity::unload);
+        for (CustomBlockEntity removeTicket : removeTickets) {
+            removeTicket.unload();
+        }
         loaded.removeAll(removeTickets);
         removeTickets.clear();
         loaded.forEach(CustomBlockEntity::tick);
@@ -65,17 +70,19 @@ public class CustomBlockManager extends TickingTask implements Listener {
 
     public void loadChunk(@NotNull Chunk chunk){
         for (BlockState blockState : chunk.getTileEntities()) {
-            CustomBlockType customBlockType = CustomBlockType.get(blockState);
+            CustomBlockType customBlockType = CustomBlockType.get((TileState) blockState);
             if (customBlockType instanceof CustomBlockEntityType<?> blockEntityType) {
-                CustomBlockManager.getInstance().load(blockEntityType, (TileState) blockState);
+                load(blockEntityType, (TileState) blockState);
             }
         }
     }
+
+    // TODO FIX SERVER CALLS
     public void unloadChunk(@NotNull Chunk chunk){
         for (BlockState blockState : chunk.getTileEntities()) {
-            CustomBlockType customBlockType = CustomBlockType.get(blockState);
+            CustomBlockType customBlockType = CustomBlockType.get((TileState) blockState);
             if (customBlockType instanceof CustomBlockEntityType<?>) {
-                CustomBlockManager.getInstance().unload((TileState) blockState);
+                unload((TileState) blockState);
             }
         }
     }

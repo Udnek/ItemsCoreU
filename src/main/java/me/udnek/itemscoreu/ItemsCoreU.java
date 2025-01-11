@@ -3,28 +3,28 @@ package me.udnek.itemscoreu;
 import me.udnek.itemscoreu.customattribute.ClearAttributeCommand;
 import me.udnek.itemscoreu.customattribute.CustomAttributeCommand;
 import me.udnek.itemscoreu.customblock.CustomBlockListener;
+import me.udnek.itemscoreu.customblock.CustomBlockManager;
+import me.udnek.itemscoreu.customblock.LoadedCustomBlocksCommand;
+import me.udnek.itemscoreu.customblock.SetCustomBlockCommand;
 import me.udnek.itemscoreu.customblock.type.CustomBlockType;
-import me.udnek.itemscoreu.customentity.CustomEntityCommand;
 import me.udnek.itemscoreu.customentity.CustomEntityManager;
-import me.udnek.itemscoreu.customentity.CustomLoadedEntitiesCommand;
+import me.udnek.itemscoreu.customentity.LoadedCustomEntitiesCommand;
+import me.udnek.itemscoreu.customentity.SummonCustomEntityCommand;
 import me.udnek.itemscoreu.customequipmentslot.CustomEquipmentSlot;
 import me.udnek.itemscoreu.customhelp.CustomHelpCommand;
 import me.udnek.itemscoreu.customhud.CustomHudManager;
 import me.udnek.itemscoreu.custominventory.CustomInventoryListener;
-import me.udnek.itemscoreu.customitem.CraftListener;
-import me.udnek.itemscoreu.customitem.CustomItem;
-import me.udnek.itemscoreu.customitem.CustomItemCommand;
-import me.udnek.itemscoreu.customitem.CustomItemListener;
+import me.udnek.itemscoreu.customitem.*;
 import me.udnek.itemscoreu.customloot.LootTableUtils;
 import me.udnek.itemscoreu.customrecipe.RecipeManager;
 import me.udnek.itemscoreu.customregistry.CustomRegistries;
 import me.udnek.itemscoreu.customregistry.CustomRegistry;
+import me.udnek.itemscoreu.customregistry.InitializationProcess;
 import me.udnek.itemscoreu.nms.PacketHandler;
 import me.udnek.itemscoreu.resourcepack.ResourcePackCommand;
 import me.udnek.itemscoreu.resourcepack.ResourcePackablePlugin;
 import me.udnek.itemscoreu.serializabledata.SerializableDataManager;
-import me.udnek.itemscoreu.customregistry.InitializationProcess;
-import me.udnek.itemscoreu.customitem.VanillaItemManager;
+import net.minecraft.core.registries.Registries;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -37,6 +37,7 @@ public final class ItemsCoreU extends JavaPlugin implements ResourcePackablePlug
         return instance;
     }
 
+    @Override
     public void onEnable() {
         instance = this;
 
@@ -56,15 +57,18 @@ public final class ItemsCoreU extends JavaPlugin implements ResourcePackablePlug
 
         // COMMANDS
         getCommand("giveu").setExecutor(new CustomItemCommand());
-        getCommand("summonu").setExecutor(new CustomEntityCommand());
+        getCommand("summonu").setExecutor(new SummonCustomEntityCommand());
         getCommand("resourcepacku").setExecutor(new ResourcePackCommand());
         getCommand("helpu").setExecutor(CustomHelpCommand.getInstance());
         getCommand("attributeu").setExecutor(new CustomAttributeCommand());
         getCommand("clear_attribute_modifiers").setExecutor(new ClearAttributeCommand());
-        getCommand("custom_entities").setExecutor(new CustomLoadedEntitiesCommand());
+        getCommand("custom_entities").setExecutor(new LoadedCustomEntitiesCommand());
+        getCommand("set_blocku").setExecutor(new SetCustomBlockCommand());
+        getCommand("custom_block_entities").setExecutor(new LoadedCustomBlocksCommand());
 
         // TICKERS
         CustomEntityManager.getInstance().start(this);
+        CustomBlockManager.getInstance().start(this);
         CustomHudManager.getInstance().start(this);
 
         PacketHandler.initialize();
@@ -80,8 +84,6 @@ public final class ItemsCoreU extends JavaPlugin implements ResourcePackablePlug
 
     @Override
     public void onDisable() {
-        CustomEntityManager.getInstance().stop();
-        CustomHudManager.getInstance().stop();
         SerializableDataManager.saveConfig();
     }
 }

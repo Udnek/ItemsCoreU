@@ -35,7 +35,7 @@ public class CustomEntityManager extends TickingTask implements Listener {
 
     private CustomEntityManager(){}
 
-    public @NotNull List<Holder> getAllLoaded() {
+    @NotNull List<Holder> getAllLoaded() {
         return loaded;
     }
 

@@ -1,8 +1,8 @@
 package me.udnek.itemscoreu.customloot.table;
 
 import me.udnek.itemscoreu.customitem.CustomItem;
-import me.udnek.itemscoreu.nms.Nms;
 import me.udnek.itemscoreu.customitem.ItemUtils;
+import me.udnek.itemscoreu.nms.Nms;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.Inventory;

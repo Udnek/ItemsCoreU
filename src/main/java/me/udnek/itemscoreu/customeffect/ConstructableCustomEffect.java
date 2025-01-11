@@ -28,7 +28,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
 import java.lang.reflect.Constructor;
-import java.sql.Ref;
 
 public abstract class ConstructableCustomEffect extends AbstractRegistrable implements CustomEffect{
     protected Holder<MobEffect> nmsEffect;

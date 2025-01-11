@@ -1,6 +1,5 @@
 package me.udnek.itemscoreu.customitem;
 
-import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.*;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;

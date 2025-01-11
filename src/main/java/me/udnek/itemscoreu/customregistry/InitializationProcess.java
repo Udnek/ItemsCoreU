@@ -1,8 +1,8 @@
 package me.udnek.itemscoreu.customregistry;
 
 import me.udnek.itemscoreu.customevent.InitializationEvent;
-import me.udnek.itemscoreu.util.LogUtils;
 import me.udnek.itemscoreu.customitem.VanillaItemManager;
+import me.udnek.itemscoreu.util.LogUtils;
 
 public class InitializationProcess {
 
