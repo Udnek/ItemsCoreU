@@ -46,7 +46,7 @@ public class PacketHandler {
             }
         });
 
-        ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(
+/*        ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(
                 ItemsCoreU.getInstance(), ListenerPriority.NORMAL,
                 PacketType.Play.Server.WINDOW_ITEMS)
         {
@@ -74,18 +74,8 @@ public class PacketHandler {
             @Override
             public void onPacketSending(PacketEvent event) {
                 PacketContainer packet = event.getPacket();
-                List<ItemStack> stacks = packet.getItemListModifier().read(0);
-                List<Integer> modifyIndexes = new ArrayList<>();
-                for (int i = 0; i < stacks.size(); i++) {
-                    ItemStack itemStack = stacks.get(i);
-                    net.minecraft.world.item.ItemStack nmsStack = NmsUtils.toNmsItemStack(itemStack);
-                    ResourceLocation id = BuiltInRegistries.ITEM.getKey(nmsStack.getItem());
-                    if (!id.getNamespace().equals("minecraft")) modifyIndexes.add(i);
-                }
-                for (Integer i : modifyIndexes) {
-                    stacks.set(i, new ItemStack(Material.MACE));
-                }
+                packet.getItemArrayModifier()
             }
-        });
+        });*/
     }
 }
