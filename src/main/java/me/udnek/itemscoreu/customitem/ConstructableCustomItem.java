@@ -31,7 +31,7 @@ import java.util.function.Consumer;
 import static io.papermc.paper.datacomponent.DataComponentTypes.*;
 
 
-public abstract class ConstructableCustomItem extends OptimizedComponentHolder<CustomItem> implements CustomItemProperties, ComponentUpdatingCustomItem {
+public abstract class ConstructableCustomItem extends OptimizedComponentHolder<CustomItem> implements CustomItemProperties, UpdatingCustomItem {
     private String id;
     protected ItemStack itemStack = null;
     protected List<Recipe> recipes = null;
@@ -56,7 +56,7 @@ public abstract class ConstructableCustomItem extends OptimizedComponentHolder<C
     public void initializeComponents(){}
     @Override
     public void afterInitialization() {
-        ComponentUpdatingCustomItem.super.afterInitialization();
+        UpdatingCustomItem.super.afterInitialization();
         initializeComponents();
         repairData = initializeRepairData();
         generateRecipes(this::registerRecipe);

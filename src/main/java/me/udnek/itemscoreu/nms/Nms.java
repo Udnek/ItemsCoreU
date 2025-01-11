@@ -105,7 +105,6 @@ public class Nms {
     ///////////////////////////////////////////////////////////////////////////
 
     public void registerItem(){
-        System.out.println(BuiltInRegistries.ITEM);
         NamespacedKey key = new NamespacedKey(ItemsCoreU.getInstance(), "test");
         NmsUtils.registerInIntrusiveRegistry(BuiltInRegistries.ITEM, new Supplier<Item>() {
             @Override

@@ -73,21 +73,6 @@ public final class ItemsCoreU extends JavaPlugin implements ResourcePackablePlug
         getCommand("set_blocku").setExecutor(new SetCustomBlockCommand());
         getCommand("custom_block_entities").setExecutor(new LoadedCustomBlocksCommand());
 
-        //Nms.get().registerItem();
-
-
-/*        Codec<ItemStack> codec = Codec.lazyInitialized(() -> {
-            return RecordCodecBuilder.create((instance) -> {
-                return instance.group(Item.CODEC.fieldOf("id").forGetter(ItemStack::getItemHolder), DataComponentPatch.CODEC.optionalFieldOf("components", DataComponentPatch.EMPTY).forGetter((itemstack) -> {
-                    return itemstack.getComponentsPatch();
-                })).apply(instance, (holder, datacomponentpatch) -> {
-                    return new ItemStack(holder, 5, datacomponentpatch);
-                });
-            });
-        });
-
-        Reflex.setFieldValue(ItemStack.class, "CODEC", codec);*/
-
 
         // TICKERS
         CustomEntityManager.getInstance().start(this);

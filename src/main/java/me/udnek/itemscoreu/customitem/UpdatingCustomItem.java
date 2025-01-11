@@ -6,7 +6,9 @@ import org.jetbrains.annotations.NotNull;
 
 import static io.papermc.paper.datacomponent.DataComponentTypes.*;
 
-public interface ComponentUpdatingCustomItem extends CustomItem{
+public interface UpdatingCustomItem extends CustomItem{
+
+    default boolean isUpdateMaterial(){return true;}
 
     default void getComponentsToUpdate(@NotNull ConstructableCustomItem.ComponentConsumer consumer){
         consumer.accept(MAX_DAMAGE);
@@ -23,7 +25,7 @@ public interface ComponentUpdatingCustomItem extends CustomItem{
     @Override
     default @NotNull ItemStack update(@NotNull ItemStack itemStack) {
         ItemStack relevantItem = getItem();
-        itemStack = itemStack.withType(relevantItem.getType());
+        if (isUpdateMaterial()) itemStack = itemStack.withType(relevantItem.getType());
         @NotNull ItemStack finalItemStack = itemStack;
         getComponentsToUpdate(new ConstructableCustomItem.ComponentConsumer() {
             @Override
