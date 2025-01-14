@@ -68,6 +68,7 @@ import org.bukkit.util.StructureSearchResult;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Predicate;
@@ -104,14 +105,9 @@ public class Nms {
     // ITEMS
     ///////////////////////////////////////////////////////////////////////////
 
-    public void registerItem(){
-        NamespacedKey key = new NamespacedKey(ItemsCoreU.getInstance(), "test");
-        NmsUtils.registerInIntrusiveRegistry(BuiltInRegistries.ITEM, new Supplier<Item>() {
-            @Override
-            public Item get() {
-                return new Item(new Item.Properties().setId(ResourceKey.create(Registries.ITEM, NmsUtils.toNmsResourceLocation(key))));
-            }
-        }, key);
+    public int getMaxAmountCanFitInBundle(@NotNull ItemStack itemStack){
+        Method method = Reflex.getMethod(BundleItem.class, "getMaxAmountToAdd", net.minecraft.world.item.ItemStack.class);
+        return (int) Reflex.invokeMethod(Items.BUNDLE, method, NmsUtils.toNmsItemStack(itemStack));
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -227,8 +223,8 @@ public class Nms {
             NmsUtils.getPossibleLoot(entry, itemStack -> {
                 if (found.get()) return;
                 if (predicate.test(NmsUtils.toBukkitItemStack(itemStack))) {
-                    int weight = (int) Reflex.getFieldValue(container, "weight");
-                    int quality = (int) Reflex.getFieldValue(container, "quality");
+                    int weight = Reflex.getFieldValue(container, "weight");
+                    int quality = Reflex.getFieldValue(container, "quality");
                     result[0] = weight;
                     result[1] = quality;
                     found.set(true);
@@ -408,18 +404,6 @@ public class Nms {
     }
     public void resetSpinAttack(@NotNull Player player){
         setSpinAttack(player, 0, 0, null);
-    }
-
-    @Deprecated
-    public void setDimensions(@NotNull org.bukkit.entity.Entity entity, @NotNull EntityDimensions dimensions){
-        Entity nmsEntity = NmsUtils.toNmsEntity(entity);
-        Reflex.setFieldValue(nmsEntity, "dimensions", dimensions.toNms());
-    }
-
-    @Deprecated
-    public @NotNull EntityDimensions getDimensions(@NotNull org.bukkit.entity.Entity entity){
-        Entity nmsEntity = NmsUtils.toNmsEntity(entity);
-        return new EntityDimensions((net.minecraft.world.entity.EntityDimensions) Reflex.getFieldValue(nmsEntity, "dimensions"));
     }
 
     ///////////////////////////////////////////////////////////////////////////

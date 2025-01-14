@@ -15,7 +15,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-public interface CustomEquipmentSlot extends Translatable, Registrable, Predicate<CustomEquipmentSlot> {
+public interface CustomEquipmentSlot extends Translatable, Registrable, Predicate<CustomEquipmentSlot>{
 
     SingleSlot MAIN_HAND = register(new MainHandSlot("main_hand"));
     SingleSlot OFF_HAND = register(new ConstructableSingleSlot("offhand", 40, EquipmentSlotGroup.OFFHAND, EquipmentSlot.OFF_HAND, "item.modifiers.offhand"));

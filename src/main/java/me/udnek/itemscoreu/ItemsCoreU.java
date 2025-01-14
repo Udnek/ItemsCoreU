@@ -30,8 +30,9 @@ import me.udnek.itemscoreu.serializabledata.SerializableDataManager;
 import me.udnek.itemscoreu.util.Reflex;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.item.*;
+import net.minecraft.world.level.storage.loot.LootTable;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -72,7 +73,6 @@ public final class ItemsCoreU extends JavaPlugin implements ResourcePackablePlug
         getCommand("custom_entities").setExecutor(new LoadedCustomEntitiesCommand());
         getCommand("set_blocku").setExecutor(new SetCustomBlockCommand());
         getCommand("custom_block_entities").setExecutor(new LoadedCustomBlocksCommand());
-
 
         // TICKERS
         CustomEntityManager.getInstance().start(this);
