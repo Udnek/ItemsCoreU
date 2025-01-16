@@ -106,7 +106,7 @@ public class Nms {
     ///////////////////////////////////////////////////////////////////////////
 
     public int getMaxAmountCanFitInBundle(@NotNull ItemStack itemStack){
-        Method method = Reflex.getMethod(BundleItem.class, "getMaxAmountToAdd", net.minecraft.world.item.ItemStack.class);
+        Method method = Reflex.getMethod(BundleContents.Mutable.class, "getMaxAmountToAdd", net.minecraft.world.item.ItemStack.class);
         return (int) Reflex.invokeMethod(Items.BUNDLE, method, NmsUtils.toNmsItemStack(itemStack));
     }
 
