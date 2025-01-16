@@ -105,9 +105,12 @@ public class Nms {
     // ITEMS
     ///////////////////////////////////////////////////////////////////////////
 
-    public int getMaxAmountCanFitInBundle(@NotNull ItemStack itemStack){
+    public int getMaxAmountCanFitInBundle(@NotNull io.papermc.paper.datacomponent.item.BundleContents contents, @NotNull ItemStack itemStack){
+        List<net.minecraft.world.item.ItemStack> nmsItems = new ArrayList<>();
+        contents.contents().forEach(item -> nmsItems.add(NmsUtils.toNmsItemStack(item)));
+        BundleContents.Mutable mutable = new BundleContents.Mutable(new BundleContents(nmsItems));
         Method method = Reflex.getMethod(BundleContents.Mutable.class, "getMaxAmountToAdd", net.minecraft.world.item.ItemStack.class);
-        return (int) Reflex.invokeMethod(Items.BUNDLE, method, NmsUtils.toNmsItemStack(itemStack));
+        return (int) Reflex.invokeMethod(mutable, method, NmsUtils.toNmsItemStack(itemStack));
     }
 
     ///////////////////////////////////////////////////////////////////////////

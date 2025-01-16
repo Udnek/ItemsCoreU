@@ -41,12 +41,14 @@ public class CustomEntityManager extends TickingTask implements Listener {
 
     public void load(@NotNull Entity entity, @NotNull CustomEntity customEntity){
         if (isLoaded(entity)) return;
+        System.out.println("load");
         loaded.add(new Holder(entity, customEntity));
     }
 
     public void unload(@NotNull Entity entity){
         Holder holder = getHolder(entity);
         if (holder == null) return;
+        System.out.println("unload");
         loaded.remove(holder);
     }
 
