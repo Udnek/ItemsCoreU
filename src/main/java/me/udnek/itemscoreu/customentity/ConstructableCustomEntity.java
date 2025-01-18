@@ -1,5 +1,6 @@
 package me.udnek.itemscoreu.customentity;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -29,6 +30,14 @@ public abstract class ConstructableCustomEntity<VanillaEntity extends Entity> im
     public void load(@NotNull Entity entity) {
         this.entity = (VanillaEntity) entity;
     }
+
+    @Override
+    public final void tick() {
+        if (Bukkit.getCurrentTick() % getTickDelay() == 0) delayedTick();
+    }
+    public int getTickDelay(){return 5;}
+
+    public abstract void delayedTick();
 
     @Override
     @MustBeInvokedByOverriders

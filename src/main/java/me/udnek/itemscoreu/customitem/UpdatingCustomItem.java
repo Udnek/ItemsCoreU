@@ -20,6 +20,8 @@ public interface UpdatingCustomItem extends CustomItem{
         consumer.accept(ITEM_MODEL);
         consumer.accept(REPAIRABLE);
         consumer.accept(ITEM_NAME);
+        consumer.accept(EQUIPPABLE);
+        consumer.accept(MAX_STACK_SIZE);
     }
 
     @Override

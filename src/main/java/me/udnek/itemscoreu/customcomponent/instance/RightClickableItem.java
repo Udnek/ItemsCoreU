@@ -8,10 +8,7 @@ import org.jetbrains.annotations.NotNull;
 
 public interface RightClickableItem extends CustomComponent<CustomItem> {
 
-    RightClickableItem EMPTY = new RightClickableItem() {
-        @Override
-        public void onRightClick(@NotNull CustomItem item, @NotNull PlayerInteractEvent event) {}
-    };
+    RightClickableItem EMPTY = (item, event) -> {};
 
     void onRightClick(@NotNull CustomItem item, @NotNull PlayerInteractEvent event);
 

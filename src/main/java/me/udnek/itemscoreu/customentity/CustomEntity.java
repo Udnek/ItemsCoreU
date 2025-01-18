@@ -3,15 +3,17 @@ package me.udnek.itemscoreu.customentity;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public interface CustomEntity {
 
     static @Nullable CustomEntityType<?> getType(@NotNull Entity entity) {
-        CustomEntity customEntity = get(entity);
-        return customEntity == null ? null : customEntity.getType();
+        String id = entity.getPersistentDataContainer().get(CustomEntityType.NAMESPACED_KEY, PersistentDataType.STRING);
+        return id == null ? null : CustomEntityType.get(id);
     }
+
     static @Nullable CustomEntity get(@NotNull Entity entity){
         return CustomEntityManager.getInstance().getCustom(entity);
     }

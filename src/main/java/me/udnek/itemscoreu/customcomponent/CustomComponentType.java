@@ -2,10 +2,7 @@ package me.udnek.itemscoreu.customcomponent;
 
 import me.udnek.itemscoreu.ItemsCoreU;
 import me.udnek.itemscoreu.customblock.type.CustomBlockType;
-import me.udnek.itemscoreu.customcomponent.instance.CustomItemAttributesComponent;
-import me.udnek.itemscoreu.customcomponent.instance.RightClickableBlock;
-import me.udnek.itemscoreu.customcomponent.instance.RightClickableItem;
-import me.udnek.itemscoreu.customcomponent.instance.VanillaAttributesComponent;
+import me.udnek.itemscoreu.customcomponent.instance.*;
 import me.udnek.itemscoreu.customitem.CustomItem;
 import me.udnek.itemscoreu.customregistry.CustomRegistries;
 import me.udnek.itemscoreu.customregistry.Registrable;
@@ -25,9 +22,12 @@ public interface CustomComponentType<HolderType, Component extends CustomCompone
     CustomComponentType<CustomItem, VanillaAttributesComponent>
             VANILLA_ATTRIBUTED_ITEM = register(new ConstructableComponentType("vanilla_attributed_item", VanillaAttributesComponent.DEFAULT));
 
+    CustomComponentType<CustomItem, InventoryInteractableItem>
+            INVENTORY_INTERACTABLE_ITEM = register(new ConstructableComponentType("inventory_interactable_item", InventoryInteractableItem.EMPTY));
+
     @NotNull Component getDefault();
 
-    private static <HolderType, Component extends CustomComponent<HolderType>> CustomComponentType<HolderType, Component> register(CustomComponentType<HolderType, Component> type){
-        return (CustomComponentType<HolderType, Component>) CustomRegistries.COMPONENT_TYPE.register(ItemsCoreU.getInstance(), type);
+    private static <K, V extends CustomComponent<K>> @NotNull CustomComponentType<K, V> register(CustomComponentType<K, V> type){
+        return CustomRegistries.COMPONENT_TYPE.register(ItemsCoreU.getInstance(), type);
     }
 }

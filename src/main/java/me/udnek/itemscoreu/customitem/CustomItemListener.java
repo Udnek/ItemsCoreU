@@ -5,6 +5,7 @@ import me.udnek.itemscoreu.custominventory.CustomInventory;
 import me.udnek.itemscoreu.util.SelfRegisteringListener;
 import me.udnek.itemscoreu.util.Utils;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
@@ -31,6 +32,14 @@ public class CustomItemListener extends SelfRegisteringListener {
         customItem.getComponents().getOrDefault(CustomComponentType.RIGHT_CLICKABLE_ITEM).onRightClick(customItem, event);
     }
 
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onPlayerConsume(InventoryClickEvent event){
+        CustomItem currentItem = CustomItem.get(event.getCurrentItem());
+        CustomItem cursorItem = CustomItem.get(event.getCursor());
+        if (currentItem != null) currentItem.getComponents().getOrDefault(CustomComponentType.INVENTORY_INTERACTABLE_ITEM).onBeingClicked(currentItem, event);
+        if (cursorItem != null) cursorItem.getComponents().getOrDefault(CustomComponentType.INVENTORY_INTERACTABLE_ITEM).onClickWith(cursorItem, event);
+    }
+
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent event){
         CustomItem customItem = CustomItem.get(event.getItemInHand());
@@ -46,9 +55,7 @@ public class CustomItemListener extends SelfRegisteringListener {
         if (clickedInventory.getType() == InventoryType.PLAYER) return;
         CustomInventory customInventory = CustomInventory.get(clickedInventory);
         if (customInventory != null && !customInventory.shouldAutoUpdateItems()) return;
-        Utils.consumeIfNotNull(CustomItem.get(event.getCurrentItem()), customItem -> {
-            event.setCurrentItem(customItem.update(event.getCurrentItem()));
-        });
+        CustomItem.consumeIfCustom(event.getCurrentItem(), customItem -> event.setCurrentItem(customItem.update(event.getCurrentItem())));
     }
     @EventHandler
     public void updateItemOnJoin(PlayerJoinEvent event){
@@ -56,9 +63,7 @@ public class CustomItemListener extends SelfRegisteringListener {
         for (int i = 0; i < inventory.getSize(); i++) {
             ItemStack item = inventory.getItem(i);
             int finalI = i;
-            Utils.consumeIfNotNull(CustomItem.get(item), customItem -> {
-                inventory.setItem(finalI, customItem.update(item));
-            });
+            CustomItem.consumeIfCustom(item, customItem -> inventory.setItem(finalI, customItem.update(item)));
         }
     }
 }

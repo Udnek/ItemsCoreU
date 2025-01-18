@@ -8,10 +8,7 @@ import org.jetbrains.annotations.NotNull;
 
 public interface RightClickableBlock extends CustomComponent<CustomBlockType> {
 
-    RightClickableBlock EMPTY = new RightClickableBlock() {
-        @Override
-        public void onRightClick(@NotNull CustomBlockType block, @NotNull PlayerInteractEvent event) {}
-    };
+    RightClickableBlock EMPTY = (block, event) -> {};
 
     void onRightClick(@NotNull CustomBlockType block, @NotNull PlayerInteractEvent event);
 
