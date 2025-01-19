@@ -2,7 +2,6 @@ package me.udnek.itemscoreu.customblock;
 
 import me.udnek.itemscoreu.customblock.type.CustomBlockType;
 import me.udnek.itemscoreu.customregistry.CustomRegistries;
-import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;

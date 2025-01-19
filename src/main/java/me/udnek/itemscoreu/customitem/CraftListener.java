@@ -1,13 +1,11 @@
 package me.udnek.itemscoreu.customitem;
 
-import com.destroystokyo.paper.event.inventory.PrepareResultEvent;
 import com.google.common.base.Preconditions;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import me.udnek.itemscoreu.util.SelfRegisteringListener;
 import me.udnek.itemscoreu.util.Utils;
 import org.bukkit.Material;
 import org.bukkit.block.Crafter;
-import org.bukkit.craftbukkit.v1_21_R2.block.CraftBlockState;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.CrafterCraftEvent;
 import org.bukkit.event.inventory.FurnaceSmeltEvent;

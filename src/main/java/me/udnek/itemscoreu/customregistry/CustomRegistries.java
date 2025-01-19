@@ -2,7 +2,6 @@ package me.udnek.itemscoreu.customregistry;
 
 import me.udnek.itemscoreu.ItemsCoreU;
 import me.udnek.itemscoreu.customattribute.CustomAttribute;
-import me.udnek.itemscoreu.customblock.type.CustomBlockEntityType;
 import me.udnek.itemscoreu.customblock.type.CustomBlockType;
 import me.udnek.itemscoreu.customcomponent.CustomComponentType;
 import me.udnek.itemscoreu.customeffect.CustomEffect;

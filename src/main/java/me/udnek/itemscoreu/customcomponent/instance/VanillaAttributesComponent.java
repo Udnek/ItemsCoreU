@@ -1,11 +1,11 @@
 package me.udnek.itemscoreu.customcomponent.instance;
 
-import me.udnek.itemscoreu.customattribute.*;
+import me.udnek.itemscoreu.customattribute.CustomKeyedAttributeModifier;
+import me.udnek.itemscoreu.customattribute.VanillaAttributesContainer;
 import me.udnek.itemscoreu.customcomponent.CustomComponent;
 import me.udnek.itemscoreu.customcomponent.CustomComponentType;
 import me.udnek.itemscoreu.customitem.CustomItem;
 import org.bukkit.attribute.Attribute;
-import org.bukkit.attribute.AttributeModifier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
