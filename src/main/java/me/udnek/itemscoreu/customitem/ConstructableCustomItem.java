@@ -5,7 +5,7 @@ import com.google.errorprone.annotations.ForOverride;
 import io.papermc.paper.datacomponent.DataComponentType;
 import io.papermc.paper.datacomponent.item.*;
 import me.udnek.itemscoreu.customattribute.AttributeUtils;
-import me.udnek.itemscoreu.customcomponent.OptimizedComponentHolder;
+import me.udnek.itemscoreu.customcomponent.AbstractComponentHolder;
 import me.udnek.itemscoreu.customevent.CustomItemGeneratedEvent;
 import me.udnek.itemscoreu.customrecipe.RecipeManager;
 import me.udnek.itemscoreu.util.LoreBuilder;
@@ -31,7 +31,7 @@ import java.util.function.Consumer;
 import static io.papermc.paper.datacomponent.DataComponentTypes.*;
 
 
-public abstract class ConstructableCustomItem extends OptimizedComponentHolder<CustomItem> implements CustomItemProperties, UpdatingCustomItem {
+public abstract class ConstructableCustomItem extends AbstractComponentHolder<CustomItem> implements CustomItemProperties, UpdatingCustomItem {
     private String id;
     protected ItemStack itemStack = null;
     protected List<Recipe> recipes = null;
@@ -151,6 +151,15 @@ public abstract class ConstructableCustomItem extends OptimizedComponentHolder<C
         itemStack = new ItemStack(getMaterial());
         setPersistentData(itemStack);
 
+        int maxStackSize = CustomItemProperties.getInDataOrInStack(itemStack, MAX_STACK_SIZE, getMaxStackSize(), 1);
+        int maxDamage = CustomItemProperties.getInDataOrInStack(itemStack, MAX_DAMAGE, getMaxDamage(), 0);
+        if (maxStackSize > 1 && maxDamage > 0){
+            throw new RuntimeException("Item can not be stackable and damageable: " + getId());
+        }
+
+        setData(MAX_STACK_SIZE, getMaxStackSize());
+        setData(MAX_DAMAGE, getMaxDamage());
+
         setData(ITEM_NAME, getItemName());
         setData(LORE, getLore());
         setData(RARITY, getRarity());
@@ -163,8 +172,6 @@ public abstract class ConstructableCustomItem extends OptimizedComponentHolder<C
         setData(ENCHANTMENT_GLINT_OVERRIDE, getEnchantmentGlintOverride());
         setData(CUSTOM_MODEL_DATA, getCustomModelData());
         setData(DAMAGE_RESISTANT, getDamageResistant());
-        setData(MAX_STACK_SIZE, getMaxStackSize());
-        setData(MAX_DAMAGE, getMaxDamage());
         setData(TRIM, getTrim());
         setData(INSTRUMENT, getMusicInstrument());
         setData(ATTRIBUTE_MODIFIERS, getAttributeModifiers());

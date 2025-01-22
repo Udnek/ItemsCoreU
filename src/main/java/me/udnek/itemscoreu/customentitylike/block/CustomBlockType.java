@@ -1,24 +1,26 @@
-package me.udnek.itemscoreu.customblock.type;
+package me.udnek.itemscoreu.customentitylike.block;
 
 import com.destroystokyo.paper.event.block.BlockDestroyEvent;
+import io.papermc.paper.event.packet.PlayerChunkLoadEvent;
 import me.udnek.itemscoreu.ItemsCoreU;
 import me.udnek.itemscoreu.customcomponent.ComponentHolder;
+import me.udnek.itemscoreu.customentitylike.EntityLikeType;
 import me.udnek.itemscoreu.customregistry.CustomRegistries;
-import me.udnek.itemscoreu.customregistry.Registrable;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.TileState;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockExplodeEvent;
+import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public interface CustomBlockType extends Registrable, ComponentHolder<CustomBlockType> {
+public interface CustomBlockType extends ComponentHolder<CustomBlockType>, EntityLikeType<TileState> {
 
-    NamespacedKey PDC_NAMESPACE_TYPE = new NamespacedKey(ItemsCoreU.getInstance(), "custom_block_type");
-    NamespacedKey PDC_NAMESPACE_ENTITY_TYPE = new NamespacedKey(ItemsCoreU.getInstance(), "custom_block_type");
+    NamespacedKey PDC_KEY = new NamespacedKey(ItemsCoreU.getInstance(), "custom_block_type");
 
     static @Nullable String getId(@NotNull Block block){
         BlockState state = block.getState();
@@ -27,9 +29,7 @@ public interface CustomBlockType extends Registrable, ComponentHolder<CustomBloc
     }
 
     static @Nullable String getId(@NotNull TileState blockState){
-        String normal = blockState.getPersistentDataContainer().get(PDC_NAMESPACE_TYPE, PersistentDataType.STRING);
-        String entity = blockState.getPersistentDataContainer().get(PDC_NAMESPACE_ENTITY_TYPE, PersistentDataType.STRING);
-        return normal == null ? entity : normal;
+        return blockState.getPersistentDataContainer().get(PDC_KEY, PersistentDataType.STRING);
     }
 
     static @Nullable String getId(@NotNull Location location){
@@ -48,6 +48,10 @@ public interface CustomBlockType extends Registrable, ComponentHolder<CustomBloc
 
     void place(@NotNull Location location);
     void destroy(@NotNull Location location);
+    void onPlayerLoads(@NotNull PlayerChunkLoadEvent event, @NotNull TileState tileState);
+    void onDestroy(@NotNull EntityExplodeEvent event, @NotNull Block block);
     void onDestroy(@NotNull BlockDestroyEvent event);
     void onDestroy(@NotNull BlockBreakEvent event);
+    void onDestroy(@NotNull BlockExplodeEvent event);
+
 }

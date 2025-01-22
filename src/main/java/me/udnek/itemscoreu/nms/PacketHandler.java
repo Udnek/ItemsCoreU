@@ -17,7 +17,7 @@ import net.minecraft.world.effect.MobEffect;
 import org.bukkit.potion.PotionEffectType;
 
 public class PacketHandler {
-    
+
     public static void initialize() {
         ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(
                 ItemsCoreU.getInstance(), ListenerPriority.NORMAL,
@@ -36,81 +36,58 @@ public class PacketHandler {
                 }
             }
         });
-    }
+
+
 /*        ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(
                 ItemsCoreU.getInstance(), ListenerPriority.NORMAL,
-                PacketType.Play.Server.WINDOW_ITEMS)
-        {
+                PacketType.Play.Server.MAP_CHUNK) {
             @Override
             public void onPacketSending(PacketEvent event) {
                 PacketContainer packet = event.getPacket();
-                List<ItemStack> stacks = packet.getItemListModifier().read(0);
-                List<Integer> modifyIndexes = new ArrayList<>();
-                for (int i = 0; i < stacks.size(); i++) {
-                    ItemStack itemStack = stacks.get(i);
-                    stacks.set(i, fix(itemStack));
+                WrappedLevelChunkData.ChunkData chunkData = packet.getLevelChunkData().read(0);
+                byte[] buffer = chunkData.getBuffer();
+
+
+                System.out.println(buffer.length + " " + buffer.length/16 + " " + buffer.length/16/16);
+                System.out.println(Arrays.toString(buffer));
+
+                for (int x = 0; x < 16; x++) {
+                    for (int y = 0; y < buffer.length/(16*16); y++) {
+                        for (int z = 0; z < 16; z++) {
+                            int index = getIndex(x, y, z);
+                            byte blockId = buffer[index];
+                            if (blockId == 17) {
+                                buffer[index] = (byte) 18;
+                            }
+                        }
+                    }
                 }
-                for (Integer i : modifyIndexes) {
-                    stacks.set(i, new ItemStack(Material.MACE));
-                }
+                chunkData.setBuffer(buffer);
             }
-        });
 
-        ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(
-                ItemsCoreU.getInstance(), ListenerPriority.NORMAL,
-                PacketType.Play.Server.SET_SLOT)
-        {
-            @Override
-            public void onPacketSending(PacketEvent event) {
-                PacketContainer packet = event.getPacket();
-                ItemStack itemStack = packet.getItemModifier().read(0);
-                packet.getItemModifier().write(0, fix(itemStack));
+            public int getIndex(int x, int y, int z) {
+                return y + (z * 16) + (x * 16 * 16);
             }
-        });
+        });*/
 
-
-        ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(
-                ItemsCoreU.getInstance(), ListenerPriority.NORMAL,
-                PacketType.Play.Server.ENTITY_METADATA)
-        {
-            @Override
-            public void onPacketSending(PacketEvent event) {
-*//*                PacketContainer packet = event.getPacket();
-                System.out.println(packet.getItemModifier().size());
-                packet.getItemModifier().read(4);*//*
-            }
-        });
     }
-
-
-
-
-
-
-
-
-    public static boolean isCustomId(@NotNull ItemStack itemStack){
-        net.minecraft.world.item.ItemStack nmsStack = NmsUtils.toNmsItemStack(itemStack);
-        ResourceLocation id = BuiltInRegistries.ITEM.getKey(nmsStack.getItem());
-        return !id.getNamespace().equals("minecraft");
-    }
-
-    public static @NotNull List<ItemStack> fix(@NotNull List<ItemStack> brokens){
-        List<ItemStack> fixeds = new ArrayList<>();
-        for (ItemStack broken : brokens) {
-            fixeds.add(fix(broken));
-        }
-        return fixeds;
-    }
-    
-    public static @NotNull ItemStack fix(@NotNull ItemStack broken){
-        if (isCustomId(broken)){
-            broken = broken.withType(Material.MACE);
-        }
-        BundleContents bundleContents = broken.getData(DataComponentTypes.BUNDLE_CONTENTS);
-        if (bundleContents == null || bundleContents.contents().isEmpty()) return broken;
-        BundleContents newBundle = BundleContents.bundleContents(fix(bundleContents.contents()));
-        broken.setData(DataComponentTypes.BUNDLE_CONTENTS, newBundle);
-        return broken;
-    }*/
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

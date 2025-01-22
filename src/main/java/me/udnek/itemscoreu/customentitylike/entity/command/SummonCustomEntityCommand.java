@@ -1,5 +1,6 @@
-package me.udnek.itemscoreu.customentity;
+package me.udnek.itemscoreu.customentitylike.entity.command;
 
+import me.udnek.itemscoreu.customentitylike.entity.CustomEntityType;
 import me.udnek.itemscoreu.customregistry.CustomRegistries;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -18,7 +19,7 @@ public class SummonCustomEntityCommand implements CommandExecutor, TabExecutor {
         if (!(commandSender instanceof Player player)) return false;
         if (args.length != 1) return false;
 
-        CustomEntityType<?> entityType = CustomEntityType.get(args[0]);
+        CustomEntityType entityType = CustomEntityType.get(args[0]);
         if (entityType == null) return false;
 
         entityType.spawn(player.getLocation());

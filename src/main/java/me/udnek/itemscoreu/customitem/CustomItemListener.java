@@ -5,7 +5,6 @@ import me.udnek.itemscoreu.custominventory.CustomInventory;
 import me.udnek.itemscoreu.util.SelfRegisteringListener;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -37,14 +36,6 @@ public class CustomItemListener extends SelfRegisteringListener {
         CustomItem cursorItem = CustomItem.get(event.getCursor());
         if (currentItem != null) currentItem.getComponents().getOrDefault(CustomComponentType.INVENTORY_INTERACTABLE_ITEM).onBeingClicked(currentItem, event);
         if (cursorItem != null) cursorItem.getComponents().getOrDefault(CustomComponentType.INVENTORY_INTERACTABLE_ITEM).onClickWith(cursorItem, event);
-    }
-
-    @EventHandler
-    public void onBlockPlace(BlockPlaceEvent event){
-        CustomItem customItem = CustomItem.get(event.getItemInHand());
-        if (customItem == null) return;
-        if (!(customItem instanceof CustomBlockItem blockItem)) return;
-        blockItem.onBlockPlace(event);
     }
 
     @EventHandler

@@ -2,7 +2,7 @@ package me.udnek.itemscoreu.customitem;
 
 import com.google.common.base.Preconditions;
 import io.papermc.paper.datacomponent.DataComponentTypes;
-import me.udnek.itemscoreu.customcomponent.OptimizedComponentHolder;
+import me.udnek.itemscoreu.customcomponent.AbstractComponentHolder;
 import me.udnek.itemscoreu.customevent.CustomItemGeneratedEvent;
 import me.udnek.itemscoreu.customrecipe.RecipeManager;
 import org.bukkit.Material;
@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 @ApiStatus.NonExtendable
-public class VanillaBasedCustomItem extends OptimizedComponentHolder<CustomItem> implements UpdatingCustomItem {
+public class VanillaBasedCustomItem extends AbstractComponentHolder<CustomItem> implements UpdatingCustomItem {
 
     protected ItemStack itemStack;
     protected RepairData repairData = null;
