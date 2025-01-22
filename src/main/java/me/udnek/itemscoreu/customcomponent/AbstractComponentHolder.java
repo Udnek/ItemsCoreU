@@ -2,7 +2,7 @@ package me.udnek.itemscoreu.customcomponent;
 
 import org.jetbrains.annotations.NotNull;
 
-public abstract class OptimizedComponentHolder<HolderType> implements ComponentHolder<HolderType> {
+public abstract class AbstractComponentHolder<HolderType> implements ComponentHolder<HolderType> {
     private CustomComponentMap<HolderType> components = null;
 
     @Override

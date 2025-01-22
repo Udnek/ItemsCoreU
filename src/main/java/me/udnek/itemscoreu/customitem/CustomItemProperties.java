@@ -1,5 +1,6 @@
 package me.udnek.itemscoreu.customitem;
 
+import io.papermc.paper.datacomponent.DataComponentType;
 import io.papermc.paper.datacomponent.item.*;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
@@ -10,6 +11,7 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemRarity;
+import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -89,6 +91,11 @@ public interface CustomItemProperties {
     // 2.65 writable_book_content
     // 2.66 written_book_content
 
+    static <Value, Type extends DataComponentType.Valued<Value>> @NotNull Value getInDataOrInStack(@NotNull ItemStack itemStack, @NotNull Type type, @Nullable DataSupplier<Value> dataSupplier, @NotNull Value fallback){
+        if (dataSupplier == null) return itemStack.getDataOrDefault(type, fallback);
+        Value value = dataSupplier.get();
+        return value == null ? fallback : value;
+    }
 
     class DataSupplier<T> implements Supplier<T> {
 

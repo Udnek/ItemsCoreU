@@ -33,7 +33,7 @@ public interface UpdatingCustomItem extends CustomItem{
             @Override
             public <T> void accept(DataComponentType.@NotNull Valued<T> type) {
                 T data = relevantItem.getData(type);
-                if (data == null) finalItemStack.resetData(type);
+                if (data == null) finalItemStack.unsetData(type);
                 else finalItemStack.setData(type, data);
             }
 

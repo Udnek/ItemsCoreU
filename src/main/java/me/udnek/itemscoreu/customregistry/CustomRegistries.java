@@ -2,11 +2,11 @@ package me.udnek.itemscoreu.customregistry;
 
 import me.udnek.itemscoreu.ItemsCoreU;
 import me.udnek.itemscoreu.customattribute.CustomAttribute;
-import me.udnek.itemscoreu.customblock.type.CustomBlockType;
 import me.udnek.itemscoreu.customcomponent.CustomComponentType;
 import me.udnek.itemscoreu.customeffect.CustomEffect;
 import me.udnek.itemscoreu.customenchantment.CustomEnchantment;
-import me.udnek.itemscoreu.customentity.CustomEntityType;
+import me.udnek.itemscoreu.customentitylike.block.CustomBlockType;
+import me.udnek.itemscoreu.customentitylike.entity.CustomEntityType;
 import me.udnek.itemscoreu.customequipmentslot.CustomEquipmentSlot;
 import me.udnek.itemscoreu.customitem.CustomItem;
 import me.udnek.itemscoreu.customloot.LootTableRegistry;
@@ -22,7 +22,7 @@ public class CustomRegistries {
     public static final CustomRegistry<CustomAttribute> ATTRIBUTE;
     public static final CustomRegistry<CustomEquipmentSlot> EQUIPMENT_SLOT;
     public static final CustomRegistry<CustomComponentType<?, ?>> COMPONENT_TYPE;
-    public static final CustomRegistry<CustomEntityType<?>> ENTITY_TYPE;
+    public static final CustomRegistry<CustomEntityType> ENTITY_TYPE;
     public static final LootTableRegistry LOOT_TABLE;
     public static final CustomRegistry<CustomEffect> EFFECT;
     public static final CustomRegistry<CustomEnchantment> ENCHANTMENT;
