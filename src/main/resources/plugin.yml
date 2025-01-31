@@ -58,3 +58,9 @@ commands:
       aliases: []
       permission: itemscoreu.admin
       permission-message: "You do not have permission to use this command"
+  play_soundu:
+      description: "play_soundu"
+      usage: "/play_soundu <sound>"
+      aliases: []
+      permission: itemscoreu.admin
+      permission-message: "You do not have permission to use this command"

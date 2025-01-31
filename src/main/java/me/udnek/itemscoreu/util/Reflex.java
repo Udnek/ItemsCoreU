@@ -3,6 +3,7 @@ package me.udnek.itemscoreu.util;
 import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnknownNullability;
 import sun.misc.Unsafe;
 
 import java.lang.reflect.Constructor;
@@ -22,7 +23,7 @@ public class Reflex {
         }
     }
 
-    public static @Nullable <T> T getFieldValue(@NotNull Object source, @NotNull String name) {
+    public static @UnknownNullability <T> T getFieldValue(@NotNull Object source, @NotNull String name) {
         Class<?> clazz = source instanceof Class<?> ? (Class<?>) source : source.getClass();
         Field field = getField(clazz, name);
 
@@ -101,9 +102,9 @@ public class Reflex {
         throw new RuntimeException(new NoSuchMethodException(name));
     }
 
-    public static @Nullable Object invokeMethod(@Nullable Object object, @NotNull Method method, @Nullable Object ...args){
+    public static <T> @UnknownNullability T invokeMethod(@Nullable Object object, @NotNull Method method, @Nullable Object ...args){
         try {
-            return method.invoke(object, args);
+            return (T) method.invoke(object, args);
         } catch (IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException(e);
         }

@@ -11,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class VanillaAttributesComponent implements CustomComponent<CustomItem> {
 
-    public static final VanillaAttributesComponent DEFAULT = new VanillaAttributesComponent(){
+    public static final VanillaAttributesComponent EMPTY = new VanillaAttributesComponent(){
         @Override
         public void addAttribute(@NotNull Attribute attribute, @NotNull CustomKeyedAttributeModifier modifier) {
             throw new RuntimeException("Can not add attribute to default empty component. Set new component to item or use #safeAddAttribute if you want to modify attributes");

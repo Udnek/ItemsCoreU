@@ -6,18 +6,19 @@ import me.udnek.itemscoreu.util.Reflex;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.key.Keyed;
 import net.kyori.adventure.text.serializer.json.JSONComponentSerializer;
-import net.minecraft.core.Holder;
-import net.minecraft.core.HolderSet;
-import net.minecraft.core.MappedRegistry;
-import net.minecraft.core.Registry;
+import net.minecraft.core.*;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.ReloadableServerRegistries;
+import net.minecraft.server.dedicated.DedicatedPlayerList;
 import net.minecraft.server.dedicated.DedicatedServer;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -25,25 +26,29 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.entries.*;
 import net.minecraft.world.level.storage.loot.functions.ExplorationMapFunction;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.craftbukkit.v1_21_R2.CraftLootTable;
 import org.bukkit.craftbukkit.v1_21_R2.CraftServer;
 import org.bukkit.craftbukkit.v1_21_R2.CraftWorld;
+import org.bukkit.craftbukkit.v1_21_R2.block.CraftBlockState;
 import org.bukkit.craftbukkit.v1_21_R2.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_21_R2.entity.CraftLivingEntity;
+import org.bukkit.craftbukkit.v1_21_R2.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_21_R2.inventory.CraftItemStack;
 import org.bukkit.craftbukkit.v1_21_R2.util.CraftChatMessage;
 import org.bukkit.craftbukkit.v1_21_R2.util.CraftMagicNumbers;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -65,25 +70,26 @@ public class NmsUtils {
     }
 
     // REGISTRY
-    public static <T> Registry<T> getRegistry(@NotNull ResourceKey<Registry<T>> registry){
+    public static @NotNull <T> Registry<T> getRegistry(@NotNull ResourceKey<Registry<T>> registry){
         DedicatedServer server = ((CraftServer) Bukkit.getServer()).getServer();
         return server.registryAccess().lookup(registry).orElse(null);
     }
-    public static ResourceLocation toNmsResourceLocation(@NotNull Key key){
-        return ResourceLocation.parse(key.toString());
+    public static @NotNull ResourceLocation toNmsResourceLocation(@NotNull Key key){
+        return ResourceLocation.parse(key.asString());
+    }
+    public static @NotNull <T> ResourceKey<T> toNmsResourceKey(@NotNull ResourceKey<Registry<T>> registry, @NotNull Key key){
+        return ResourceKey.create(registry, toNmsResourceLocation(key));
     }
 
-    public static <T> Holder<T> toNms(@NotNull ResourceKey<Registry<T>> registry, @NotNull Keyed keyed){
+    public static @NotNull <T> Holder<T> toNms(@NotNull ResourceKey<Registry<T>> registry, @NotNull Keyed keyed){
         return toNms(getRegistry(registry), keyed);
     }
-    public static <T> Holder<T> toNms(@NotNull Registry<T> registry, @NotNull Keyed keyed){
+    public static @NotNull <T> Holder<T> toNms(@NotNull Registry<T> registry, @NotNull Keyed keyed){
         return registry.get(toNmsResourceLocation(keyed.key())).get();
     }
 
     public static <T> void editRegistry(@NotNull Registry<T> registry, @NotNull Consumer<Registry<T>> consumer){
         Reflex.setFieldValue(registry, "frozen", false);
-
-        //Reflex.setFieldValue(registry, "frozenTags", new IdentityHashMap<TagKey<T>, HolderSet.Named<T>>());
 
         Object frozenTags = Reflex.getFieldValue(registry, "frozenTags");
         Object allTags = Reflex.getFieldValue(registry, "allTags");
@@ -136,9 +142,7 @@ public class NmsUtils {
     }
 
     // ITEM
-    @Contract("null -> null")
-    public static net.minecraft.world.item.ItemStack toNmsItemStack(@Nullable ItemStack itemStack){
-        if (itemStack == null) return null;
+    public static @NotNull net.minecraft.world.item.ItemStack toNmsItemStack(@Nullable ItemStack itemStack){
         return CraftItemStack.asNMSCopy(itemStack);
     }
     public static Item toNmsMaterial(@NotNull Material material){
@@ -151,15 +155,37 @@ public class NmsUtils {
         return CraftItemStack.asBukkitCopy(itemStack);
     }
     // ENTITY
-    public static Entity toNmsEntity(@NotNull org.bukkit.entity.Entity entity){
+    public static @NotNull Entity toNmsEntity(@NotNull org.bukkit.entity.Entity entity){
         return ((CraftEntity) entity).getHandle();
     }
-    public static LivingEntity toNmsEntity(@NotNull org.bukkit.entity.LivingEntity entity){
+    public static @NotNull LivingEntity toNmsEntity(@NotNull org.bukkit.entity.LivingEntity entity){
         return ((CraftLivingEntity) entity).getHandle();
     }
+    public static @NotNull ServerPlayer toNmsPlayer(@NotNull Player player){
+        return ((CraftPlayer) player).getHandle();
+    }
+    public static void sendPacket(@NotNull Player player, Packet<ClientGamePacketListener> packet){
+        toNmsPlayer(player).connection.sendPacket(packet);
+    }
     // WORLD
-    public static ServerLevel toNmsWorld(@NotNull World world){
+    public static @NotNull ServerLevel toNmsWorld(@NotNull World world){
         return ((CraftWorld) world).getHandle();
+    }
+
+    public static @NotNull BlockPos toNmsBlockPos(@NotNull org.bukkit.block.Block block){
+        return new BlockPos(block.getX(), block.getY(), block.getZ());
+    }
+
+    public static @NotNull BlockState toNmsBlockState(@NotNull org.bukkit.block.BlockState blockState){
+        return ((CraftBlockState) blockState).getHandle();
+    }
+
+    public static @NotNull Location fromNmsBlockPos(@Nullable World world, @NotNull BlockPos blockPos){
+        return new Location(world, blockPos.getX(), blockPos.getY(), blockPos.getZ());
+    }
+
+    public static @NotNull DedicatedPlayerList getNmsServer(){
+        return ((CraftServer) Bukkit.getServer()).getHandle();
     }
 
     // Attribute
@@ -190,17 +216,17 @@ public class NmsUtils {
     ///////////////////////////////////////////////////////////////////////////
     // LOOT
     ///////////////////////////////////////////////////////////////////////////
-    public static LootTable toNmsLootTable(org.bukkit.loot.LootTable lootTable){
+    public static @NotNull LootTable toNmsLootTable(org.bukkit.loot.LootTable lootTable){
         return ((CraftLootTable) lootTable).getHandle();
     }
-    public static List<LootPool> getPools(LootTable lootTable){
-        return (List<LootPool>) Reflex.getFieldValue(lootTable, NmsFields.POOLS);
+    public static @NotNull List<LootPool> getPools(LootTable lootTable){
+        return Reflex.getFieldValue(lootTable, NmsFields.POOLS);
     }
     public static @NotNull LootPoolEntry getEntry(@NotNull LootPoolSingletonContainer container){
-        return ((LootPoolEntry) Reflex.getFieldValue(container, "entry"));
+        return Reflex.getFieldValue(container, "entry");
     }
     public static List<LootPoolEntryContainer> getEntries(@NotNull LootPool lootPool){
-        return (List<LootPoolEntryContainer>) Reflex.getFieldValue(lootPool, NmsFields.ENTRIES);
+        return Reflex.getFieldValue(lootPool, NmsFields.ENTRIES);
     }
     // containers
     public static @NotNull List<LootPoolSingletonContainer> getAllSingletonContainers(@NotNull LootTable lootTable){
@@ -211,7 +237,7 @@ public class NmsUtils {
     public static void getAllSingletonContainers(@NotNull LootPoolEntryContainer container, Consumer<LootPoolSingletonContainer> consumer){
         if (container instanceof NestedLootTable){
             LootTable lootTable;
-            Either<ResourceKey<LootTable>, LootTable> either = (Either<ResourceKey<LootTable>, LootTable>) Reflex.getFieldValue(container, NmsFields.CONTENTS);
+            Either<ResourceKey<LootTable>, LootTable> either = Reflex.getFieldValue(container, NmsFields.CONTENTS);
             if (either.left() != null && either.left().isPresent()){
                 lootTable = getLootTable(either.left().get());
             } else lootTable = either.right().get();
@@ -221,16 +247,16 @@ public class NmsUtils {
         else if (container instanceof LootPoolSingletonContainer singletonContainer) {
             consumer.accept(singletonContainer);
         } else {
-            List<LootPoolEntryContainer> childrenContainers = (List<LootPoolEntryContainer>) Reflex.getFieldValue(container, NmsFields.CHILDREN);
+            List<LootPoolEntryContainer> childrenContainers = Reflex.getFieldValue(container, NmsFields.CHILDREN);
             childrenContainers.forEach(container1 -> getAllSingletonContainers(container1, consumer));
         }
     }
     public static void getAllSingletonContainers(@NotNull LootPool lootPool, @NotNull Consumer<LootPoolSingletonContainer> consumer){
-        List<LootPoolEntryContainer> containers = (List<LootPoolEntryContainer>) Reflex.getFieldValue(lootPool, NmsFields.ENTRIES);
+        List<LootPoolEntryContainer> containers = Reflex.getFieldValue(lootPool, NmsFields.ENTRIES);
         containers.forEach(container -> getAllSingletonContainers(container, consumer));
     }
     public static void getAllSingletonContainers(@NotNull LootTable lootTable, @NotNull Consumer<LootPoolSingletonContainer> consumer){
-        List<LootPool> lootPools = (List<LootPool>) Reflex.getFieldValue(lootTable, NmsFields.POOLS);
+        List<LootPool> lootPools = Reflex.getFieldValue(lootTable, NmsFields.POOLS);
         lootPools.forEach(lootPool -> getAllSingletonContainers(lootPool, consumer));
     }
     // possible loot
@@ -241,7 +267,7 @@ public class NmsUtils {
         if (container instanceof LootItem){
             Item item = ((Holder<Item>) Reflex.getFieldValue(container, "item")).value();
             if (item == Items.MAP){
-                List<LootItemFunction> functions = (List<LootItemFunction>) Reflex.getFieldValue(container, "functions");
+                List<LootItemFunction> functions = Reflex.getFieldValue(container, "functions");
                 for (LootItemFunction function : functions) {
                     if (!(function instanceof ExplorationMapFunction)) continue;
                     consumer.accept(new net.minecraft.world.item.ItemStack(Items.FILLED_MAP));

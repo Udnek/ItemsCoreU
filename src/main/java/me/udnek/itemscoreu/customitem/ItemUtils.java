@@ -5,11 +5,13 @@ import io.papermc.paper.datacomponent.item.Repairable;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.*;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Consumer;
@@ -17,6 +19,13 @@ import java.util.function.Predicate;
 
 
 public class ItemUtils {
+
+    public static void giveAndDropLeftover(@NotNull Player player, ItemStack @NotNull ...itemStack){
+        HashMap<Integer, ItemStack> dropItem = player.getInventory().addItem(itemStack);
+        for (ItemStack stack : dropItem.values()) {
+            player.getWorld().dropItem(player.getLocation(), stack);
+        }
+    }
 
     public static boolean containsSame(@NotNull ItemStack itemStack, @NotNull Collection<Material> materials, @NotNull Collection<CustomItem> customs){
         CustomItem customItem = CustomItem.get(itemStack);

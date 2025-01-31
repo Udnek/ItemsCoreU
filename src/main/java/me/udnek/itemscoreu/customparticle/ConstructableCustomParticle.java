@@ -6,6 +6,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.checkerframework.checker.index.qual.Positive;
+import org.jetbrains.annotations.MustBeInvokedByOverriders;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class ConstructableCustomParticle<EntityT extends Entity> implements CustomParticle {
@@ -47,6 +48,7 @@ public abstract class ConstructableCustomParticle<EntityT extends Entity> implem
 
     abstract protected void nextFrame();
 
+    @MustBeInvokedByOverriders
     protected void spawn(){
         display = (EntityT) location.getWorld().spawnEntity(location, getType());
     }

@@ -58,6 +58,7 @@ public class VanillaBasedCustomItem extends AbstractComponentHolder<CustomItem> 
     public @NotNull NamespacedKey getNewRecipeKey() {
         AtomicInteger amount = new AtomicInteger(0);
         getRecipes(recipe -> amount.incrementAndGet());
+        if (amount.get() == 0) getKey();
         return NamespacedKey.fromString(getId() + "_" + amount.get());
     }
 
@@ -84,5 +85,10 @@ public class VanillaBasedCustomItem extends AbstractComponentHolder<CustomItem> 
     public void initialize(@NotNull Plugin plugin) {
         Preconditions.checkArgument(id == null, "Item already initialized!");
         id = new NamespacedKey(plugin, getRawId()).asString();
+    }
+
+    @Override
+    public @NotNull String translationKey() {
+        return material.translationKey();
     }
 }

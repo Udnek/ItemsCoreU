@@ -6,6 +6,8 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.block.Block;
+import org.bukkit.block.CreatureSpawner;
+import org.bukkit.block.TileState;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.EntitySnapshot;
 import org.bukkit.entity.EntityType;
@@ -15,21 +17,23 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.OverridingMethodsMustInvokeSuper;
 
+@Deprecated
 public abstract class SpawnerBasedConstructableBlockType extends AbstactCustomBlockType {
 
     protected EntitySnapshot visualRepresentation;
 
     @Override
-    public final @NotNull Material getMaterial() {return Material.SPAWNER;}
+    public final @NotNull TileState getRealState() {return (TileState) Material.SPAWNER.createBlockData().createBlockState();}
+
 
     @Override
     @OverridingMethodsMustInvokeSuper
     public void place(@NotNull Location location){
         super.place(location);
-/*        CreatureSpawner blockState = (CreatureSpawner) location.getBlock().getState();
+        CreatureSpawner blockState = (CreatureSpawner) location.getBlock().getState();
         blockState.setRequiredPlayerRange(0);
         blockState.setSpawnedEntity(getVisualRepresentation());
-        blockState.update(true, false);*/
+        blockState.update(true, false);
     }
 
     public abstract @NotNull ItemStack getVisualItem();
@@ -48,11 +52,16 @@ public abstract class SpawnerBasedConstructableBlockType extends AbstactCustomBl
     }
 
     @Override
+    public boolean doCustomBreakTimeAndAnimation() {return false;}
+
+    @Override
+    public @NotNull Material getBreakSpeedBaseBlock() {return Material.SPAWNER;}
+
+    @Override
     @OverridingMethodsMustInvokeSuper
-    public void onDestroy(@NotNull Block block) {
-        super.onDestroy(block);
+    public void onGenericDestroy(@NotNull Block block) {
+        super.onGenericDestroy(block);
         Location centerLocation = block.getLocation().toCenterLocation();
-        // TODO: 7/22/2024 FIX PARTICLES
         ParticleBuilder builder = new ParticleBuilder(Particle.ITEM);
         builder.location(centerLocation);
         builder.data(getVisualItem());

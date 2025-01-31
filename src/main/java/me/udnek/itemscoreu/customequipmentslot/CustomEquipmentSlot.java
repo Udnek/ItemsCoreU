@@ -5,6 +5,7 @@ import me.udnek.itemscoreu.customequipmentslot.instance.*;
 import me.udnek.itemscoreu.customregistry.CustomRegistries;
 import me.udnek.itemscoreu.customregistry.Registrable;
 import net.kyori.adventure.translation.Translatable;
+import org.bukkit.NamespacedKey;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.EquipmentSlotGroup;
@@ -37,6 +38,13 @@ public interface CustomEquipmentSlot extends Translatable, Registrable, Predicat
             EquipmentSlotGroup.ANY, null, "item.modifiers.any"));
 
     SingleSlot ACTIVE_HAND = register(new ActiveHandSlot("active_hand"));
+
+    GroupSlot DUMB_INVENTORY = register(new ConstructableGroupSlot(
+            "dumb_inventory",
+            Set.of(),
+            null,
+            null,
+            "slot." + new NamespacedKey(ItemsCoreU.getInstance(),"text").getNamespace() + ".dumb_inventory"));
 
     SingleSlot BODY = register(new AnimalBodySlot("body"));
 
@@ -73,6 +81,6 @@ public interface CustomEquipmentSlot extends Translatable, Registrable, Predicat
     void getAllSlots(@NotNull LivingEntity entity, @NotNull Consumer<@NotNull Integer> consumer);
 
     private static <Slot extends CustomEquipmentSlot> @NotNull Slot register(@NotNull Slot slot){
-        return (Slot) CustomRegistries.EQUIPMENT_SLOT.register(ItemsCoreU.getInstance(), slot);
+        return CustomRegistries.EQUIPMENT_SLOT.register(ItemsCoreU.getInstance(), slot);
     }
 }

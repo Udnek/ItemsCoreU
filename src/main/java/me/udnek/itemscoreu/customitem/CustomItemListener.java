@@ -5,6 +5,7 @@ import me.udnek.itemscoreu.custominventory.CustomInventory;
 import me.udnek.itemscoreu.util.SelfRegisteringListener;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -12,12 +13,11 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
-import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
 
 public class CustomItemListener extends SelfRegisteringListener {
-
-
-    public CustomItemListener(JavaPlugin plugin) {
+    public CustomItemListener(@NotNull Plugin plugin) {
         super(plugin);
     }
 
@@ -28,6 +28,13 @@ public class CustomItemListener extends SelfRegisteringListener {
         CustomItem customItem = CustomItem.get(event.getItem());
         if (customItem == null) return;
         customItem.getComponents().getOrDefault(CustomComponentType.RIGHT_CLICKABLE_ITEM).onRightClick(customItem, event);
+    }
+
+    @EventHandler
+    public void onBlockPlace(BlockPlaceEvent event){
+        CustomItem.consumeIfCustom(event.getItemInHand(), customItem -> {
+            customItem.getComponents().getOrDefault(CustomComponentType.BLOCK_PLACING_ITEM).onPlace(event);
+        });
     }
 
     @EventHandler(priority = EventPriority.MONITOR)

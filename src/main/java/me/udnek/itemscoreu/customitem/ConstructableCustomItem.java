@@ -20,6 +20,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -37,12 +38,15 @@ public abstract class ConstructableCustomItem extends AbstractComponentHolder<Cu
     protected List<Recipe> recipes = null;
     protected RepairData repairData = null;
 
+    public static final Material DEFAULT_MATERIAL = Material.GUNPOWDER;
+    public static final Material DEFAULT_MATERIAL_FOR_BLOCK_PLACEABLE = Material.BARRIER;
+
     ///////////////////////////////////////////////////////////////////////////
     // INITIAL
     ///////////////////////////////////////////////////////////////////////////
 
     @Override
-    public @NotNull Material getMaterial() {return Material.GUNPOWDER;}
+    public @NotNull Material getMaterial() {return DEFAULT_MATERIAL;}
 
     @Override
     public final @NotNull String getId(){return this.id;}
@@ -77,6 +81,12 @@ public abstract class ConstructableCustomItem extends AbstractComponentHolder<Cu
     // COMPONENTS
     ///////////////////////////////////////////////////////////////////////////
 
+
+    @Override
+    public @NotNull String translationKey() {
+        return "item."+getKey().namespace()+"."+getRawId();
+    }
+
     public @Nullable LoreBuilder getLoreBuilder(){
         List<Component> lore = new ArrayList<>();
         getLore(lore::add);
@@ -108,11 +118,14 @@ public abstract class ConstructableCustomItem extends AbstractComponentHolder<Cu
     }
     @Override
     public @Nullable DataSupplier<Key> getItemModel() {return DataSupplier.of(getKey());}
-    public @Nullable String getRawItemName(){return "item."+getKey().namespace()+"."+getRawId();}
+
+    @Deprecated
+    @ApiStatus.ScheduledForRemoval
+    public @Nullable String getRawItemName(){return translationKey();}
+
     @Override
     public @Nullable DataSupplier<Component> getItemName() {
-        if (getRawItemName() == null) return null;
-        return DataSupplier.of(Component.translatable(getRawItemName()));
+        return DataSupplier.of(Component.translatable(translationKey()));
     }
     @Override
     public @Nullable DataSupplier<UseCooldown> getUseCooldown() {

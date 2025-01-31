@@ -6,15 +6,24 @@ import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
+import com.comphenix.protocol.wrappers.BlockPosition;
 import me.udnek.itemscoreu.ItemsCoreU;
 import me.udnek.itemscoreu.customeffect.ConstructableCustomEffect;
 import me.udnek.itemscoreu.customeffect.CustomEffect;
+import me.udnek.itemscoreu.customentitylike.block.CustomBlockType;
 import me.udnek.itemscoreu.customregistry.CustomRegistries;
+import me.udnek.itemscoreu.util.Reflex;
 import net.minecraft.core.Holder;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket;
+import net.minecraft.network.protocol.game.ClientboundLevelParticlesPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffect;
+import org.bukkit.Location;
+import org.bukkit.block.BlockState;
 import org.bukkit.potion.PotionEffectType;
+import org.jetbrains.annotations.NotNull;
 
 public class PacketHandler {
 
@@ -37,51 +46,108 @@ public class PacketHandler {
             }
         });
 
+        // CHUNKS
 
-/*        ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(
+/*
+
+        ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(
                 ItemsCoreU.getInstance(), ListenerPriority.NORMAL,
                 PacketType.Play.Server.MAP_CHUNK) {
             @Override
             public void onPacketSending(PacketEvent event) {
-                PacketContainer packet = event.getPacket();
-                WrappedLevelChunkData.ChunkData chunkData = packet.getLevelChunkData().read(0);
-                byte[] buffer = chunkData.getBuffer();
 
+                ClientboundLevelChunkWithLightPacket packet = (ClientboundLevelChunkWithLightPacket) event.getPacket().getHandle();
+                int chunkX = packet.getX();
+                int chunkZ = packet.getZ();
+                int posX = packet.getX() * 16;
+                int posZ = packet.getZ() * 16;
 
-                System.out.println(buffer.length + " " + buffer.length/16 + " " + buffer.length/16/16);
-                System.out.println(Arrays.toString(buffer));
+                World world = event.getPlayer().getWorld();
 
-                for (int x = 0; x < 16; x++) {
-                    for (int y = 0; y < buffer.length/(16*16); y++) {
-                        for (int z = 0; z < 16; z++) {
-                            int index = getIndex(x, y, z);
-                            byte blockId = buffer[index];
-                            if (blockId == 17) {
-                                buffer[index] = (byte) 18;
-                            }
-                        }
-                    }
-                }
-                chunkData.setBuffer(buffer);
+                int worldMinHeight = world.getMinHeight();
+                int worldMaxHeight = world.getMinHeight();
+                int worldTrueHeight = Math.abs(worldMinHeight) + worldMaxHeight;
+                int ySectionCount = worldTrueHeight / 16;
+
+                byte[] buffer = packet.getChunkData().getReadBuffer().array();
+
+                boolean edited = false;
+
+                LevelChunkSection.
+
             }
+        });
 
-            public int getIndex(int x, int y, int z) {
-                return y + (z * 16) + (x * 16 * 16);
+*/
+
+        // BLOCKS
+
+/*        ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(
+                ItemsCoreU.getInstance(), ListenerPriority.NORMAL,
+                PacketType.Play.Server.BLOCK_CHANGED_ACK) {
+            @Override
+            public void onPacketSending(PacketEvent event) {
+                System.out.println(((ClientboundBlockChangedAckPacket) event.getPacket().getHandle()).sequence());
+                // TODO PACKET REASON???
+                //event.setCancelled(true);
             }
         });*/
 
+
+        ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(
+                ItemsCoreU.getInstance(), ListenerPriority.NORMAL,
+                PacketType.Play.Server.BLOCK_CHANGE) {
+            @Override
+            public void onPacketSending(PacketEvent event) {
+                PacketContainer packet = event.getPacket();
+                ClientboundBlockUpdatePacket handle = (ClientboundBlockUpdatePacket) packet.getHandle();
+                CustomBlockType blockType = CustomBlockType.get(NmsUtils.fromNmsBlockPos(event.getPlayer().getWorld(), handle.getPos()).getBlock());
+                if (blockType == null) return;
+                BlockState fakeState = blockType.getFakeState();
+                if (fakeState == null) return;
+                Reflex.setFieldValue(handle, "blockState", NmsUtils.toNmsBlockState(fakeState));
+            }
+        });
+
+        ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(
+                ItemsCoreU.getInstance(), ListenerPriority.NORMAL,
+                PacketType.Play.Server.BLOCK_ACTION, PacketType.Play.Server.TILE_ENTITY_DATA) {
+            @Override
+            public void onPacketSending(PacketEvent event) {
+                PacketContainer packet = event.getPacket();
+                BlockPosition position = packet.getBlockPositionModifier().read(0);
+                CustomBlockType blockType = CustomBlockType.get(position.toLocation(event.getPlayer().getWorld()).getBlock());
+                if (blockType != null && blockType.getFakeState() != null) event.setCancelled(true);
+            }
+        });
+
+        ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(
+                ItemsCoreU.getInstance(), ListenerPriority.NORMAL,
+                PacketType.Play.Server.WORLD_PARTICLES) {
+            @Override
+            public void onPacketSending(PacketEvent event) {
+                PacketContainer packet = event.getPacket();
+
+                ClientboundLevelParticlesPacket handle = (ClientboundLevelParticlesPacket) packet.getHandle();
+                if (!isFallingParticle(handle)) return;
+
+                CustomBlockType blockType = CustomBlockType.get(NmsUtils.fromNmsBlockPos(
+                        event.getPlayer().getWorld(),
+                        NmsUtils.toNmsPlayer(event.getPlayer()).getOnPos()).getBlock()
+                );
+                if (blockType == null) return;
+                blockType.onPlayerFall(event.getPlayer(), new Location(event.getPlayer().getWorld(), handle.getX(), handle.getY(), handle.getZ()), handle.getCount());
+                event.setCancelled(true);
+            }
+
+            public boolean isFallingParticle(@NotNull ClientboundLevelParticlesPacket packet){
+                if (packet.getParticle().getType() != ParticleTypes.BLOCK) return false;
+                return packet.getXDist() == 0 && packet.getYDist() == 0 && packet.getZDist() == 0 || packet.getMaxSpeed() != 0.15;
+            }
+        });
+
     }
 }
-
-
-
-
-
-
-
-
-
-
 
 
 

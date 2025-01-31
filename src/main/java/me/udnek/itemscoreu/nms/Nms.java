@@ -3,16 +3,15 @@ package me.udnek.itemscoreu.nms;
 import com.mojang.datafixers.util.Pair;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import me.udnek.itemscoreu.customenchantment.NmsEnchantmentContainer;
+import me.udnek.itemscoreu.nms.loot.LootContextBuilder;
 import me.udnek.itemscoreu.nms.loot.entry.NmsCustomLootEntryBuilder;
 import me.udnek.itemscoreu.nms.loot.table.NmsDefaultLootTableContainer;
 import me.udnek.itemscoreu.nms.loot.table.NmsLootTableContainer;
 import me.udnek.itemscoreu.nms.loot.util.NmsFields;
 import me.udnek.itemscoreu.util.LogUtils;
 import me.udnek.itemscoreu.util.Reflex;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Holder;
-import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
+import net.minecraft.core.*;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
 import net.minecraft.network.protocol.common.custom.GameTestAddMarkerDebugPayload;
@@ -21,17 +20,21 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.ReloadableServerRegistries;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.context.ContextKeySet;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.npc.VillagerTrades;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.MapItem;
 import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.item.component.BundleContents;
+import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.trading.MerchantOffer;
 import net.minecraft.world.level.biome.Biome;
-import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.chunk.status.ChunkStatus;
@@ -48,12 +51,16 @@ import net.minecraft.world.level.storage.loot.entries.LootPoolEntry;
 import net.minecraft.world.level.storage.loot.entries.LootPoolEntryContainer;
 import net.minecraft.world.level.storage.loot.entries.LootPoolSingletonContainer;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import org.bukkit.*;
+import org.bukkit.block.BlockFace;
 import org.bukkit.craftbukkit.v1_21_R2.CraftChunk;
-import org.bukkit.craftbukkit.v1_21_R2.CraftLootTable;
 import org.bukkit.craftbukkit.v1_21_R2.CraftServer;
-import org.bukkit.craftbukkit.v1_21_R2.entity.*;
+import org.bukkit.craftbukkit.v1_21_R2.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_21_R2.entity.CraftEntityType;
+import org.bukkit.craftbukkit.v1_21_R2.entity.CraftMob;
+import org.bukkit.craftbukkit.v1_21_R2.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_21_R2.generator.structure.CraftStructure;
 import org.bukkit.craftbukkit.v1_21_R2.inventory.CraftItemStack;
 import org.bukkit.craftbukkit.v1_21_R2.map.CraftMapCursor;
@@ -61,6 +68,7 @@ import org.bukkit.craftbukkit.v1_21_R2.util.CraftLocation;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.MerchantRecipe;
 import org.bukkit.map.MapCursor;
@@ -109,31 +117,69 @@ public class Nms {
         contents.contents().forEach(item -> nmsItems.add(NmsUtils.toNmsItemStack(item)));
         BundleContents.Mutable mutable = new BundleContents.Mutable(new BundleContents(nmsItems));
         Method method = Reflex.getMethod(BundleContents.Mutable.class, "getMaxAmountToAdd", net.minecraft.world.item.ItemStack.class);
-        return (int) Reflex.invokeMethod(mutable, method, NmsUtils.toNmsItemStack(itemStack));
+        return Reflex.invokeMethod(mutable, method, NmsUtils.toNmsItemStack(itemStack));
     }
 
     ///////////////////////////////////////////////////////////////////////////
     // BLOCKS
     ///////////////////////////////////////////////////////////////////////////
-    
-    public void setBlockFriction(@NotNull Material material, float friction){
-        Block block = NmsUtils.toNms(Registries.BLOCK, material).value();
-        Reflex.setFieldValue(block, "friction", friction);
-    }
-
-    public void setBlockSpeedFactor(@NotNull Material material, float speed){
-        Block block = NmsUtils.toNms(Registries.BLOCK, material).value();
-        Reflex.setFieldValue(block, "speedFactor", speed);
-    }
 
     
     ///////////////////////////////////////////////////////////////////////////
     // USAGES
     ///////////////////////////////////////////////////////////////////////////
 
+    public record BlockPlaceResult(boolean isSuccess, @Nullable ItemStack resultingItem){
+    }
+
+    public @NotNull Nms.BlockPlaceResult placeBlockFromItem(@NotNull Player player, @Nullable ItemStack itemStack, @NotNull EquipmentSlot hand, @NotNull Location hitPos, @NotNull BlockFace blockFace, @NotNull org.bukkit.block.Block clicked){
+        return placeBlockFromItem(player, itemStack, hand, hitPos, blockFace, clicked, false);
+    }
+
+
+
+    public @NotNull Nms.BlockPlaceResult placeBlockFromItem(@NotNull Player player, @Nullable ItemStack itemStack, @NotNull EquipmentSlot hand, @NotNull Location hitPos, @NotNull BlockFace blockFace, @NotNull org.bukkit.block.Block clicked, boolean isInside){
+        net.minecraft.world.item.ItemStack stack = NmsUtils.toNmsItemStack(itemStack);
+        if (!(stack.getItem() instanceof BlockItem blockItem)) return new BlockPlaceResult(false, itemStack);
+        InteractionHand interactionHand = switch (hand){
+            case HAND -> InteractionHand.MAIN_HAND;
+            case OFF_HAND -> InteractionHand.OFF_HAND;
+            default -> throw new RuntimeException("Equipment slot must be hand, given: " + hand);
+        };
+        Direction direction = switch (blockFace){
+            case UP -> Direction.UP;
+            case DOWN -> Direction.DOWN;
+            case EAST -> Direction.EAST;
+            case WEST -> Direction.WEST;
+            case SOUTH -> Direction.SOUTH;
+            case NORTH -> Direction.NORTH;
+            default -> throw new RuntimeException("BlockFace does not match any of Nms: " + blockFace);
+        };
+        InteractionResult placed = blockItem.useOn(new BlockPlaceContext(
+                        NmsUtils.toNmsPlayer(player),
+                        interactionHand,
+                        stack,
+                        new BlockHitResult(
+                                new Vec3(hitPos.getX(), hitPos.getY(), hitPos.getZ()),
+                                direction,
+                                NmsUtils.toNmsBlockPos(clicked),
+                                isInside)
+                )
+        );
+        return new BlockPlaceResult(placed instanceof InteractionResult.Success, NmsUtils.toBukkitItemStack(stack));
+    }
+
     public @NotNull ItemStack getSpawnEggByType(@NotNull EntityType type){
         net.minecraft.world.entity.EntityType<?> aClass = CraftEntityType.bukkitToMinecraft(type);
         return CraftItemStack.asNewCraftStack(SpawnEggItem.byId(aClass));
+    }
+
+    public float getBreakProgressPerTick(@NotNull Player player, @NotNull Material material){
+        BlockState state = Reflex.getFieldValue(material.createBlockData().createBlockState(), "data");
+        return state.getDestroyProgress(NmsUtils.toNmsPlayer(player), null, null);
+    }
+    public int getBreakSpeed(@NotNull Player player, @NotNull Material material){
+        return (int) (1 / getBreakProgressPerTick(player, material));
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -264,12 +310,12 @@ public class Nms {
 
     public @NotNull List<ItemStack> getPossibleLoot(@NotNull org.bukkit.loot.LootTable lootTable) {
         List<ItemStack> result = new ArrayList<>();
-        LootTable nmsLootTable = ((CraftLootTable) lootTable).getHandle();
+        LootTable nmsLootTable = NmsUtils.toNmsLootTable(lootTable);
         NmsUtils.getPossibleLoot(nmsLootTable, itemStack -> result.add(NmsUtils.toBukkitItemStack(itemStack)));
         return result;
     }
     public @Nullable org.bukkit.loot.LootTable getDeathLootTable(@NotNull org.bukkit.entity.LivingEntity bukkitEntity){
-        LivingEntity entity = ((CraftLivingEntity) bukkitEntity).getHandle();
+        LivingEntity entity = NmsUtils.toNmsEntity(bukkitEntity);
         Optional<ResourceKey<LootTable>> lootTable = entity.getLootTable();
         if (lootTable.isEmpty()) return null;
         return NmsUtils.getLootTable(lootTable.get()).craftLootTable;
@@ -282,6 +328,14 @@ public class Nms {
         } else {
             mob.lootTable = Optional.of(NmsUtils.getResourceKeyLootTable(lootTable.getKey().toString()));
         }
+    }
+
+    public @NotNull List<ItemStack> populateLootTable(@NotNull org.bukkit.loot.LootTable bukkitTable, @NotNull LootContextBuilder contextBuilder){
+        LootTable lootTable = NmsUtils.toNmsLootTable(bukkitTable);
+        List<ItemStack> itemStacks = new ArrayList<>();
+        lootTable.getRandomItems(contextBuilder.getNmsParams()).forEach(itemStack ->
+                itemStacks.add(NmsUtils.toBukkitItemStack(itemStack)));
+        return itemStacks;
     }
 
     ///////////////////////////////////////////////////////////////////////////

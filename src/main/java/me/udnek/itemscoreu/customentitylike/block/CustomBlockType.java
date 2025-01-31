@@ -1,7 +1,6 @@
 package me.udnek.itemscoreu.customentitylike.block;
 
 import com.destroystokyo.paper.event.block.BlockDestroyEvent;
-import io.papermc.paper.event.packet.PlayerChunkLoadEvent;
 import me.udnek.itemscoreu.ItemsCoreU;
 import me.udnek.itemscoreu.customcomponent.ComponentHolder;
 import me.udnek.itemscoreu.customentitylike.EntityLikeType;
@@ -11,12 +10,14 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.TileState;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockExplodeEvent;
+import org.bukkit.entity.Player;
+import org.bukkit.event.block.*;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.function.Consumer;
 
 public interface CustomBlockType extends ComponentHolder<CustomBlockType>, EntityLikeType<TileState> {
 
@@ -46,12 +47,29 @@ public interface CustomBlockType extends ComponentHolder<CustomBlockType>, Entit
         return CustomRegistries.BLOCK_TYPE.get(id);
     }
 
+    static void consumeIfCustom(@NotNull Block block, @NotNull Consumer<CustomBlockType> consumer){
+        CustomBlockType blockType = get(block);
+        if (blockType != null) consumer.accept(blockType);
+    }
+    
+    @Nullable BlockState getFakeState();
+
+    float getCustomBreakProgress(@NotNull Player player, @NotNull Block block);
+
+    void onPlayerFall(@NotNull Player player, @NotNull Location location, int particlesCount);
+
+    void onDamage(@NotNull BlockDamageEvent event);
+
     void place(@NotNull Location location);
     void destroy(@NotNull Location location);
-    void onPlayerLoads(@NotNull PlayerChunkLoadEvent event, @NotNull TileState tileState);
+    void onDestroy(@NotNull BlockFadeEvent event);
+    void onDestroy(@NotNull BlockBurnEvent event);
     void onDestroy(@NotNull EntityExplodeEvent event, @NotNull Block block);
     void onDestroy(@NotNull BlockDestroyEvent event);
     void onDestroy(@NotNull BlockBreakEvent event);
     void onDestroy(@NotNull BlockExplodeEvent event);
 
+    void customBreakTickProgress(@NotNull Block block, @NotNull Player player, float progress);
+
+    boolean doCustomBreakTimeAndAnimation();
 }

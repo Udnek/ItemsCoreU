@@ -10,6 +10,7 @@ import me.udnek.itemscoreu.customentitylike.entity.CustomEntityType;
 import me.udnek.itemscoreu.customequipmentslot.CustomEquipmentSlot;
 import me.udnek.itemscoreu.customitem.CustomItem;
 import me.udnek.itemscoreu.customloot.LootTableRegistry;
+import me.udnek.itemscoreu.customsound.CustomSound;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
@@ -26,6 +27,7 @@ public class CustomRegistries {
     public static final LootTableRegistry LOOT_TABLE;
     public static final CustomRegistry<CustomEffect> EFFECT;
     public static final CustomRegistry<CustomEnchantment> ENCHANTMENT;
+    public static final CustomRegistry<CustomSound> SOUND;
 
     static {
         REGISTRY = new MappedCustomRegistry<>("registry");
@@ -40,6 +42,7 @@ public class CustomRegistries {
         ENTITY_TYPE = addRegistry(new MappedCustomRegistry<>("entity_typ"));
         LOOT_TABLE = (LootTableRegistry) addRegistry(new LootTableRegistry("loot_table"));
         EFFECT = addRegistry(new MappedCustomRegistry<>("effect"));
+        SOUND = addRegistry(new MappedCustomRegistry<>("sound"));
     }
 
     public static @NotNull <T extends Registrable> CustomRegistry<T> addRegistry(@NotNull Plugin plugin, @NotNull CustomRegistry<T> registry){

@@ -19,4 +19,12 @@ public abstract class AbstractRegistrable implements Registrable{
 
     @Override
     public final @NotNull String getId() {return id;}
+
+    @Override
+    public String toString() {
+        return "AbstractRegistrable{" +
+                "id='" + id + '\'' +
+                " (" + super.toString() + ")" +
+                '}';
+    }
 }

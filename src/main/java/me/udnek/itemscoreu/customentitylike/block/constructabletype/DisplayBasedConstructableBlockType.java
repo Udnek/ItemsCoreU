@@ -1,37 +1,95 @@
 package me.udnek.itemscoreu.customentitylike.block.constructabletype;
 
+import io.papermc.paper.datacomponent.DataComponentTypes;
+import me.udnek.itemscoreu.customparticle.instance.BlockCracksParticle;
+import net.kyori.adventure.text.Component;
+import net.minecraft.world.level.block.ShulkerBoxBlock;
 import org.bukkit.Location;
-import org.bukkit.block.Block;
+import org.bukkit.Material;
+import org.bukkit.block.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.ItemDisplay;
+import org.bukkit.entity.Player;
+import org.bukkit.event.block.BlockDamageEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.util.Transformation;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 
 public abstract class DisplayBasedConstructableBlockType extends AbstactCustomBlockType {
 
-    public abstract @NotNull ItemStack getVisualItem();
+    public static final BlockState DEFAULT_FAKE_STATE = Material.BARRIER.createBlockData().createBlockState();
+    public static final TileState DEFAULT_REAL_STATE;
+    
+    static {
+        ShulkerBox state = (ShulkerBox) Material.SHULKER_BOX.createBlockData().createBlockState();
+        ItemStack lock = new ItemStack(Material.COMMAND_BLOCK);
+        lock.setData(DataComponentTypes.ITEM_NAME, Component.text("LOCK"));
+        state.setLockItem(lock);
+        DEFAULT_REAL_STATE = state;
+    }
+
+    public abstract @NotNull ItemStack getFakeDisplay();
+
+    @Override
+    public @NotNull ItemStack getParticleBase() {return getFakeDisplay();}
+
+    @Override
+    public @NotNull TileState getRealState() {
+        return DEFAULT_REAL_STATE;
+    }
+
+    @Override
+    public @Nullable BlockState getFakeState() {return DEFAULT_FAKE_STATE;}
 
     @Override
     public void place(@NotNull Location location) {
         super.place(location);
-/*        Location displayLocation = location.toCenterLocation();
+        Location displayLocation = location.toCenterLocation();
         displayLocation.setYaw(0);
         displayLocation.setPitch(0);
         ItemDisplay entity = (ItemDisplay) location.getWorld().spawnEntity(displayLocation, EntityType.ITEM_DISPLAY);
-        entity.setItemStack(getVisualItem());
-        Transformation transformation = entity.getTransformation();
-        transformation.getScale().set(1.0001);
-        entity.setTransformation(transformation);*/
+        entity.setItemStack(getFakeDisplay());
+        if (doSlightlyBiggerModel()){
+            Transformation transformation = entity.getTransformation();
+            transformation.getScale().set(1.00001);
+            entity.setTransformation(transformation);
+        }
+    }
+
+    public boolean doSlightlyBiggerModel(){
+        BlockState fakeState = getFakeState();
+        if (fakeState == null) return true;
+        return fakeState.getType() != Material.BARRIER;
     }
 
     @Override
-    public void onDestroy(@NotNull Block block) {
-        super.onDestroy(block);
+    public void onGenericDestroy(@NotNull Block block) {
+        super.onGenericDestroy(block);
+
         Collection<Entity> displays = block.getWorld().getNearbyEntities(block.getLocation().toCenterLocation(), 0.05, 0.05, 0.05);
         for (Entity display : displays) {
             if (display.getType() == EntityType.ITEM_DISPLAY) display.remove();
         }
+    }
+
+    @Override
+    public void onDamage(@NotNull BlockDamageEvent event) {}
+
+    @Override
+    public void customBreakTickProgress(@NotNull Block block, @NotNull Player player, float progress) {
+        super.customBreakTickProgress(block, player, progress);
+        Location centerLocation = block.getLocation().toCenterLocation();
+        new BlockCracksParticle((int) (progress*9)).play(centerLocation);
+    }
+
+    @Override
+    public boolean doCustomBreakTimeAndAnimation() {
+        BlockState fakeState = getFakeState();
+        if (fakeState == null) return false;
+        return fakeState.getType() == Material.BARRIER;
     }
 }
