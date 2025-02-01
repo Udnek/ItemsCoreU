@@ -5,6 +5,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class SerializableDataManager {
 
@@ -15,15 +16,17 @@ public class SerializableDataManager {
     ///////////////////////////////////////////////////////////////////////////
     // READING
     ///////////////////////////////////////////////////////////////////////////
-    public static void read(@NotNull SerializableData data, @NotNull Plugin plugin, @NotNull Player player){
+    public static <T extends SerializableData> @NotNull T read(@NotNull T data, @NotNull Plugin plugin, @NotNull Player player){
         String readRaw = readRaw(getPath(data, plugin, player));
         data.deserialize(readRaw);
+        return data;
     }
-    public static void read(@NotNull SerializableData data, @NotNull Plugin plugin){
+    public static <T extends SerializableData> @NotNull T read(@NotNull T data, @NotNull Plugin plugin){
         String readRaw = readRaw(getPath(data, plugin));
         data.deserialize(readRaw);
+        return data;
     }
-    private static String readRaw(@NotNull String path){
+    private static @Nullable String readRaw(@NotNull String path){
         return config.getString(path);
     }
     ///////////////////////////////////////////////////////////////////////////
@@ -41,7 +44,7 @@ public class SerializableDataManager {
     ///////////////////////////////////////////////////////////////////////////
     // INITIAL
     ///////////////////////////////////////////////////////////////////////////
-    private static String getPath(@NotNull SerializableData data, @NotNull Plugin plugin, @NotNull Player player){
+    private static @NotNull String getPath(@NotNull SerializableData data, @NotNull Plugin plugin, @NotNull Player player){
         return toStringPath(
                 PLAYER_PATH,
                 player.getUniqueId().toString(),

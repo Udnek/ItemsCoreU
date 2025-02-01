@@ -34,6 +34,7 @@ import net.minecraft.world.item.component.BundleContents;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.trading.MerchantOffer;
 import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.block.RespawnAnchorBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.LevelChunk;
@@ -124,6 +125,16 @@ public class Nms {
     // BLOCKS
     ///////////////////////////////////////////////////////////////////////////
 
+
+    public @Nullable Location findAnchorStandUpLocation(@NotNull EntityType entityType, @NotNull Location anchorLocation){
+        Optional<Vec3> standUpPosition = RespawnAnchorBlock.findStandUpPosition(
+                CraftEntityType.bukkitToMinecraft(entityType),
+                NmsUtils.toNmsWorld(anchorLocation.getWorld()),
+                NmsUtils.toNmsBlockPos(anchorLocation.getBlock())
+        );
+        return standUpPosition.map(vec3 -> new Location(anchorLocation.getWorld(), vec3.x, vec3.y, vec3.z)).orElse(null);
+    }
+    
     
     ///////////////////////////////////////////////////////////////////////////
     // USAGES
@@ -456,10 +467,14 @@ public class Nms {
     // ENTITY
     ///////////////////////////////////////////////////////////////////////////
     public void setSpinAttack(@NotNull Player player, int ticks, float damage, @Nullable ItemStack itemStack){
-        ((CraftPlayer) player).getHandle().startAutoSpinAttack(ticks, damage, NmsUtils.toNmsItemStack(itemStack));
+        NmsUtils.toNmsPlayer(player).startAutoSpinAttack(ticks, damage, NmsUtils.toNmsItemStack(itemStack));
     }
     public void resetSpinAttack(@NotNull Player player){
         setSpinAttack(player, 0, 0, null);
+    }
+
+    public boolean mayBuild(@NotNull Player player){
+        return NmsUtils.toNmsPlayer(player).mayBuild();
     }
 
     ///////////////////////////////////////////////////////////////////////////

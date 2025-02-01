@@ -10,9 +10,12 @@ import me.udnek.itemscoreu.customregistry.AbstractRegistrable;
 import me.udnek.itemscoreu.nms.Nms;
 import me.udnek.itemscoreu.nms.loot.LootContextBuilder;
 import me.udnek.itemscoreu.util.Either;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.CreakingHeartBlock;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
+import org.bukkit.block.CreakingHeart;
 import org.bukkit.block.TileState;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -110,6 +113,7 @@ public abstract class AbstactCustomBlockType extends AbstractRegistrable impleme
 
                 ItemStack item = event.getItem();
                 if (item == null) return;
+                if (!Nms.get().mayBuild(event.getPlayer())) return;
 
                 Block relative = event.getClickedBlock().getRelative(event.getBlockFace());
                 BlockState state = relative.getState(true);
@@ -233,7 +237,6 @@ public abstract class AbstactCustomBlockType extends AbstractRegistrable impleme
         if (soundGroup != null) {
             location.getWorld().playSound(location, soundGroup.getFallSound(), SoundCategory.BLOCKS, soundGroup.getVolume(), soundGroup.getPitch());
         }
-
     }
 
     @OverridingMethodsMustInvokeSuper

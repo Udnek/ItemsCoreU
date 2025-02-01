@@ -8,6 +8,7 @@ import me.udnek.itemscoreu.customentitylike.EntityLikeManager;
 import me.udnek.itemscoreu.nms.NmsUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket;
+import net.minecraft.world.level.block.BedBlock;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
@@ -154,7 +155,7 @@ public class CustomBlockManager extends EntityLikeManager<TileState, CustomBlock
     @EventHandler
     public void onHopperInteract(HopperInventorySearchEvent event){
         CustomBlockType.consumeIfCustom(event.getSearchBlock(), block ->
-                block.getComponents().getOrDefault(CustomComponentType.HOPPER_INTERACTING_BLOCK).onHopperInteract(event)
+                block.getComponents().getOrDefault(CustomComponentType.HOPPER_INTERACTING_BLOCK).onHopperInteract(block, event)
         );
     }
 
@@ -164,12 +165,12 @@ public class CustomBlockManager extends EntityLikeManager<TileState, CustomBlock
         Location source = event.getSource().getLocation();
         if (source != null){
             CustomBlockType.consumeIfCustom(source.getBlock(), block ->
-                    block.getComponents().getOrDefault(CustomComponentType.HOPPER_INTERACTING_BLOCK).onItemMoveFrom(event)
+                    block.getComponents().getOrDefault(CustomComponentType.HOPPER_INTERACTING_BLOCK).onItemMoveFrom(block, event)
             );
         }
         if (destination != null){
             CustomBlockType.consumeIfCustom(destination.getBlock(), block ->
-                    block.getComponents().getOrDefault(CustomComponentType.HOPPER_INTERACTING_BLOCK).onItemMoveInto(event)
+                    block.getComponents().getOrDefault(CustomComponentType.HOPPER_INTERACTING_BLOCK).onItemMoveInto(block, event)
             );
         }
     }
