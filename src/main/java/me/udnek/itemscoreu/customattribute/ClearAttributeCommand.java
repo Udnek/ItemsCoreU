@@ -1,5 +1,6 @@
 package me.udnek.itemscoreu.customattribute;
 
+import org.bukkit.Registry;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.attribute.AttributeModifier;
@@ -13,7 +14,7 @@ public class ClearAttributeCommand implements CommandExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
         if (!(commandSender instanceof Player player)) return false;
-        for (@NotNull Attribute attribute : Attribute.values()) {
+        for (@NotNull Attribute attribute : Registry.ATTRIBUTE.stream().toList()) {
             AttributeInstance attributeInstance = player.getAttribute(attribute);
             if (attributeInstance == null) continue;
             for (AttributeModifier modifier : attributeInstance.getModifiers()) {

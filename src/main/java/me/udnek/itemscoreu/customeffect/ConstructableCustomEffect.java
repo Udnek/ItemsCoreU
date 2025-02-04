@@ -1,5 +1,6 @@
 package me.udnek.itemscoreu.customeffect;
 
+import me.udnek.itemscoreu.customattribute.CustomAttributeConsumer;
 import me.udnek.itemscoreu.customregistry.AbstractRegistrable;
 import me.udnek.itemscoreu.nms.NmsUtils;
 import me.udnek.itemscoreu.util.Reflex;

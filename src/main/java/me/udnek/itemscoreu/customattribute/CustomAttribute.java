@@ -15,13 +15,13 @@ public interface CustomAttribute extends Translatable, Registrable {
     TextColor TAKE_COLOR = NamedTextColor.RED;
     TextColor PLUS_COLOR = NamedTextColor.BLUE;
 
-    double getDefaultValue();
-    double getMinimum();
-    double getMaximum();
     @NotNull Component getLoreLine(double amount, @NotNull AttributeModifier.Operation operation);
     @NotNull Component getLoreLineWithBase(double base);
     default double calculate(@NotNull LivingEntity entity){
-        return calculateWithBase(entity, getDefaultValue());
+        return calculateWithBase(entity, getDefault());
     }
     double calculateWithBase(@NotNull LivingEntity entity, double base);
+    double getDefault();
+    double getMin();
+    double getMax();
 }

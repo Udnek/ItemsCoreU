@@ -2,6 +2,7 @@ package me.udnek.itemscoreu.customenchantment;
 
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.ItemEnchantments;
+import me.udnek.itemscoreu.customattribute.CustomAttributeConsumer;
 import me.udnek.itemscoreu.customregistry.AbstractRegistrable;
 import me.udnek.itemscoreu.nms.NmsUtils;
 import net.minecraft.core.HolderSet;

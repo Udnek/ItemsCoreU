@@ -1,6 +1,7 @@
 package me.udnek.itemscoreu.customeffect;
 
 import me.udnek.itemscoreu.customattribute.CustomAttribute;
+import me.udnek.itemscoreu.customattribute.CustomAttributeConsumer;
 import me.udnek.itemscoreu.customregistry.CustomRegistries;
 import me.udnek.itemscoreu.customregistry.Registrable;
 import net.kyori.adventure.translation.Translatable;
@@ -38,6 +39,10 @@ public interface CustomEffect extends Registrable, Translatable {
     default void applyInvisible(@NotNull LivingEntity entity, int duration, int amplifier){
         apply(entity, duration, amplifier, false, false, false);
     }
+    default void remove(@NotNull LivingEntity entity){
+        entity.removePotionEffect(getBukkitType());
+    }
+
     boolean has(@NotNull LivingEntity entity);
     @Nullable PotionEffect get(@NotNull LivingEntity entity);
     default int getAppliedLevel(@NotNull LivingEntity entity){
@@ -46,9 +51,5 @@ public interface CustomEffect extends Registrable, Translatable {
         return effect.getAmplifier();
     }
     void getCustomAttributes(@NotNull PotionEffect context, @NotNull CustomAttributeConsumer consumer);
-
-    interface CustomAttributeConsumer {
-        void accept(@NotNull CustomAttribute attribute, double amount, @NotNull AttributeModifier.Operation operation);
-    }
 
 }

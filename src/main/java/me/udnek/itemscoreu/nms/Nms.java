@@ -10,6 +10,10 @@ import me.udnek.itemscoreu.nms.loot.table.NmsLootTableContainer;
 import me.udnek.itemscoreu.nms.loot.util.NmsFields;
 import me.udnek.itemscoreu.util.LogUtils;
 import me.udnek.itemscoreu.util.Reflex;
+import net.minecraft.advancements.CriteriaTriggers;
+import net.minecraft.advancements.critereon.DefaultBlockInteractionTrigger;
+import net.minecraft.advancements.critereon.EnchantedItemTrigger;
+import net.minecraft.advancements.critereon.EnterBlockTrigger;
 import net.minecraft.core.Registry;
 import net.minecraft.core.*;
 import net.minecraft.core.registries.Registries;
@@ -121,10 +125,13 @@ public class Nms {
         return Reflex.invokeMethod(mutable, method, NmsUtils.toNmsItemStack(itemStack));
     }
 
+    public void triggerEnchantedItem(@NotNull Player player, @NotNull ItemStack itemStack, int levels){
+        CriteriaTriggers.ENCHANTED_ITEM.trigger(NmsUtils.toNmsPlayer(player), NmsUtils.toNmsItemStack(itemStack), levels);
+    }
+
     ///////////////////////////////////////////////////////////////////////////
     // BLOCKS
     ///////////////////////////////////////////////////////////////////////////
-
 
     public @Nullable Location findAnchorStandUpLocation(@NotNull EntityType entityType, @NotNull Location anchorLocation){
         Optional<Vec3> standUpPosition = RespawnAnchorBlock.findStandUpPosition(

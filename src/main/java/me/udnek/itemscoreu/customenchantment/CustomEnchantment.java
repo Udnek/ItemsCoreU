@@ -1,6 +1,7 @@
 package me.udnek.itemscoreu.customenchantment;
 
 import me.udnek.itemscoreu.customattribute.CustomAttribute;
+import me.udnek.itemscoreu.customattribute.CustomAttributeConsumer;
 import me.udnek.itemscoreu.customequipmentslot.CustomEquipmentSlot;
 import me.udnek.itemscoreu.customregistry.CustomRegistries;
 import me.udnek.itemscoreu.customregistry.Registrable;
@@ -27,7 +28,4 @@ public interface CustomEnchantment extends Registrable {
 
     void getCustomAttributes(int level, @NotNull CustomAttributeConsumer consumer);
 
-    interface CustomAttributeConsumer {
-        void accept(@NotNull CustomAttribute attribute, double amount, @NotNull AttributeModifier.Operation operation, @NotNull CustomEquipmentSlot slot);
-    }
 }

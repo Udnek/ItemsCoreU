@@ -20,6 +20,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 public class CustomAttributeUtils {
 
@@ -30,13 +31,20 @@ public class CustomAttributeUtils {
 
     private double multiplyBase = 1;
     private double multiply = 1;
+    private final boolean reversed;
 
     public CustomAttributeUtils(@NotNull CustomAttribute attribute, @NotNull Collection<CustomEquipmentSlot> searchTroughSlots, @NotNull LivingEntity entity, double base){
+        this(attribute, searchTroughSlots, entity, base, false);
+    }
+
+    public CustomAttributeUtils(@NotNull CustomAttribute attribute, @NotNull Collection<CustomEquipmentSlot> searchTroughSlots, @NotNull LivingEntity entity, double base, boolean reversed){
         this.attribute = attribute;
         this.searchTroughSlots = searchTroughSlots;
         this.entity = entity;
         this.amount = base;
+        this.reversed = reversed;
     }
+
     protected void calculate(){
 
         Map<@NotNull Integer, @NotNull ItemStack> slots = new HashMap<>();
@@ -70,10 +78,10 @@ public class CustomAttributeUtils {
             for (Map.Entry<Enchantment, Integer> enchantmentEntry : slotEntry.getValue().getEnchantments().entrySet()) {
                 CustomEnchantment enchantment = CustomEnchantment.get(enchantmentEntry.getKey());
                 if (enchantment == null) continue;
-                enchantment.getCustomAttributes(enchantmentEntry.getValue(), (localAttribute, amount, operation, slot) -> {
+                enchantment.getCustomAttributes(enchantmentEntry.getValue(), (localAttribute, modifier) -> {
                     if (localAttribute != attribute) return;
-                    if (!slot.isAppropriateSlot(entity, slotEntry.getKey())) return;
-                    add(operation, amount);
+                    if (!modifier.getEquipmentSlot().isAppropriateSlot(entity, slotEntry.getKey())) return;
+                    add(modifier.getOperation(), amount);
                 });
             }
 
@@ -95,36 +103,35 @@ public class CustomAttributeUtils {
         for (PotionEffect potionEffect : entity.getActivePotionEffects()) {
             CustomEffect custom = CustomEffect.get(potionEffect.getType());
             if (custom == null) continue;
-            custom.getCustomAttributes(potionEffect, (thisAttr, thisAmount, operation) -> {
+            custom.getCustomAttributes(potionEffect, (thisAttr, modifier) -> {
                 if (thisAttr != attribute) return;
-                add(operation, thisAmount);
+                add(modifier.getOperation(), modifier.getAmount());
             });
         }
 
 
         amount *= multiplyBase;
         amount *= multiply;
-
-        amount = Math.clamp(amount, attribute.getMinimum(), attribute.getMaximum());
     }
 
-    public void add(@NotNull AttributeModifier.Operation operation, double amount){
+    public void add(@NotNull AttributeModifier.Operation operation, double localAmount){
+        if (reversed) localAmount *= -1;
         switch (operation){
-            case ADD_NUMBER -> this.amount += amount;
-            case ADD_SCALAR -> multiplyBase += amount;
-            default -> multiply *= (1 + amount);
+            case ADD_NUMBER -> amount += localAmount;
+            case ADD_SCALAR -> multiplyBase += localAmount;
+            case MULTIPLY_SCALAR_1 -> multiply *= (1 + localAmount);
         }
     }
 
 
-    public static double calculate(@NotNull CustomAttribute attribute, @NotNull Collection<CustomEquipmentSlot> slots, @NotNull LivingEntity entity, double base){
-        CustomAttributeUtils attributeUtils = new CustomAttributeUtils(attribute, slots, entity, base);
+    public static double calculate(@NotNull CustomAttribute attribute, @NotNull Collection<CustomEquipmentSlot> slots, @NotNull LivingEntity entity, double base, boolean reversed){
+        CustomAttributeUtils attributeUtils = new CustomAttributeUtils(attribute, slots, entity, base, reversed);
         attributeUtils.calculate();
         return attributeUtils.amount;
     }
 
-    public static double calculate(@NotNull CustomAttribute attribute, @NotNull LivingEntity entity, double base){
-        return calculate(attribute, CustomRegistries.EQUIPMENT_SLOT.getAll(), entity, base);
+    public static double calculate(@NotNull CustomAttribute attribute, @NotNull LivingEntity entity, double base, boolean reversed){
+        return calculate(attribute, CustomRegistries.EQUIPMENT_SLOT.getAll(), entity, base, reversed);
     }
 }
 

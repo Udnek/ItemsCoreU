@@ -12,6 +12,10 @@ public class CustomAttributeModifier {
     protected final AttributeModifier.Operation operation;
     protected final CustomEquipmentSlot equipmentSlot;
 
+    public CustomAttributeModifier(double amount, @NotNull AttributeModifier.Operation operation){
+        this(amount, operation, CustomEquipmentSlot.ANY_VANILLA);
+    }
+
     public CustomAttributeModifier(double amount, @NotNull AttributeModifier.Operation operation, @NotNull CustomEquipmentSlot equipmentSlot){
         this.amount = amount;
         this.operation = operation;

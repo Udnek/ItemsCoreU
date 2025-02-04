@@ -16,7 +16,7 @@ public class ConstructableCustomAttribute extends AbstractRegistrable implements
     protected final double minValue;
     protected final double maxValue;
     protected final boolean beneficial;
-    protected final boolean numberAsPercentageLore; // lore: +N attribute -> +N(N*100%) attribute
+    protected final boolean numberAsPercentageLore; // lore: +n *attribute* -> +n(n*100%) *attribute*
 
     public ConstructableCustomAttribute(@NotNull String rawId, double defaultValue, double min, double max, boolean beneficial, boolean numberAsPercentageLore){
         this.rawId = rawId;
@@ -32,22 +32,23 @@ public class ConstructableCustomAttribute extends AbstractRegistrable implements
     public ConstructableCustomAttribute(@NotNull String rawId, double defaultValue, double min, double max){
         this(rawId,defaultValue, min, max, true);
     }
-    public ConstructableCustomAttribute(@NotNull String rawId, double min, double max){
-        this(rawId,0, min, max);
-    }
+
 
     @Override
-    public double getDefaultValue() {return defaultValue;}
+    public double getDefault() {return defaultValue;}
     @Override
-    public double getMinimum() {return minValue;}
+    public double getMin() {return minValue;}
     @Override
-    public double getMaximum() {return maxValue;}
+    public double getMax() {return maxValue;}
 
     @Override
     public double calculateWithBase(@NotNull LivingEntity entity, double base) {
-        return CustomAttributeUtils.calculate(this, entity, base);
+        return clamp(CustomAttributeUtils.calculate(this, entity, base, false));
     }
 
+    public double clamp(double value){
+        return Math.clamp(value, getMin(), getMax());
+    }
 
     public @NotNull Component getLoreLine(double amount, @NotNull AttributeModifier.Operation operation) {
         TextColor color;
