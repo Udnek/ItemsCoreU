@@ -1,5 +1,7 @@
 package me.udnek.itemscoreu.util;
 
+import io.papermc.paper.datacomponent.DataComponentTypes;
+import io.papermc.paper.datacomponent.item.ItemLore;
 import net.kyori.adventure.text.Component;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -50,11 +52,9 @@ public class LoreBuilder {
     }
 
     public void buildAndApply(@NotNull ItemStack itemStack){
-        itemStack.editMeta(itemMeta -> {
-            List<Component> lore = LoreBuilder.this.build();
-            if (lore.isEmpty()) return;
-            itemMeta.lore(lore);
-        });
+        List<Component> lore = LoreBuilder.this.build();
+        if (lore.isEmpty()) return;
+        itemStack.setData(DataComponentTypes.LORE, ItemLore.lore(lore));
     }
 
     public enum Position{
