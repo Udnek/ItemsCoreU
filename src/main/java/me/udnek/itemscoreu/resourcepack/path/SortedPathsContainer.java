@@ -36,7 +36,7 @@ public class SortedPathsContainer {
         all.add(newPath);
     }
 
-    public List<SamePathsContainer> getSames() {
+    public @NotNull List<SamePathsContainer> getSames() {
         return sames;
     }
 
@@ -52,7 +52,7 @@ public class SortedPathsContainer {
         }
     }
 
-    public List<RpPath> getAllExcludingSame(){
+    public @NotNull List<RpPath> getAllExcludingSame(){
         List<RpPath> toExclude = new ArrayList<>();
         for (RpPath path : all) {
             for (SamePathsContainer same : sames) {

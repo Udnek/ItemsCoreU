@@ -15,19 +15,26 @@ public class SamePathsContainer {
     }
 
     public boolean canAdd(@NotNull RpPath rpPath){
-        return paths.get(0).isSame(rpPath) && !paths.contains(rpPath);
+        return paths.getFirst().isSame(rpPath) && !paths.contains(rpPath);
     }
 
     public void add(@NotNull RpPath rpPath){
-        if (!canAdd(rpPath)) return;
+        Preconditions.checkArgument(canAdd(rpPath), "Can not add " + rpPath + " to container with sames: " + this);
         paths.add(rpPath);
     }
 
-    public List<RpPath> getAll(){
+    public @NotNull List<RpPath> getAll(){
         return new ArrayList<>(paths);
     }
 
     public @NotNull RpPath getExample(){
-        return paths.get(0);
+        return paths.getFirst();
+    }
+
+    @Override
+    public String toString() {
+        return "SamePathsContainer{" +
+                "paths=" + paths +
+                '}';
     }
 }

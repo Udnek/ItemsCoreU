@@ -90,4 +90,10 @@ public class RpPath {
     public boolean isSame(@NotNull RpPath other){
         return this.path.equals(other.path);
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof RpPath rpPath)) return false;
+        return isSame(rpPath);
+    }
 }

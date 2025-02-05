@@ -21,7 +21,7 @@ public class ResourcepackSettings implements SerializableData {
         return "extract_directory="+extractDirectory;
     }
     @Override
-    public void deserialize(String data) {
+    public void deserialize(@Nullable String data) {
         if (data == null) return;
         extractDirectory = data.substring(data.indexOf('=')+1);
     }

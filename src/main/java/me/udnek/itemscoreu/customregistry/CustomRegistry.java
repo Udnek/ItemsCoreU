@@ -18,6 +18,7 @@ public interface CustomRegistry<T extends Registrable> extends Registrable{
     }
     boolean contains(@Nullable String id);
     @NotNull Collection<String> getIds();
+    @NotNull Collection<T> getAllByPlugin(@NotNull Plugin plugin);
     void getAll(@NotNull Consumer<T> consumer);
     @NotNull Collection<T> getAll();
 }

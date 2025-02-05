@@ -11,6 +11,7 @@ import me.udnek.itemscoreu.util.LogUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -36,7 +37,7 @@ public class ResourcePackMerger {
 
     public ResourcePackMerger(){}
 
-    public String checkExtractDirectory(String extractDirectory){
+    public @Nullable String checkExtractDirectoryAndError(@Nullable String extractDirectory){
         if (extractDirectory == null) return "Directory can not be null!";
         File file = new File(extractDirectory);
         if (!file.isDirectory()) return "Specified path is not a directory!";
@@ -48,12 +49,8 @@ public class ResourcePackMerger {
 
     public void startGlobalMerging(@NotNull String extractDirectory){
 
-        // TODO: 8/3/2024 MERGE ATLASES 
-        // TODO: 8/3/2024 AUTO ADD SPACINGS
-        
-        
         this.extractDirectory = extractDirectory;
-        Preconditions.checkArgument(checkExtractDirectory(extractDirectory) == null, "Extract directory can not be null!");
+        Preconditions.checkArgument(checkExtractDirectoryAndError(extractDirectory) == null, "Extract directory can not be null!");
         LogUtils.pluginLog("ResourcePack merging started");
         List<VirtualResourcePack> resourcePacks = new ArrayList<>();
         for (Plugin plugin : Bukkit.getPluginManager().getPlugins()) {
@@ -98,7 +95,6 @@ public class ResourcePackMerger {
         RpPath rpPath = container.getExample();
         saveText(rpPath, merger.getMergedAsString());
     }
-
     public void manualMergeCopy(@NotNull SamePathsContainer container){
         if (extractFileExists(container.getExample())){
             LogUtils.pluginLog("Manual file already exists: " + container.getExample());
@@ -110,8 +106,6 @@ public class ResourcePackMerger {
             LogUtils.pluginWarning("Should be manually merged: " + rpPath.withMergeId(mergeId));
             mergeId++;
         }
-
-
     }
     public boolean isInAutoMerge(@NotNull RpPath rpPath){
         for (RpPath mergeDirectory : MERGE_DIRECTORIES) {
@@ -139,13 +133,11 @@ public class ResourcePackMerger {
         String filePath = rpPath.getExtractPath(extractDirectory);
         String folderPath = rpPath.withLayerUp().getExtractPath(extractDirectory);
         new File(folderPath).mkdirs();
-        try {
-            new File(filePath).createNewFile();
+        try { new File(filePath).createNewFile();
         } catch (IOException e) {throw new RuntimeException(e);}
     }
     public void copyFile(@NotNull RpPath from, @NotNull RpPath to){
         createNewFile(to);
-
         switch (from.getFileType()) {
             case PNG -> copyImage(from, to);
             case OGG -> copySound(from, to);

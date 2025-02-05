@@ -37,7 +37,7 @@ public class ResourcePackCommand implements TabExecutor, CommandExecutor {
         }
 
         ResourcePackMerger merger = new ResourcePackMerger();
-        String error = merger.checkExtractDirectory(directory);
+        String error = merger.checkExtractDirectoryAndError(directory);
         if (error != null){
             LogUtils.pluginLog(error);
             return true;

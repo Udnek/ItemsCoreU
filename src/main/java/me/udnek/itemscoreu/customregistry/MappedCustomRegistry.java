@@ -3,14 +3,18 @@ package me.udnek.itemscoreu.customregistry;
 import com.google.common.base.Preconditions;
 import me.udnek.itemscoreu.util.LogUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.NamespacedKey;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 public class MappedCustomRegistry<T extends Registrable> extends AbstractRegistrable implements CustomRegistry<T>{
 
@@ -42,7 +46,6 @@ public class MappedCustomRegistry<T extends Registrable> extends AbstractRegistr
     public T get(@Nullable String id) {
         return map.get(id);
     }
-
     @Override
     public boolean contains(@Nullable String id) {
         return map.containsKey(id);
@@ -50,18 +53,25 @@ public class MappedCustomRegistry<T extends Registrable> extends AbstractRegistr
 
     @Override
     public @NotNull Collection<String> getIds() {
-        return map.keySet();
+        return new ArrayList<>(map.keySet());
     }
-    protected void logRegistered(T custom){
+    protected void logRegistered(@NotNull T custom){
         LogUtils.pluginLog("("+ getId() +") " + custom.getId());
     }
 
     @Override
     public void getAll(@NotNull Consumer<T> consumer) {
-        map.forEach((s, t) -> consumer.accept(t));
+        map.values().forEach(consumer);
     }
     @Override
     public @NotNull Collection<T> getAll() {
-        return map.values();
+        return new ArrayList<>(map.values());
+    }
+    @Override
+    public @NotNull Collection<T> getAllByPlugin(@NotNull Plugin plugin) {
+        Collection<T> all = getAll();
+        String namespace = new NamespacedKey(plugin, "text").getNamespace();
+        all.removeIf(object -> !object.getKey().getNamespace().equals(namespace));
+        return all;
     }
 }
