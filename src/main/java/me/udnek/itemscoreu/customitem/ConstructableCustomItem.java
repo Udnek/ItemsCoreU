@@ -119,10 +119,6 @@ public abstract class ConstructableCustomItem extends AbstractComponentHolder<Cu
     @Override
     public @Nullable DataSupplier<Key> getItemModel() {return DataSupplier.of(getKey());}
 
-    @Deprecated
-    @ApiStatus.ScheduledForRemoval
-    public @Nullable String getRawItemName(){return translationKey();}
-
     @Override
     public @Nullable DataSupplier<Component> getItemName() {
         return DataSupplier.of(Component.translatable(translationKey()));

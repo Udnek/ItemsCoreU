@@ -19,6 +19,9 @@ public class RpPath {
         this.resourcePack = resourcePack;
         this.path = FileManager.removeSlashes(path);
     }
+    public RpPath(@NotNull String path){
+        this(null, path);
+    }
 
     public @NotNull RpPath withAdded(@NotNull String added){
         String newPath = FileManager.joinPaths(path, added);

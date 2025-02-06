@@ -44,8 +44,6 @@ public class ItemModelMerger implements RpFileMerger {
                 JsonObject pA = o1.getAsJsonObject(PREDICATE);
                 JsonObject pB = o2.getAsJsonObject(PREDICATE);
 
-                //if (isBiggerCMD(pA, pB)) return -1;
-
                 Set<String> keys = new HashSet<>(pA.asMap().keySet());
                 keys.addAll(pB.asMap().keySet());
 
@@ -61,14 +59,6 @@ public class ItemModelMerger implements RpFileMerger {
 
                 return 0;
             }
-
-/*            public boolean isBiggerCMD(JsonObject pA, JsonObject pB){
-                JsonElement cmdA = pA.get(CUSTOM_MODEL_DATA);
-                if (cmdA == null) return false;
-                JsonElement cmdB = pB.get(CUSTOM_MODEL_DATA);
-                if (cmdB == null) return true;
-                return cmdA.getAsInt() > cmdB.getAsInt();
-            }*/
         });
 
 

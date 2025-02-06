@@ -1,10 +1,14 @@
 package me.udnek.itemscoreu.resourcepack;
 
+import io.papermc.paper.datacomponent.DataComponentTypes;
+import me.udnek.itemscoreu.customcomponent.CustomComponentType;
+import me.udnek.itemscoreu.customevent.ResourcepackInitializationEvent;
 import me.udnek.itemscoreu.customitem.CustomItem;
 import me.udnek.itemscoreu.customregistry.CustomRegistries;
 import me.udnek.itemscoreu.resourcepack.path.RpPath;
 import me.udnek.itemscoreu.resourcepack.path.VirtualRpJsonFile;
 import me.udnek.itemscoreu.util.LogUtils;
+import net.kyori.adventure.key.Key;
 import org.bukkit.NamespacedKey;
 import org.jetbrains.annotations.NotNull;
 
@@ -31,44 +35,27 @@ public class VirtualResourcePack {
         for (RpPath file : files) {
             LogUtils.pluginLog(file);
         }
-        LogUtils.pluginLog("adding missing:");
+        LogUtils.pluginLog("AutoAdding:");
+        List<VirtualRpJsonFile> toAdd = new ArrayList<>();
         for (CustomItem item : CustomRegistries.ITEM.getAllByPlugin(plugin)) {
-            NamespacedKey namespacedKey = item.getKey();
-            // item def
-            RpPath path = new RpPath(this, "assets/" + namespacedKey.getNamespace() + "/items/" + namespacedKey.getKey() + ".json");
-            if (!files.contains(path)){
-                LogUtils.pluginLog(path);
-                VirtualRpJsonFile virtualRpJsonFile = new VirtualRpJsonFile(this,
-                        """
-                                {
-                                  "model": {
-                                    "type": "minecraft:model",
-                                    "model": "%namespace%:item/%key%"
-                                  }
-                                }
-                                """.replace("%namespace%", namespacedKey.getNamespace()).replace("%key%", namespacedKey.getKey()),
-                        path.getPath());
-                files.add(virtualRpJsonFile);
-            }
-            // item model
-            path = new RpPath(this, "assets/" + namespacedKey.getNamespace() + "/models/item/" + namespacedKey.getKey() + ".json");
-            if (!files.contains(path)){
-                LogUtils.pluginLog(path);
-                VirtualRpJsonFile virtualRpJsonFile = new VirtualRpJsonFile(this,
-                        """
-                                {
-                                    "parent": "minecraft:item/generated",
-                                    "textures": {
-                                        "layer0": "%namespace%:item/%key%"
-                                    }
-                                }
-                                """.replace("%namespace%", namespacedKey.getNamespace()).replace("%key%", namespacedKey.getKey()),
-                        path.getPath());
-                files.add(virtualRpJsonFile);
-            }
+            toAdd.addAll(item.getComponents().getOrDefault(CustomComponentType.AUTO_GENERATING_FILES_ITEM).getFiles(item));
         }
-        LogUtils.pluginLog("finished missing");
+        ResourcepackInitializationEvent event = new ResourcepackInitializationEvent(this);
+        event.callEvent();
+        toAdd.addAll(event.getFiles());
+        for (VirtualRpJsonFile file : toAdd) {
+            if (files.contains(file)) continue;
+            VirtualRpJsonFile pluginFile = new VirtualRpJsonFile(this, file.getData(), file.getPath());
+            LogUtils.pluginLog(pluginFile);
+            files.add(pluginFile);
+        }
+        LogUtils.pluginLog("finished AutoAdding");
+
         LogUtils.pluginLog("ResourcePack "+ plugin.getName() +" initialization ended");
+    }
+
+    public @NotNull ResourcePackablePlugin getPlugin() {
+        return plugin;
     }
 
     public @NotNull List<String> getResources(@NotNull RpPath path){

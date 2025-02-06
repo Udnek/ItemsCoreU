@@ -26,14 +26,17 @@ import me.udnek.itemscoreu.resourcepack.ResourcePackCommand;
 import me.udnek.itemscoreu.resourcepack.ResourcePackablePlugin;
 import me.udnek.itemscoreu.serializabledata.SerializableDataManager;
 import net.minecraft.network.protocol.game.ClientboundGameEventPacket;
+import net.minecraft.world.item.DyeItem;
+import net.minecraft.world.item.crafting.ArmorDyeRecipe;
 import org.bukkit.Bukkit;
+import org.bukkit.DyeColor;
 import org.bukkit.event.world.WorldEvent;
+import org.bukkit.inventory.Recipe;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class ItemsCoreU extends JavaPlugin implements ResourcePackablePlugin {
     private static Plugin instance;
-
 
     public static Plugin getInstance(){
         return instance;
@@ -44,6 +47,7 @@ public final class ItemsCoreU extends JavaPlugin implements ResourcePackablePlug
         instance = this;
 
         CustomRegistry<CustomRegistry<?>> registry = CustomRegistries.REGISTRY;
+
 
         // EVENTS
         new CustomItemListener(this);

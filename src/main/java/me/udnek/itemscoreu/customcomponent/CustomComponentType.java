@@ -11,27 +11,30 @@ import org.jetbrains.annotations.NotNull;
 public interface CustomComponentType<HolderType, Component extends CustomComponent<HolderType>> extends Registrable {
 
     CustomComponentType<CustomItem, CustomItemAttributesComponent>
-            CUSTOM_ATTRIBUTED_ITEM = register(new ConstructableComponentType("custom_attributed_item", CustomItemAttributesComponent.EMPTY));
+            CUSTOM_ATTRIBUTED_ITEM = register(new ConstructableComponentType<>("custom_attributed_item", CustomItemAttributesComponent.EMPTY));
 
     CustomComponentType<CustomItem, RightClickableItem>
-            RIGHT_CLICKABLE_ITEM = register(new ConstructableComponentType("right_clickable_item", RightClickableItem.EMPTY));
+            RIGHT_CLICKABLE_ITEM = register(new ConstructableComponentType<>("right_clickable_item", RightClickableItem.EMPTY));
 
     CustomComponentType<CustomItem, VanillaAttributesComponent>
-            VANILLA_ATTRIBUTED_ITEM = register(new ConstructableComponentType("vanilla_attributed_item", VanillaAttributesComponent.EMPTY));
+            VANILLA_ATTRIBUTED_ITEM = register(new ConstructableComponentType<>("vanilla_attributed_item", VanillaAttributesComponent.EMPTY));
 
     CustomComponentType<CustomItem, InventoryInteractableItem>
-            INVENTORY_INTERACTABLE_ITEM = register(new ConstructableComponentType("inventory_interactable_item", InventoryInteractableItem.EMPTY));
+            INVENTORY_INTERACTABLE_ITEM = register(new ConstructableComponentType<>("inventory_interactable_item", InventoryInteractableItem.EMPTY));
 
     CustomComponentType<CustomItem, BlockPlacingItem>
-            BLOCK_PLACING_ITEM = register(new ConstructableComponentType("block_placing_item", BlockPlacingItem.EMPTY));
+            BLOCK_PLACING_ITEM = register(new ConstructableComponentType<>("block_placing_item", BlockPlacingItem.EMPTY));
+
+    CustomComponentType<CustomItem, AutoGeneratingFilesItem>
+            AUTO_GENERATING_FILES_ITEM = register(new ConstructableComponentType<>("auto_generating_files_item", AutoGeneratingFilesItem.GENERATED));
 
     // BLOCK
 
     CustomComponentType<CustomBlockType, RightClickableBlock>
-            RIGHT_CLICKABLE_BLOCK = register(new ConstructableComponentType("right_clickable_block", RightClickableBlock.EMPTY));
+            RIGHT_CLICKABLE_BLOCK = register(new ConstructableComponentType<>("right_clickable_block", RightClickableBlock.EMPTY));
 
     CustomComponentType<CustomBlockType, HopperInteractingBlock>
-            HOPPER_INTERACTING_BLOCK = register(new ConstructableComponentType("hopper_interacting_block", HopperInteractingBlock.DENY));
+            HOPPER_INTERACTING_BLOCK = register(new ConstructableComponentType<>("hopper_interacting_block", HopperInteractingBlock.DENY));
 
 
 
