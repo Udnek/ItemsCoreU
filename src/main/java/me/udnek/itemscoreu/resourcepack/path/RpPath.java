@@ -1,5 +1,6 @@
 package me.udnek.itemscoreu.resourcepack.path;
 
+import com.google.common.base.Preconditions;
 import me.udnek.itemscoreu.resourcepack.FileManager;
 import me.udnek.itemscoreu.resourcepack.FileType;
 import me.udnek.itemscoreu.resourcepack.VirtualResourcePack;
@@ -12,8 +13,8 @@ import java.util.List;
 
 public class RpPath {
 
-    protected final VirtualResourcePack resourcePack;
-    protected final String path;
+    protected final @Nullable VirtualResourcePack resourcePack;
+    protected final @NotNull String path;
 
     public RpPath(@Nullable VirtualResourcePack resourcePack, @NotNull String path){
         this.resourcePack = resourcePack;
@@ -46,6 +47,7 @@ public class RpPath {
     public @NotNull List<RpPath> findFiles(){
         //LogUtils.pluginLog(this);
         //LogUtils.pluginLog("Checking is file");
+        Preconditions.checkArgument(resourcePack != null, "Resourcepack can not be null to find files: " + this);
         if (resourcePack.isFile(this)) return List.of(this);
         //LogUtils.pluginLog("Checking is empty directory");
         if (resourcePack.isDirectoryEmpty(this)) return List.of();
@@ -79,7 +81,7 @@ public class RpPath {
     }
     @Override
     public @NotNull String toString() {
-        return "RPPath{ " + path + " (" + resourcePack.getName() + ") }";
+        return "RPPath{ " + path + " (" + (resourcePack == null ? null : resourcePack.getName()) + ") }";
     }
 
     public @NotNull InputStream getInputStream(){

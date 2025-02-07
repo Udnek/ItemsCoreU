@@ -49,7 +49,7 @@ public class VirtualResourcePack {
             LogUtils.pluginLog(pluginFile);
             files.add(pluginFile);
         }
-        LogUtils.pluginLog("finished AutoAdding");
+        LogUtils.pluginLog("Finished AutoAdding");
 
         LogUtils.pluginLog("ResourcePack "+ plugin.getName() +" initialization ended");
     }

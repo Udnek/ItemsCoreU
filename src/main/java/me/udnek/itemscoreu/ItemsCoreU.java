@@ -25,21 +25,28 @@ import me.udnek.itemscoreu.nms.PacketHandler;
 import me.udnek.itemscoreu.resourcepack.ResourcePackCommand;
 import me.udnek.itemscoreu.resourcepack.ResourcePackablePlugin;
 import me.udnek.itemscoreu.serializabledata.SerializableDataManager;
+import net.kyori.adventure.key.Key;
 import net.minecraft.network.protocol.game.ClientboundGameEventPacket;
 import net.minecraft.world.item.DyeItem;
 import net.minecraft.world.item.crafting.ArmorDyeRecipe;
 import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
+import org.bukkit.NamespacedKey;
 import org.bukkit.event.world.WorldEvent;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 
 public final class ItemsCoreU extends JavaPlugin implements ResourcePackablePlugin {
     private static Plugin instance;
 
-    public static Plugin getInstance(){
+    public static @NotNull Plugin getInstance(){
         return instance;
+    }
+
+    public static @NotNull Key getKey(@NotNull String value){
+        return new NamespacedKey(getInstance(), value);
     }
 
     @Override

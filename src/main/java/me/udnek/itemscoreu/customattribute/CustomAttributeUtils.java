@@ -81,7 +81,7 @@ public class CustomAttributeUtils {
                 enchantment.getCustomAttributes(enchantmentEntry.getValue(), (localAttribute, modifier) -> {
                     if (localAttribute != attribute) return;
                     if (!modifier.getEquipmentSlot().isAppropriateSlot(entity, slotEntry.getKey())) return;
-                    add(modifier.getOperation(), amount);
+                    add(modifier.getOperation(), modifier.getAmount());
                 });
             }
 
