@@ -1,6 +1,7 @@
 package me.udnek.itemscoreu.nms;
 
 import com.mojang.datafixers.util.Pair;
+import io.papermc.paper.datacomponent.item.UseCooldown;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import me.udnek.itemscoreu.customenchantment.NmsEnchantmentContainer;
 import me.udnek.itemscoreu.nms.loot.LootContextBuilder;
@@ -10,12 +11,14 @@ import me.udnek.itemscoreu.nms.loot.table.NmsLootTableContainer;
 import me.udnek.itemscoreu.nms.loot.util.NmsFields;
 import me.udnek.itemscoreu.util.LogUtils;
 import me.udnek.itemscoreu.util.Reflex;
+import net.kyori.adventure.key.Key;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.Registry;
 import net.minecraft.core.*;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
 import net.minecraft.network.protocol.common.custom.GameTestAddMarkerDebugPayload;
+import net.minecraft.network.protocol.game.ClientboundCooldownPacket;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.ReloadableServerRegistries;
@@ -29,6 +32,7 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.npc.VillagerTrades;
 import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.ItemCooldowns;
 import net.minecraft.world.item.MapItem;
 import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.item.component.BundleContents;
@@ -55,6 +59,7 @@ import net.minecraft.world.level.storage.loot.entries.LootPoolSingletonContainer
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
+import org.apache.logging.log4j.util.TriConsumer;
 import org.bukkit.*;
 import org.bukkit.block.BlockFace;
 import org.bukkit.craftbukkit.v1_21_R3.CraftChunk;
@@ -70,9 +75,7 @@ import org.bukkit.craftbukkit.v1_21_R3.util.CraftLocation;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.EquipmentSlot;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.MerchantRecipe;
+import org.bukkit.inventory.*;
 import org.bukkit.map.MapCursor;
 import org.bukkit.util.StructureSearchResult;
 import org.jetbrains.annotations.NotNull;
@@ -81,6 +84,7 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public class Nms {
@@ -475,6 +479,17 @@ public class Nms {
     }
     public void resetSpinAttack(@NotNull Player player){
         setSpinAttack(player, 0, 0, null);
+    }
+
+    public void iterateTroughCooldowns(@NotNull Player player, @NotNull TriConsumer<Key, Integer, Integer> consumer){
+        for (Map.Entry<ResourceLocation, ItemCooldowns.CooldownInstance> entry : NmsUtils.toNmsPlayer(player).getCooldowns().cooldowns.entrySet()) {
+            ResourceLocation location = entry.getKey();
+            consumer.accept(new NamespacedKey(location.getNamespace(), location.getPath()), entry.getValue().startTime(), entry.getValue().endTime());
+        }
+    }
+
+    public void sendCooldown(@NotNull Player player, @NotNull Key key, int duration){
+        NmsUtils.sendPacket(player, new ClientboundCooldownPacket(NmsUtils.toNmsResourceLocation(key), duration));
     }
 
     public boolean mayBuild(@NotNull Player player){

@@ -26,7 +26,7 @@ import java.util.function.Consumer;
 
 public class ResourcePackMerger {
 
-    public static final RpPath LANG_DIRECTORY = new RpPath(null, "assets/minecraft/lang");
+    public static final RpPath LANG_DIRECTORY = new RpPath(null, "assets/*/lang");
     public static final RpPath ITEM_MODEL_DIRECTORY = new RpPath(null, "assets/minecraft/models/item");
 
     private static final RpPath[] MERGE_DIRECTORIES = new RpPath[]{LANG_DIRECTORY, ITEM_MODEL_DIRECTORY};
@@ -60,9 +60,13 @@ public class ResourcePackMerger {
         }
         resourcePacks.forEach(VirtualResourcePack::initialize);
 
-        resourcePacks.stream().flatMap(resourcePack ->
-                resourcePack.getAllFoundFiles().stream()).forEach(container::add);
+        for (VirtualResourcePack resourcePack : resourcePacks) {
+            for (RpPath path : resourcePack.getAllFoundFiles()) {
+                container.add(path);
+            }
+        }
 
+        container.debug();
         for (SamePathsContainer containerSame : container.getSames()) {
             if (isInAutoMerge(containerSame.getExample())){
                 autoMergeCopy(containerSame);

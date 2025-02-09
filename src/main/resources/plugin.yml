@@ -61,6 +61,12 @@ commands:
   play_soundu:
       description: "play_soundu"
       usage: "/play_soundu <sound>"
-      aliases: []
+      aliases: [itemscoreu_play_sound]
+      permission: itemscoreu.admin
+      permission-message: "You do not have permission to use this command"
+  effectu:
+      description: "effectu"
+      usage: "/effectu <effect> [duration] [lvl]"
+      aliases: [itemscoreu_effect]
       permission: itemscoreu.admin
       permission-message: "You do not have permission to use this command"

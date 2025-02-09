@@ -49,6 +49,11 @@ public class VirtualResourcePack {
             LogUtils.pluginLog(pluginFile);
             files.add(pluginFile);
         }
+        for (VirtualRpJsonFile file : event.getForcedFiles()) {
+            VirtualRpJsonFile pluginFile = new VirtualRpJsonFile(this, file.getData(), file.getPath());
+            LogUtils.pluginLog(pluginFile);
+            files.add(pluginFile);
+        }
         LogUtils.pluginLog("Finished AutoAdding");
 
         LogUtils.pluginLog("ResourcePack "+ plugin.getName() +" initialization ended");

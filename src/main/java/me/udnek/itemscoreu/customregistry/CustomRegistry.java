@@ -11,6 +11,8 @@ import java.util.function.Consumer;
 public interface CustomRegistry<T extends Registrable> extends Registrable{
     @NotNull <V extends T>  V register(@NotNull Plugin plugin, @NotNull V custom);
     @Nullable T get(@Nullable String id);
+    @NotNull T get(int index);
+    int getIndex(@NotNull T custom);
     default @NotNull T getOrException(@NotNull String id){
         @Nullable T item = get(id);
         Preconditions.checkArgument(item != null, "No such item in registry: " + id);

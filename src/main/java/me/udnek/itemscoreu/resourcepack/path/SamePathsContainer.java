@@ -15,7 +15,7 @@ public class SamePathsContainer {
     }
 
     public boolean canAdd(@NotNull RpPath rpPath){
-        return paths.getFirst().isSame(rpPath) && !paths.contains(rpPath);
+        return paths.getFirst().isSame(rpPath);
     }
 
     public void add(@NotNull RpPath rpPath){

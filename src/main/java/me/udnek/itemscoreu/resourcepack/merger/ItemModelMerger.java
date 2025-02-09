@@ -62,7 +62,7 @@ public class ItemModelMerger implements RpFileMerger {
         });
 
 
-        JsonObject mainJson = jsons.get(0).deepCopy();
+        JsonObject mainJson = jsons.getFirst().deepCopy();
         mainJson.remove(OVERRIDES);
         JsonArray overridesJson = new JsonArray();
 

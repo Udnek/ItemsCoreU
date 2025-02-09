@@ -14,7 +14,6 @@ public class SortedPathsContainer {
     public SortedPathsContainer(){}
 
     public void add(@NotNull RpPath newPath){
-        if (all.contains(newPath)) return;
 
         for (SamePathsContainer container : sames) {
             if (container.canAdd(newPath)){
@@ -57,7 +56,6 @@ public class SortedPathsContainer {
         for (RpPath path : all) {
             for (SamePathsContainer same : sames) {
                 if (same.getExample().isSame(path)) {
-                    LogUtils.pluginLog("Excluding: " + path );
                     toExclude.add(path);
                     break;
                 }

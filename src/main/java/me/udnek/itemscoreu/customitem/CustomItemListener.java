@@ -1,8 +1,14 @@
 package me.udnek.itemscoreu.customitem;
 
+import me.udnek.itemscoreu.ItemsCoreU;
 import me.udnek.itemscoreu.customcomponent.CustomComponentType;
 import me.udnek.itemscoreu.custominventory.CustomInventory;
+import me.udnek.itemscoreu.nms.Nms;
 import me.udnek.itemscoreu.util.SelfRegisteringListener;
+import net.kyori.adventure.key.Key;
+import net.minecraft.server.level.ServerPlayer;
+import org.apache.logging.log4j.util.TriConsumer;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockPlaceEvent;
@@ -10,10 +16,12 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 
 public class CustomItemListener extends SelfRegisteringListener {
@@ -21,7 +29,18 @@ public class CustomItemListener extends SelfRegisteringListener {
         super(plugin);
     }
 
-    // TODO: 2/15/2024 FIX SO TWO ITEMS WONT FIRE AT ONE TICK
+    @EventHandler
+    public void onPlayerRespawn(PlayerRespawnEvent event){
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                Player player = event.getPlayer();
+                Nms.get().iterateTroughCooldowns(player, (key, start, end) -> Nms.get().sendCooldown(player,  key, end-start));
+            }
+        }.runTaskLater(ItemsCoreU.getInstance(), 20);
+
+    }
+
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
         if (!event.getAction().isRightClick()) return;
@@ -54,6 +73,7 @@ public class CustomItemListener extends SelfRegisteringListener {
         if (customInventory != null && !customInventory.shouldAutoUpdateItems()) return;
         CustomItem.consumeIfCustom(event.getCurrentItem(), customItem -> event.setCurrentItem(customItem.update(event.getCurrentItem())));
     }
+
     @EventHandler
     public void updateItemOnJoin(PlayerJoinEvent event){
         PlayerInventory inventory = event.getPlayer().getInventory();

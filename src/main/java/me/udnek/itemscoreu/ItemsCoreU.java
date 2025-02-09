@@ -2,6 +2,8 @@ package me.udnek.itemscoreu;
 
 import me.udnek.itemscoreu.customattribute.ClearAttributeCommand;
 import me.udnek.itemscoreu.customattribute.CustomAttributeCommand;
+import me.udnek.itemscoreu.customeffect.CustomEffect;
+import me.udnek.itemscoreu.customeffect.CustomEffectCommand;
 import me.udnek.itemscoreu.customentitylike.block.CustomBlockManager;
 import me.udnek.itemscoreu.customentitylike.block.command.LoadedCustomBlocksCommand;
 import me.udnek.itemscoreu.customentitylike.block.command.SetCustomBlockCommand;
@@ -27,6 +29,7 @@ import me.udnek.itemscoreu.resourcepack.ResourcePackablePlugin;
 import me.udnek.itemscoreu.serializabledata.SerializableDataManager;
 import net.kyori.adventure.key.Key;
 import net.minecraft.network.protocol.game.ClientboundGameEventPacket;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.DyeItem;
 import net.minecraft.world.item.crafting.ArmorDyeRecipe;
 import org.bukkit.Bukkit;
@@ -54,8 +57,6 @@ public final class ItemsCoreU extends JavaPlugin implements ResourcePackablePlug
         instance = this;
 
         CustomRegistry<CustomRegistry<?>> registry = CustomRegistries.REGISTRY;
-
-
         // EVENTS
         new CustomItemListener(this);
         new CraftListener(this);
@@ -76,6 +77,7 @@ public final class ItemsCoreU extends JavaPlugin implements ResourcePackablePlug
         getCommand("set_blocku").setExecutor(new SetCustomBlockCommand());
         getCommand("custom_block_entities").setExecutor(new LoadedCustomBlocksCommand());
         getCommand("play_soundu").setExecutor(new CustomSoundCommand());
+        getCommand("effectu").setExecutor(new CustomEffectCommand());
 
         // TICKERS
         CustomEntityManager.getInstance().start(this);

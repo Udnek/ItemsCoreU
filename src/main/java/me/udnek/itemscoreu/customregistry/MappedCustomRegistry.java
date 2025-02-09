@@ -2,6 +2,7 @@ package me.udnek.itemscoreu.customregistry;
 
 import com.google.common.base.Preconditions;
 import me.udnek.itemscoreu.util.LogUtils;
+import net.minecraft.world.entity.animal.Wolf;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.event.Listener;
@@ -9,16 +10,14 @@ import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public class MappedCustomRegistry<T extends Registrable> extends AbstractRegistrable implements CustomRegistry<T>{
 
     protected HashMap<String, T> map = new HashMap<>();
+    protected List<String> indexes = new ArrayList<>();
     protected String rawId;
 
     public MappedCustomRegistry(@NotNull String rawId){
@@ -34,6 +33,7 @@ public class MappedCustomRegistry<T extends Registrable> extends AbstractRegistr
         custom.initialize(plugin);
         Preconditions.checkArgument(!map.containsKey(custom.getId()), "Registry already contains key " + custom.getId());
         map.put(custom.getId(), custom);
+        indexes.add(custom.getId());
         logRegistered(custom);
         if (custom instanceof Listener listener){
             Bukkit.getPluginManager().registerEvents(listener, plugin);
@@ -46,6 +46,17 @@ public class MappedCustomRegistry<T extends Registrable> extends AbstractRegistr
     public T get(@Nullable String id) {
         return map.get(id);
     }
+
+    @Override
+    public @NotNull T get(int index) {
+        return Objects.requireNonNull(get(indexes.get(index)));
+    }
+
+    @Override
+    public int getIndex(@NotNull T custom) {
+        return indexes.indexOf(custom.getId());
+    }
+
     @Override
     public boolean contains(@Nullable String id) {
         return map.containsKey(id);
