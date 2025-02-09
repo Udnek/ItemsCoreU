@@ -24,7 +24,6 @@ public class LanguageMerger implements RpFileMerger {
 
     @Override
     public void merge(){
-        System.out.println(jsons);
         merged = new JsonObject();
         for (JsonObject json : jsons) {
             for (Map.Entry<String, JsonElement> entry : json.asMap().entrySet()) {

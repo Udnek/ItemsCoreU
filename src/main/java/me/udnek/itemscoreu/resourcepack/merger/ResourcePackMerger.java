@@ -1,12 +1,17 @@
 package me.udnek.itemscoreu.resourcepack.merger;
 
 import com.google.common.base.Preconditions;
+import me.udnek.itemscoreu.customcomponent.CustomComponentType;
+import me.udnek.itemscoreu.customevent.ResourcepackInitializationEvent;
+import me.udnek.itemscoreu.customitem.CustomItem;
+import me.udnek.itemscoreu.customregistry.CustomRegistries;
 import me.udnek.itemscoreu.resourcepack.FileType;
 import me.udnek.itemscoreu.resourcepack.ResourcePackablePlugin;
 import me.udnek.itemscoreu.resourcepack.VirtualResourcePack;
 import me.udnek.itemscoreu.resourcepack.path.RpPath;
 import me.udnek.itemscoreu.resourcepack.path.SamePathsContainer;
 import me.udnek.itemscoreu.resourcepack.path.SortedPathsContainer;
+import me.udnek.itemscoreu.resourcepack.path.VirtualRpJsonFile;
 import me.udnek.itemscoreu.util.LogUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
@@ -27,9 +32,8 @@ import java.util.function.Consumer;
 public class ResourcePackMerger {
 
     public static final RpPath LANG_DIRECTORY = new RpPath(null, "assets/*/lang");
-    public static final RpPath ITEM_MODEL_DIRECTORY = new RpPath(null, "assets/minecraft/models/item");
 
-    private static final RpPath[] MERGE_DIRECTORIES = new RpPath[]{LANG_DIRECTORY, ITEM_MODEL_DIRECTORY};
+    private static final RpPath[] MERGE_DIRECTORIES = new RpPath[]{LANG_DIRECTORY};
 
     private final SortedPathsContainer container = new SortedPathsContainer();
 
@@ -60,11 +64,32 @@ public class ResourcePackMerger {
         }
         resourcePacks.forEach(VirtualResourcePack::initialize);
 
+        List<RpPath> files = new ArrayList<>();
+
         for (VirtualResourcePack resourcePack : resourcePacks) {
-            for (RpPath path : resourcePack.getAllFoundFiles()) {
-                container.add(path);
-            }
+            files.addAll(resourcePack.getAllFoundFiles());
         }
+
+        LogUtils.pluginLog("AutoAdding:");
+        List<VirtualRpJsonFile> toAdd = new ArrayList<>();
+        for (CustomItem item : CustomRegistries.ITEM.getAll()) {
+            toAdd.addAll(item.getComponents().getOrDefault(CustomComponentType.AUTO_GENERATING_FILES_ITEM).getFiles(item));
+        }
+        ResourcepackInitializationEvent event = new ResourcepackInitializationEvent();
+        event.callEvent();
+        toAdd.addAll(event.getFiles());
+        for (VirtualRpJsonFile file : toAdd) {
+            if (files.contains(file)) continue;
+            LogUtils.pluginLog(file);
+            files.add(file);
+        }
+        for (VirtualRpJsonFile file : event.getForcedFiles()) {
+            LogUtils.pluginLog(file);
+            files.add(file);
+        }
+        LogUtils.pluginLog("Finished AutoAdding");
+
+        files.forEach(container::add);
 
         container.debug();
         for (SamePathsContainer containerSame : container.getSames()) {
@@ -84,9 +109,7 @@ public class ResourcePackMerger {
 
     public void autoMergeCopy(@NotNull SamePathsContainer container){
         RpFileMerger merger;
-        if (container.getExample().isBelow(ITEM_MODEL_DIRECTORY)){
-            merger = new ItemModelMerger();
-        } else if (container.getExample().isBelow(LANG_DIRECTORY)){
+        if (container.getExample().isBelow(LANG_DIRECTORY)){
             merger = new LanguageMerger();
         } else {
             throw new RuntimeException("Directory can not be merged automatically");

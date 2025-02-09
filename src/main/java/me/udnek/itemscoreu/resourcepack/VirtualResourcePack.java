@@ -35,27 +35,6 @@ public class VirtualResourcePack {
         for (RpPath file : files) {
             LogUtils.pluginLog(file);
         }
-        LogUtils.pluginLog("AutoAdding:");
-        List<VirtualRpJsonFile> toAdd = new ArrayList<>();
-        for (CustomItem item : CustomRegistries.ITEM.getAllByPlugin(plugin)) {
-            toAdd.addAll(item.getComponents().getOrDefault(CustomComponentType.AUTO_GENERATING_FILES_ITEM).getFiles(item));
-        }
-        ResourcepackInitializationEvent event = new ResourcepackInitializationEvent(this);
-        event.callEvent();
-        toAdd.addAll(event.getFiles());
-        for (VirtualRpJsonFile file : toAdd) {
-            if (files.contains(file)) continue;
-            VirtualRpJsonFile pluginFile = new VirtualRpJsonFile(this, file.getData(), file.getPath());
-            LogUtils.pluginLog(pluginFile);
-            files.add(pluginFile);
-        }
-        for (VirtualRpJsonFile file : event.getForcedFiles()) {
-            VirtualRpJsonFile pluginFile = new VirtualRpJsonFile(this, file.getData(), file.getPath());
-            LogUtils.pluginLog(pluginFile);
-            files.add(pluginFile);
-        }
-        LogUtils.pluginLog("Finished AutoAdding");
-
         LogUtils.pluginLog("ResourcePack "+ plugin.getName() +" initialization ended");
     }
 

@@ -12,10 +12,8 @@ public class ResourcepackInitializationEvent extends CustomEvent{
 
     protected List<VirtualRpJsonFile> files = new ArrayList<>();
     protected List<VirtualRpJsonFile> forced = new ArrayList<>();
-    protected VirtualResourcePack resourcePack;
 
-    public ResourcepackInitializationEvent(@NotNull VirtualResourcePack resourcePack){
-        this.resourcePack = resourcePack;
+    public ResourcepackInitializationEvent(){
     }
 
     public void addFile(@NotNull VirtualRpJsonFile file){
@@ -30,12 +28,4 @@ public class ResourcepackInitializationEvent extends CustomEvent{
     }
 
     public @NotNull List<VirtualRpJsonFile> getForcedFiles() {return forced;}
-
-    public @NotNull ResourcePackablePlugin getPlugin(){
-        return getResourcePack().getPlugin();
-    }
-
-    public @NotNull VirtualResourcePack getResourcePack() {
-        return resourcePack;
-    }
 }
