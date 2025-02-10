@@ -8,7 +8,6 @@ import me.udnek.itemscoreu.customentitylike.EntityLikeManager;
 import me.udnek.itemscoreu.nms.NmsUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket;
-import net.minecraft.world.level.block.BedBlock;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
@@ -41,7 +40,7 @@ public class CustomBlockManager extends EntityLikeManager<TileState, CustomBlock
 
     private static CustomBlockManager instance;
 
-    private final HashMap<Player, BreakData> breaking = new HashMap<>();
+    private final HashMap<Block, BreakData> breaking = new HashMap<>();
 
     public static CustomBlockManager getInstance() {
         if (instance == null) {
@@ -78,48 +77,71 @@ public class CustomBlockManager extends EntityLikeManager<TileState, CustomBlock
         CustomBlockType blockType = CustomBlockType.get(event.getBlock());
         if (blockType == null) return;
         if (!blockType.doCustomBreakTimeAndAnimation()) return;
-        if (breaking.containsKey(event.getPlayer())) return;
+        BreakData breakData = breaking.get(event.getBlock());
+        if (breakData == null){
+            breakData = new BreakData(blockType, event.getPlayer());
+            breaking.put(event.getBlock(), breakData);
+        } else {
+            breakData.progress.put(event.getPlayer(), 0f);
+        }
         event.setCancelled(true);
         blockType.onDamage(event);
-        breaking.put(event.getPlayer(), new BreakData(event.getBlock(), blockType));
     }
 
     @EventHandler
     public void onBlockAbortDamage(BlockDamageAbortEvent event){
         CustomBlockType blockType = CustomBlockType.get(event.getBlock());
         if (blockType == null) return;
-        breaking.remove(event.getPlayer());
+        BreakData breakData = breaking.get(event.getBlock());
+        if (breakData == null) return;
+        breakData.progress.remove(event.getPlayer());
+        if (breakData.progress.isEmpty()) breaking.remove(event.getBlock());
     }
 
     @Override
     public void run() {
         super.run();
         if (breaking.isEmpty()) return;
-        List<Player> toRemove = new ArrayList<>();
-        for (Map.Entry<Player, BreakData> entry : breaking.entrySet()) {
+        List<Block> toRemove = new ArrayList<>();
+        for (Map.Entry<Block, BreakData> entry : breaking.entrySet()) {
             BreakData breakData = entry.getValue();
-            Player player = entry.getKey();
+            Block block = entry.getKey();
 
-            breakData.progress = Math.clamp(breakData.progress + breakData.customBlock.getCustomBreakProgress(player, breakData.block), 0, 1);
+            Player bestPlayer = null;
+            float bestProgress = 0;
+            for (Map.Entry<Player, Float> progressEntry : breakData.progress.entrySet()) {
+                Player player = progressEntry.getKey();
+                float progress = Math.clamp(
+                        progressEntry.getValue() +
+                                breakData.customBlock.getCustomBreakProgress(player, block), 0, 1);
+                progressEntry.setValue(progress);
+                if (progress == 1){
+                    toRemove.add(block);
+                    player.breakBlock(block);
+                    bestPlayer = null;
+                    break;
+                } else {
+                    if (progress > bestProgress){
+                        bestPlayer = player;
+                        bestProgress = progress;
+                    }
+                }
+            }
 
-            if (breakData.progress == 1) {
-                player.breakBlock(breakData.block);
-                toRemove.add(player);
-            } else {
-                breakData.customBlock.customBreakTickProgress(breakData.block, player, breakData.progress);
+            if (bestPlayer != null){
+                breakData.customBlock.customBreakTickProgress(block, bestPlayer, bestProgress);
             }
         }
         toRemove.forEach(breaking::remove);
     }
 
     public static class BreakData {
-        private final @NotNull Block block;
         private final @NotNull CustomBlockType customBlock;
-        private float progress = 0;
+        private final HashMap<Player, Float> progress = new HashMap<>();
 
-        public BreakData(@NotNull Block block, @NotNull CustomBlockType customBlock) {
-            this.block = block;
+        public BreakData(@NotNull CustomBlockType customBlock, @NotNull Player player) {
             this.customBlock = customBlock;
+            progress.put(player, 0f);
         }
     }
 

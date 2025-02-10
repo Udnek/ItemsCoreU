@@ -200,7 +200,7 @@ public interface AutoGeneratingFilesItem extends CustomComponent<CustomItem> {
             return model;
         }
     }
-    class Handheld20x20 extends Bow{
+    class Handheld20x20 extends Generated20x20{
         @Override
         public @NotNull JsonObject getModel(@NotNull Key itemModel) {
             @Nullable JsonObject model = super.getModel(itemModel);

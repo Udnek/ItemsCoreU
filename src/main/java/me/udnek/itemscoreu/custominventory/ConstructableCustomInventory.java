@@ -5,6 +5,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public abstract class ConstructableCustomInventory implements CustomInventory{
 
@@ -13,12 +14,13 @@ public abstract class ConstructableCustomInventory implements CustomInventory{
         initialize();
     }
     protected void initialize(){
-        generateInventory(getInventorySize(), getDisplayName());
+        generateInventory(getInventorySize(), getTitle());
     }
-    public abstract Component getDisplayName();
+    public abstract @Nullable Component getTitle();
     public abstract int getInventorySize();
-    public void generateInventory(int size, Component title){
-        inventory = Bukkit.createInventory(this, size, title);
+    public void generateInventory(int size, @Nullable Component title){
+        if (title == null) inventory = Bukkit.createInventory(this, size);
+        else inventory = Bukkit.createInventory(this, size, title);
     }
 
     public void addItem(int slot, int amount){

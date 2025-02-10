@@ -14,7 +14,7 @@ public interface CustomInventory extends InventoryHolder {
     static boolean isCustom(@NotNull Inventory inventory){
         return inventory.getHolder() instanceof CustomInventory;
     }
-    static boolean isCustom(InventoryHolder holder){
+    static boolean isCustom(@NotNull InventoryHolder holder){
         return holder instanceof CustomInventory;
     }
     static @Nullable CustomInventory get(@NotNull Inventory inventory){
@@ -25,12 +25,12 @@ public interface CustomInventory extends InventoryHolder {
     static boolean isSame(CustomInventory customInventory, @NotNull Inventory inventory){
         return get(inventory) == customInventory;
     }
-    default void open(Player player) {player.openInventory(getInventory());}
-    default void onPlayerClicksItem(InventoryClickEvent event){}
-    default void afterPlayerClicksItem(InventoryClickEvent event){}
-    default void onPlayerDragsItem(InventoryDragEvent event){}
-    default void onPlayerClosesInventory(InventoryCloseEvent event){}
-    default void onPlayerOpensInventory(InventoryOpenEvent event){}
+    default void open(@NotNull Player player) {player.openInventory(getInventory());}
+    default void onPlayerClicksItem(@NotNull InventoryClickEvent event){}
+    default void afterPlayerClicksItem(@NotNull InventoryClickEvent event){}
+    default void onPlayerDragsItem(@NotNull InventoryDragEvent event){}
+    default void onPlayerClosesInventory(@NotNull InventoryCloseEvent event){}
+    default void onPlayerOpensInventory(@NotNull InventoryOpenEvent event){}
     default boolean shouldAutoUpdateItems(){return true;}
 }
 

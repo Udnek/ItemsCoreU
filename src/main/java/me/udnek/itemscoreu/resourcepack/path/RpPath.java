@@ -93,7 +93,7 @@ public class RpPath {
     }
 
     public boolean isSame(@NotNull RpPath other){
-        return this.path.equals(other.path);
+        return FileManager.removeSlashes(this.path).equals(FileManager.removeSlashes(other.path));
     }
 
     @Override
