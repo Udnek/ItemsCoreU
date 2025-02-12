@@ -1,7 +1,6 @@
 package me.udnek.itemscoreu.nms;
 
 import com.mojang.datafixers.util.Pair;
-import io.papermc.paper.datacomponent.item.UseCooldown;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import me.udnek.itemscoreu.customenchantment.NmsEnchantmentContainer;
 import me.udnek.itemscoreu.nms.loot.LootContextBuilder;
@@ -75,7 +74,9 @@ import org.bukkit.craftbukkit.v1_21_R3.util.CraftLocation;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.*;
+import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.MerchantRecipe;
 import org.bukkit.map.MapCursor;
 import org.bukkit.util.StructureSearchResult;
 import org.jetbrains.annotations.NotNull;
@@ -84,7 +85,6 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public class Nms {
@@ -469,7 +469,6 @@ public class Nms {
     public void showDebugBlock(@NotNull Player player, @NotNull Location location, int color, int time){
         showDebugBlock(player, location, color, time, "");
     }
-
 
     ///////////////////////////////////////////////////////////////////////////
     // ENTITY

@@ -12,6 +12,7 @@ import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ShapedRecipeBuilder {
@@ -22,6 +23,7 @@ public class ShapedRecipeBuilder {
     private Map<Character, Material> materialIngredients = new HashMap<>();
     private Map<Character, CustomItem> customItemIngredients = new HashMap<>();
     private Map<Character, Tag<Material>> tagIngredients = new HashMap<>();
+    private Map<Character, List<ItemStack>> stackIngiridients = new HashMap<>();
 
     public ShapedRecipeBuilder(@NotNull Material replaceMaterial){
         this.replace = new ItemStack(replaceMaterial);
@@ -53,6 +55,11 @@ public class ShapedRecipeBuilder {
         return this;
     }
 
+    public ShapedRecipeBuilder stackIngredients(@NotNull Map<Character, List<ItemStack>> stackIngredients){
+        this.stackIngiridients = stackIngredients;
+        return this;
+    }
+
     public ShapedRecipeBuilder setAmount(int amount){
         this.replace.setAmount(amount);
         return this;
@@ -79,6 +86,9 @@ public class ShapedRecipeBuilder {
         }
         for (Map.Entry<Character, Tag<Material>> tag : tagIngredients.entrySet()) {
             recipe.setIngredient(tag.getKey(), new RecipeChoice.MaterialChoice(tag.getValue()));
+        }
+        for (Map.Entry<Character, List<ItemStack>> entry : stackIngiridients.entrySet()) {
+            recipe.setIngredient(entry.getKey(), new RecipeChoice.ExactChoice(entry.getValue()));
         }
 
         RecipeManager.getInstance().register(recipe);
