@@ -5,5 +5,5 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 public interface CustomHud {
-    @NotNull Component getText(Player player);
+    @NotNull Component getText(@NotNull Player player);
 }

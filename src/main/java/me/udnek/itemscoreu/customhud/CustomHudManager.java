@@ -1,22 +1,55 @@
 package me.udnek.itemscoreu.customhud;
 
+import me.udnek.itemscoreu.util.TickingTask;
+import net.kyori.adventure.text.Component;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 
-public class CustomHudManager {
+public class CustomHudManager extends TickingTask {
 
     private static final HashMap<JavaPlugin, CustomHud> tickets = new HashMap<>();
 
-    public static void addTicket(JavaPlugin plugin, CustomHud customHud){
+    private static CustomHudManager instance;
+
+    public static @NotNull CustomHudManager getInstance() {
+        if (instance == null) instance = new CustomHudManager();
+        return instance;
+
+    }
+
+    private CustomHudManager(){}
+
+
+    public void addTicket(@NotNull JavaPlugin plugin, @NotNull CustomHud customHud){
         tickets.put(plugin, customHud);
     }
 
-    public static void removeTicket(JavaPlugin plugin){
+    public void removeTicket(@NotNull JavaPlugin plugin){
         tickets.remove(plugin);
     }
 
-    public static HashMap<JavaPlugin, CustomHud> getAllTickets() {
+    public @NotNull HashMap<JavaPlugin, CustomHud> getAllTickets() {
         return tickets;
+    }
+
+    @Override
+    public int getDelay() {return 1;}
+
+    @Override
+    public void run() {
+        for (Player player : Bukkit.getOnlinePlayers()) {
+
+            Component text = Component.empty();
+
+            for (CustomHud customHud : getAllTickets().values()) {
+                text =  text.append(customHud.getText(player));
+            }
+
+            player.sendActionBar(text);
+        }
     }
 }

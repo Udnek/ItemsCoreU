@@ -1,16 +1,19 @@
 package me.udnek.itemscoreu.customequipmentslot;
 
-import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
 
 public interface SingleSlot extends CustomEquipmentSlot{
-    @Nullable Integer getSlot(@NotNull Entity entity);
+    @Nullable Integer getSlot(@NotNull LivingEntity entity);
 
     @Override
-    default void getAllSlots(@NotNull Entity entity, @NotNull Consumer<@NotNull Integer> consumer){
+    default boolean isAppropriateSlot(@NotNull LivingEntity entity, int slot) {return ((Integer) slot).equals(getSlot(entity));}
+
+    @Override
+    default void getAllSlots(@NotNull LivingEntity entity, @NotNull Consumer<@NotNull Integer> consumer){
         Integer slot = getSlot(entity);
         if (slot != null) consumer.accept(slot);
     }

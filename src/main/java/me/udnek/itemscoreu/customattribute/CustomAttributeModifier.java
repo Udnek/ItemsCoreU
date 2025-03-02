@@ -1,7 +1,9 @@
 package me.udnek.itemscoreu.customattribute;
 
 import me.udnek.itemscoreu.customequipmentslot.CustomEquipmentSlot;
+import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.AttributeModifier;
+import org.bukkit.inventory.EquipmentSlotGroup;
 import org.jetbrains.annotations.NotNull;
 
 public class CustomAttributeModifier {
@@ -9,6 +11,10 @@ public class CustomAttributeModifier {
     protected final double amount;
     protected final AttributeModifier.Operation operation;
     protected final CustomEquipmentSlot equipmentSlot;
+
+    public CustomAttributeModifier(double amount, @NotNull AttributeModifier.Operation operation){
+        this(amount, operation, CustomEquipmentSlot.ANY_VANILLA);
+    }
 
     public CustomAttributeModifier(double amount, @NotNull AttributeModifier.Operation operation, @NotNull CustomEquipmentSlot equipmentSlot){
         this.amount = amount;
@@ -18,4 +24,9 @@ public class CustomAttributeModifier {
     public double getAmount() {return amount;}
     public @NotNull AttributeModifier.Operation getOperation() {return operation;}
     public @NotNull CustomEquipmentSlot getEquipmentSlot() {return equipmentSlot;}
+    public @NotNull AttributeModifier toVanilla(@NotNull NamespacedKey key){
+        EquipmentSlotGroup equipmentSlot = this.equipmentSlot.getVanillaGroup();
+        if (equipmentSlot == null) equipmentSlot = EquipmentSlotGroup.ANY;
+        return new AttributeModifier(key, amount, operation, equipmentSlot);
+    }
 }

@@ -1,27 +1,33 @@
 package me.udnek.itemscoreu.customitem;
 
 import com.google.common.base.Preconditions;
+import io.papermc.paper.datacomponent.DataComponentTypes;
 import me.udnek.itemscoreu.customcomponent.AbstractComponentHolder;
 import me.udnek.itemscoreu.customevent.CustomItemGeneratedEvent;
-import me.udnek.itemscoreu.utils.ItemUtils;
-import net.kyori.adventure.text.Component;
-import org.bukkit.Bukkit;
+import me.udnek.itemscoreu.customrecipe.RecipeManager;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.Tag;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
-public class VanillaBasedCustomItem extends AbstractComponentHolder<CustomItem> implements CustomItem{
+@ApiStatus.NonExtendable
+public class VanillaBasedCustomItem extends AbstractComponentHolder<CustomItem> implements UpdatingCustomItem {
 
+    protected ItemStack itemStack;
+    protected RepairData repairData = null;
     protected final Material material;
-    protected String id;
+    private String id;
+
     public VanillaBasedCustomItem(@NotNull Material material){
-        Preconditions.checkArgument(material != null, "Material can not be null!");
         this.material = material;
     }
 
@@ -31,32 +37,58 @@ public class VanillaBasedCustomItem extends AbstractComponentHolder<CustomItem> 
     public @NotNull String getId() {return id;}
     @Override
     public @NotNull ItemStack getItem() {
-        ItemStack itemStack = new ItemStack(material);
-        itemStack.editMeta(itemMeta -> itemMeta.lore(List.of(Component.text("REPLACED"))));
-        CustomItemGeneratedEvent event = new CustomItemGeneratedEvent(this, itemStack, null);
-        event.callEvent();
-        event.getLoreBuilder().buildAndApply(event.getItemStack());
-        return event.getItemStack();
-    }
-    public ItemStack getFrom(@NotNull ItemStack itemStack){
-        // TODO: 8/19/2024 MAKE ITEM MODIFICATORS
-        Preconditions.checkArgument(itemStack.getType() == material, "Can not create from different material!");
-        return getItem();
+        if (itemStack == null){
+            ItemStack newItemStack = new ItemStack(material);
+            CustomItemGeneratedEvent event = new CustomItemGeneratedEvent(this, newItemStack, null, null);
+            event.callEvent();
+            event.getLoreBuilder().buildAndApply(event.getItemStack());
+            repairData = event.getRepairData();
+            itemStack = event.getItemStack();
+            if (repairData != null) itemStack.setData(DataComponentTypes.REPAIRABLE, repairData.getSuitableVanillaRepairable());
+        }
+        return itemStack.clone();
     }
 
     @Override
-    public void getRecipes(@NotNull Consumer<@NotNull Recipe> consumer) {
-        ItemStack item = getItem();
-        List<Recipe> rawRecipes = Bukkit.getRecipesFor(item);
-        for (Recipe recipe : rawRecipes) {
-            if (ItemUtils.isSameIds(recipe.getResult(), item)) {
-                consumer.accept(recipe);
-            }
-        }
+    public @Nullable RepairData getRepairData() {
+        return repairData;
     }
+
+    @Override
+    public @NotNull NamespacedKey getNewRecipeKey() {
+        AtomicInteger amount = new AtomicInteger(0);
+        getRecipes(recipe -> amount.incrementAndGet());
+        if (amount.get() == 0) getKey();
+        return NamespacedKey.fromString(getId() + "_" + amount.get());
+    }
+
+    @Override
+    public void setCooldown(@NotNull Player player, int ticks) {player.setCooldown(getItem(), ticks);}
+
+    @Override
+    public int getCooldown(@NotNull Player player) {return player.getCooldown(getItem());}
+
+    @Override
+    public boolean isTagged(@NotNull Tag<Material> tag) {return tag.isTagged(material);}
+
+    @Override
+    public void getRecipes(@NotNull Consumer<@NotNull Recipe> consumer) {
+        RecipeManager.getInstance().getRecipesAsResult(getItem(), consumer);
+    }
+
+    @Override
+    public void registerRecipe(@NotNull Recipe recipe) {
+        RecipeManager.getInstance().register(recipe);
+    }
+
     @Override
     public void initialize(@NotNull Plugin plugin) {
         Preconditions.checkArgument(id == null, "Item already initialized!");
         id = new NamespacedKey(plugin, getRawId()).asString();
+    }
+
+    @Override
+    public @NotNull String translationKey() {
+        return material.translationKey();
     }
 }

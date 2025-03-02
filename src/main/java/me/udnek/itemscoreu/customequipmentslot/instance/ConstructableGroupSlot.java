@@ -4,7 +4,8 @@ import me.udnek.itemscoreu.customequipmentslot.AbstractCustomEquipmentSlot;
 import me.udnek.itemscoreu.customequipmentslot.CustomEquipmentSlot;
 import me.udnek.itemscoreu.customequipmentslot.GroupSlot;
 import me.udnek.itemscoreu.customequipmentslot.SingleSlot;
-import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.EquipmentSlotGroup;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -14,25 +15,32 @@ import java.util.function.Consumer;
 
 public class ConstructableGroupSlot extends AbstractCustomEquipmentSlot implements GroupSlot {
     protected final String translation;
-    protected final EquipmentSlotGroup vanilla;
+    protected final EquipmentSlotGroup vanillaGroup;
+    private final EquipmentSlot vanillaSlot;
     protected final Set<SingleSlot> subs;
 
-    public ConstructableGroupSlot(@NotNull String rawId, @NotNull Set<@NotNull SingleSlot> subs, @Nullable EquipmentSlotGroup vanilla, @NotNull String translation) {
+    public ConstructableGroupSlot(@NotNull String rawId, @NotNull Set<@NotNull SingleSlot> subs, @Nullable EquipmentSlotGroup vanillaGroup, @Nullable EquipmentSlot vanillaSlot, @NotNull String translation) {
         super(rawId);
         this.translation = translation;
-        this.vanilla = vanilla;
+        this.vanillaGroup = vanillaGroup;
+        this.vanillaSlot = vanillaSlot;
         this.subs = subs;
     }
     @Override
-    public boolean isAppropriateSlot(@NotNull Entity entity, int slot) {
+    public boolean isAppropriateSlot(@NotNull LivingEntity entity, int slot) {
         return subs.stream().anyMatch(sub -> sub.isAppropriateSlot(entity, slot));
     }
     @Override
-    public @Nullable EquipmentSlotGroup getVanillaAlternative() {
-        return vanilla;
+    public @Nullable EquipmentSlotGroup getVanillaGroup() {
+        return vanillaGroup;
     }
+
     @Override
-    public void getAllSlots(@NotNull Entity entity, @NotNull Consumer<@NotNull Integer> consumer) {
+    @Nullable
+    public EquipmentSlot getVanillaSlot() {return vanillaSlot;}
+
+    @Override
+    public void getAllSlots(@NotNull LivingEntity entity, @NotNull Consumer<@NotNull Integer> consumer) {
         subs.forEach(singleSlot -> singleSlot.getAllSlots(entity, consumer));
     }
     @Override

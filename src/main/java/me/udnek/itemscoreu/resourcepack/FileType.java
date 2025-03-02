@@ -10,13 +10,14 @@ public enum FileType {
     MCMETA("mcmeta"),
     VSH("vsh"),
     FSH("fsh"),
+    OGG("ogg"),
     UNKNOWN(null);
 
     public final @Nullable String extension;
     FileType(@Nullable String extension){
         this.extension = extension;
     }
-    public static @NotNull FileType get(String path){
+    public static @NotNull FileType get(@NotNull String path){
         for (FileType value : values()) {
             if (value.extension == null) continue;
             if (path.endsWith("."+value.extension)) return value;

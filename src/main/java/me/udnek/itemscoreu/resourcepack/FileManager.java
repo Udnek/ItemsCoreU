@@ -33,17 +33,15 @@ public class FileManager{
         return first + "/" + second;
     }
 
-    public static @NotNull InputStream getFile(@NotNull Class<?> clazz, @NotNull String path){
+    public static @NotNull InputStream getInputStream(@NotNull Class<?> clazz, @NotNull String path){
         Preconditions.checkArgument(isFile(clazz, path), "Can not read file: " + path);
         return clazz.getClassLoader().getResourceAsStream(path);
     }
 
+
     public static boolean isFile(@NotNull Class<?> clazz, @NotNull String path){
         URL resource = clazz.getClassLoader().getResource(path);
         if (resource == null) return false;
-        //LogUtils.pluginLog("Resource: " + resource);
-        //LogUtils.pluginLog("File: " + resource.getFile());
-        //LogUtils.pluginLog("Path: " + resource.getPath());
         return FileType.get(removeSlashes(resource.getPath())) != FileType.UNKNOWN;
     }
 
@@ -52,7 +50,7 @@ public class FileManager{
         return resources.isEmpty();
     }
 
-    public static List<String> getAllResources(@NotNull Class<?> clazz, @NotNull String path){
+    public static @NotNull List<String> getAllResources(@NotNull Class<?> clazz, @NotNull String path){
         path = removeSlashes(path) + "/";
         String[] allResources = getAllResourcesInternal(clazz, path);
         List<String> result = new ArrayList<>();
@@ -63,7 +61,7 @@ public class FileManager{
         return result;
     }
 
-    private static String[] getAllResourcesInternal(Class<?> clazz, String path){
+    private static @NotNull String[] getAllResourcesInternal(@NotNull Class<?> clazz, @NotNull String path){
         URL dirURL = clazz.getClassLoader().getResource(path);
         if (dirURL != null && dirURL.getProtocol().equals("file")) {
             /* A file path: easy enough */

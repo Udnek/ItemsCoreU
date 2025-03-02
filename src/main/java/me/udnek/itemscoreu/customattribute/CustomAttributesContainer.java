@@ -2,48 +2,28 @@ package me.udnek.itemscoreu.customattribute;
 
 import me.udnek.itemscoreu.customequipmentslot.CustomEquipmentSlot;
 import org.bukkit.attribute.AttributeModifier;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 
-public class CustomAttributesContainer{
-
-    private final HashMap<CustomAttribute, List<CustomAttributeModifier>> attributes = new HashMap<>();
+public class CustomAttributesContainer extends AbstractAttributeContainer<CustomAttribute, CustomAttributeModifier, CustomAttributesContainer>{
 
     private CustomAttributesContainer(){}
 
-    public static CustomAttributesContainer empty(){return new CustomAttributesContainer();}
-    public List<CustomAttributeModifier> get(CustomAttribute customAttribute){return new ArrayList<>(attributes.get(customAttribute));}
-    public Map<CustomAttribute, List<CustomAttributeModifier>> getAll(){return new HashMap<>(attributes);}
-    public CustomAttributesContainer get(CustomEquipmentSlot slot){
+    public static @NotNull CustomAttributesContainer empty(){return new CustomAttributesContainer();}
+
+    @Override
+    public @NotNull CustomAttributesContainer get(@NotNull Predicate<@NotNull CustomEquipmentSlot> predicate) {
         CustomAttributesContainer newContainer = new CustomAttributesContainer();
         for (Map.Entry<CustomAttribute, List<CustomAttributeModifier>> entry : attributes.entrySet()) {
             CustomAttribute attribute = entry.getKey();
             for (CustomAttributeModifier modifier : entry.getValue()) {
-                if (modifier.getEquipmentSlot() != slot) continue;
-                newContainer.add(attribute, modifier);
+                if (predicate.test(modifier.getEquipmentSlot())) newContainer.add(attribute, modifier);
             }
-
         }
         return newContainer;
-    }
-    public boolean isEmpty(){
-        return attributes.isEmpty();
-    }
-    public boolean contains(CustomAttribute customAttribute){
-        return attributes.containsKey(customAttribute);
-    }
-    private void add(CustomAttribute attribute, CustomAttributeModifier modifier){
-        List<CustomAttributeModifier> modifiers = attributes.get(attribute);
-        if (modifiers == null){
-            modifiers = new ArrayList<>();
-            modifiers.add(modifier);
-            attributes.put(attribute, modifiers);
-            return;
-        }
-        modifiers.add(modifier);
     }
 
     public static class Builder{
@@ -52,17 +32,25 @@ public class CustomAttributesContainer{
         public Builder(){
             container = new CustomAttributesContainer();
         }
-        public Builder add(CustomAttribute customAttribute, double amount, AttributeModifier.Operation operation, CustomEquipmentSlot slot){
+        public @NotNull Builder add(@NotNull CustomAttributesContainer container){
+            for (Map.Entry<@NotNull CustomAttribute, @NotNull List<@NotNull CustomAttributeModifier>> entry : container.getAll().entrySet()) {
+                for (@NotNull CustomAttributeModifier modifier : entry.getValue()) {
+                    add(entry.getKey(), modifier);
+                }
+            }
+            return this;
+        }
+        public @NotNull Builder add(@NotNull CustomAttribute customAttribute, double amount, @NotNull AttributeModifier.Operation operation, @NotNull CustomEquipmentSlot slot){
             CustomAttributeModifier attributeModifier = new CustomAttributeModifier(amount, operation, slot);
             return add(customAttribute, attributeModifier);
         }
 
-        public Builder add(CustomAttribute customAttribute, CustomAttributeModifier attributeModifier){
+        public @NotNull Builder add(@NotNull CustomAttribute customAttribute, @NotNull CustomAttributeModifier attributeModifier){
             container.add(customAttribute, attributeModifier);
             return this;
         }
 
-        public CustomAttributesContainer build(){
+        public @NotNull CustomAttributesContainer build(){
             return container;
         }
 

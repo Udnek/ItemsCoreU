@@ -1,129 +1,95 @@
 package me.udnek.itemscoreu;
 
-import me.udnek.itemscoreu.customblock.CustomBlock;
-import me.udnek.itemscoreu.customblock.CustomBlockListener;
-import me.udnek.itemscoreu.customentity.CustomEntityCommand;
-import me.udnek.itemscoreu.customentity.CustomEntityManager;
-import me.udnek.itemscoreu.customequipmentslot.CustomEquipmentSlot;
-import me.udnek.itemscoreu.customevent.GlobalInitializationEndEvent;
-import me.udnek.itemscoreu.customhud.CustomHudTicker;
+import me.udnek.itemscoreu.customattribute.ClearAttributeCommand;
+import me.udnek.itemscoreu.customattribute.CustomAttributeCommand;
+import me.udnek.itemscoreu.customeffect.CustomEffect;
+import me.udnek.itemscoreu.customeffect.CustomEffectCommand;
+import me.udnek.itemscoreu.customentitylike.block.CustomBlockManager;
+import me.udnek.itemscoreu.customentitylike.block.command.LoadedCustomBlocksCommand;
+import me.udnek.itemscoreu.customentitylike.block.command.SetCustomBlockCommand;
+import me.udnek.itemscoreu.customentitylike.entity.CustomEntityManager;
+import me.udnek.itemscoreu.customentitylike.entity.command.LoadedCustomEntitiesCommand;
+import me.udnek.itemscoreu.customentitylike.entity.command.SummonCustomEntityCommand;
+import me.udnek.itemscoreu.customhelp.CustomHelpCommand;
+import me.udnek.itemscoreu.customhud.CustomHudManager;
 import me.udnek.itemscoreu.custominventory.CustomInventoryListener;
 import me.udnek.itemscoreu.customitem.CraftListener;
-import me.udnek.itemscoreu.customitem.CustomItem;
 import me.udnek.itemscoreu.customitem.CustomItemCommand;
 import me.udnek.itemscoreu.customitem.CustomItemListener;
+import me.udnek.itemscoreu.customitem.VanillaItemManager;
 import me.udnek.itemscoreu.customloot.LootTableUtils;
 import me.udnek.itemscoreu.customrecipe.RecipeManager;
 import me.udnek.itemscoreu.customregistry.CustomRegistries;
 import me.udnek.itemscoreu.customregistry.CustomRegistry;
-import me.udnek.itemscoreu.customregistry.Registrable;
+import me.udnek.itemscoreu.customregistry.InitializationProcess;
+import me.udnek.itemscoreu.customsound.CustomSoundCommand;
+import me.udnek.itemscoreu.nms.PacketHandler;
 import me.udnek.itemscoreu.resourcepack.ResourcePackCommand;
 import me.udnek.itemscoreu.resourcepack.ResourcePackablePlugin;
 import me.udnek.itemscoreu.serializabledata.SerializableDataManager;
-import me.udnek.itemscoreu.customadvancement.Adv;
-import me.udnek.itemscoreu.utils.LogUtils;
-import me.udnek.itemscoreu.utils.NMS.NMSTest;
-import me.udnek.itemscoreu.utils.NMS.ProtocolTest;
-import me.udnek.itemscoreu.utils.VanillaItemManager;
-import net.minecraft.world.effect.MobEffect;
+import net.kyori.adventure.key.Key;
+import net.minecraft.network.protocol.game.ClientboundGameEventPacket;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.DyeItem;
+import net.minecraft.world.item.crafting.ArmorDyeRecipe;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
+import org.bukkit.DyeColor;
+import org.bukkit.NamespacedKey;
+import org.bukkit.event.world.WorldEvent;
+import org.bukkit.inventory.Recipe;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 
 public final class ItemsCoreU extends JavaPlugin implements ResourcePackablePlugin {
-    private static JavaPlugin instance;
-    private static CustomHudTicker customHudTicker;
+    private static Plugin instance;
 
-
-    public static JavaPlugin getInstance(){
+    public static @NotNull Plugin getInstance(){
         return instance;
     }
+
+    public static @NotNull Key getKey(@NotNull String value){
+        return new NamespacedKey(getInstance(), value);
+    }
+
+    @Override
     public void onEnable() {
         instance = this;
 
-        CustomRegistry<CustomItem> item = CustomRegistries.ITEM;
-        CustomRegistry<CustomBlock> block = CustomRegistries.BLOCK;
-        CustomRegistry<CustomEquipmentSlot> equipmentSlot = CustomRegistries.EQUIPMENT_SLOT;
-
-        NMSTest.editItem();
-        NMSTest.testEnchantment();
-
+        CustomRegistry<CustomRegistry<?>> registry = CustomRegistries.REGISTRY;
         // EVENTS
         new CustomItemListener(this);
         new CraftListener(this);
         new CustomInventoryListener(this);
-        new CustomBlockListener(this);
         VanillaItemManager.getInstance();
         Bukkit.getPluginManager().registerEvents(new LootTableUtils(), this);
         RecipeManager.getInstance();
 
+
         // COMMANDS
-        this.getCommand("giveu").setExecutor(new CustomItemCommand());
-        this.getCommand("summonu").setExecutor(new CustomEntityCommand());
-        this.getCommand("resourcepacku").setExecutor(new ResourcePackCommand());
+        getCommand("giveu").setExecutor(new CustomItemCommand());
+        getCommand("summonu").setExecutor(new SummonCustomEntityCommand());
+        getCommand("resourcepacku").setExecutor(new ResourcePackCommand());
+        getCommand("helpu").setExecutor(CustomHelpCommand.getInstance());
+        getCommand("attributeu").setExecutor(new CustomAttributeCommand());
+        getCommand("clear_attribute_modifiers").setExecutor(new ClearAttributeCommand());
+        getCommand("custom_entities").setExecutor(new LoadedCustomEntitiesCommand());
+        getCommand("set_blocku").setExecutor(new SetCustomBlockCommand());
+        getCommand("custom_block_entities").setExecutor(new LoadedCustomBlocksCommand());
+        getCommand("play_soundu").setExecutor(new CustomSoundCommand());
+        getCommand("effectu").setExecutor(new CustomEffectCommand());
 
         // TICKERS
         CustomEntityManager.getInstance().start(this);
-        customHudTicker = new CustomHudTicker();
-        customHudTicker.start(this);
+        CustomBlockManager.getInstance().start(this);
+        CustomHudManager.getInstance().start(this);
 
-
-        Adv.run();
-
-
-
-
-
-
-        // TODO: 8/19/2024 REMOVE
-        //NMSTest.registerAttribute("test", 0, 0, 8);
-        MobEffect mobEffect = NMSTest.registerEffect();
-        VanillaItemManager.getInstance().replaceVanillaMaterial(Material.LEATHER_BOOTS);
-        ProtocolTest.kek();
+        PacketHandler.initialize();
 
         SerializableDataManager.loadConfig();
         this.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable(){
-            public void run(){
-                //LogUtils.pluginLog("Recipe registration started");
-                //LogUtils.pluginWarning("FIX RECIPE REGISTRATION");
-                //CustomItemRegistry.registerRecipes();
-
-                LogUtils.pluginLog("Vanilla disabler started");
-                VanillaItemManager.getInstance().start();
-
-                LogUtils.pluginLog("After initialization started");
-                for (CustomRegistry<?> registry : CustomRegistries.getRegistries()) {
-                    for (Registrable registrable : registry.getAll()) {
-                        registrable.afterInitialization();
-                    }
-                }
-
-                new GlobalInitializationEndEvent().callEvent();
-/*
-                Predicate<ItemStack> predicate = new Predicate<>() {
-                    @Override
-                    public boolean test(ItemStack itemStack) {
-                        return !CustomItem.isCustom(itemStack) && itemStack.getType() == Material.ROTTEN_FLESH;
-                    }
-                };
-                Nms.get().addLootPool(
-                        LootTables.SHULKER.getLootTable(),
-                        new CustomNmsLootPoolBuilder(
-                                new CustomNmsLootEntryBuilder().copyConditionsFrom(LootTables.ZOMBIE.getLootTable(), predicate)
-                                SimpleNmsEntry.fromVanilla(LootTables.ZOMBIE.getLootTable(), predicate, new ItemStack(Material.COMMAND_BLOCK)))
-                                .rolls(1)
-                );
-
-                ItemStackPredicate predicate1 = itemStack -> !CustomItem.isCustom(itemStack) && itemStack.getType() == Material.BLAZE_ROD;
-                Nms.get().replaceAllEntriesContains(
-                        LootTables.BLAZE.getLootTable(),
-                        predicate1,
-                        SimpleNmsEntry.fromVanilla(LootTables.BLAZE.getLootTable(), predicate1, new ItemStack(Material.CHAIN_COMMAND_BLOCK))
-                );
-*/
-
-
-
+            public void run() {
+                InitializationProcess.start();
             }
         });
     }
@@ -131,8 +97,6 @@ public final class ItemsCoreU extends JavaPlugin implements ResourcePackablePlug
 
     @Override
     public void onDisable() {
-        CustomEntityManager.getInstance().stop();
-        customHudTicker.stop();
         SerializableDataManager.saveConfig();
     }
 }

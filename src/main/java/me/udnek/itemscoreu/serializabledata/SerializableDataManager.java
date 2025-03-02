@@ -3,7 +3,9 @@ package me.udnek.itemscoreu.serializabledata;
 import me.udnek.itemscoreu.ItemsCoreU;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class SerializableDataManager {
 
@@ -14,40 +16,42 @@ public class SerializableDataManager {
     ///////////////////////////////////////////////////////////////////////////
     // READING
     ///////////////////////////////////////////////////////////////////////////
-    public static void read(SerializableData data, JavaPlugin plugin, Player player){
+    public static <T extends SerializableData> @NotNull T read(@NotNull T data, @NotNull Plugin plugin, @NotNull Player player){
         String readRaw = readRaw(getPath(data, plugin, player));
         data.deserialize(readRaw);
+        return data;
     }
-    public static void read(SerializableData data, JavaPlugin plugin){
+    public static <T extends SerializableData> @NotNull T read(@NotNull T data, @NotNull Plugin plugin){
         String readRaw = readRaw(getPath(data, plugin));
         data.deserialize(readRaw);
+        return data;
     }
-    private static String readRaw(String path){
+    private static @Nullable String readRaw(@NotNull String path){
         return config.getString(path);
     }
     ///////////////////////////////////////////////////////////////////////////
     // WRITING
     ///////////////////////////////////////////////////////////////////////////
-    public static void write(SerializableData data, JavaPlugin plugin, Player player){
+    public static void write(@NotNull SerializableData data, @NotNull Plugin plugin, @NotNull Player player){
         writeRaw(data, getPath(data, plugin, player));
     }
-    public static void write(SerializableData data, JavaPlugin plugin){
+    public static void write(@NotNull SerializableData data, @NotNull Plugin plugin){
         writeRaw(data, getPath(data, plugin));
     }
-    private static void writeRaw(SerializableData serializableData, String path){
+    private static void writeRaw(@NotNull SerializableData serializableData, @NotNull String path){
         config.set(path, serializableData.serialize());
     }
     ///////////////////////////////////////////////////////////////////////////
     // INITIAL
     ///////////////////////////////////////////////////////////////////////////
-    private static String getPath(SerializableData data, JavaPlugin plugin, Player player){
+    private static @NotNull String getPath(@NotNull SerializableData data, @NotNull Plugin plugin, @NotNull Player player){
         return toStringPath(
                 PLAYER_PATH,
                 player.getUniqueId().toString(),
                 plugin.getName() + ":" + data.getDataName()
         );
     }
-    private static String getPath(SerializableData data, JavaPlugin plugin){
+    private static @NotNull String getPath(@NotNull SerializableData data, @NotNull Plugin plugin){
         return toStringPath(
                 PLUGIN_PATH,
                 plugin.getName(),
@@ -55,7 +59,7 @@ public class SerializableDataManager {
         );
     }
 
-    private static String toStringPath(String ...path){
+    private static @NotNull String toStringPath(@NotNull String ...path){
         return String.join(".", path);
     }
 

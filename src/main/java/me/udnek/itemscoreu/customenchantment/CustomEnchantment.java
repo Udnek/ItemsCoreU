@@ -1,38 +1,31 @@
 package me.udnek.itemscoreu.customenchantment;
 
+import me.udnek.itemscoreu.customattribute.CustomAttribute;
+import me.udnek.itemscoreu.customattribute.CustomAttributeConsumer;
+import me.udnek.itemscoreu.customequipmentslot.CustomEquipmentSlot;
+import me.udnek.itemscoreu.customregistry.CustomRegistries;
+import me.udnek.itemscoreu.customregistry.Registrable;
+import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-// TODO: 7/17/2024 BACK WHEN 1.21
-public abstract class CustomEnchantment extends Enchantment {
+public interface CustomEnchantment extends Registrable {
 
-/*    protected void setNamespacedKey(JavaPlugin javaPlugin){
-        Class<?> clazz = this.getClass();
-        while (true){
-            if (clazz.getName().equals(Enchantment.class.getName())){
-                break;
-            }
-            clazz = clazz.getSuperclass();
-        }
-        try {
-            Field field = clazz.getDeclaredField("key");
-            field.setAccessible(true);
-            field.set(this, new NamespacedKey(javaPlugin, getName()));
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
+    static @Nullable CustomEnchantment get(@NotNull Enchantment enchantment){
+        return CustomRegistries.ENCHANTMENT.get(enchantment.getKey().toString());
     }
 
-    public CustomEnchantment() {
-        super();
+    static boolean isCustom(@NotNull Enchantment enchantment){
+        return get(enchantment) != null;
     }
 
-    @Override
-    public int getStartLevel() {
-        return 1;
-    }
+    @NotNull ItemStack createEnchantedBook(int level);
+    void enchant(@NotNull ItemStack itemStack, int level);
+    void enchantBook(@NotNull ItemStack itemStack, int level);
+    @NotNull Enchantment getBukkit();
 
-    @Override
-    public @NotNull Component displayName(int i) {
-        return  Component.translatable("enchantment."+getKey().getKey()+"."+getName()).append(Component.text(" ")).append(Component.translatable("enchantment.level." + i));
-    }*/
+    void getCustomAttributes(int level, @NotNull CustomAttributeConsumer consumer);
+
 }

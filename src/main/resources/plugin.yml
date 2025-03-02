@@ -1,25 +1,72 @@
 name: ItemsCoreU
 version: '${project.version}'
 main: me.udnek.itemscoreu.ItemsCoreU
-api-version: '1.21.1'
-depend: [ ProtocolLib, UltimateAdvancementAPI ]
+api-version: '1.21.4'
+depend: [ ProtocolLib ]
 load: STARTUP
 commands:
+  helpu:
+    description: "helpu"
+    usage: "/helpu"
+    aliases: [ itemscoreu_help, ?, h ]
+    permission-message: "You do not have permission to use this command"
   giveu:
     description: "giveu"
     usage: "/giveu <item>"
-    aliases: [itemscoreugive]
+    aliases: [itemscoreu_give]
     permission: itemscoreu.admin
     permission-message: "You do not have permission to use this command"
   summonu:
     description: "summonu"
     usage: "/summonu <entity>"
-    aliases: [itemscoreusummon]
+    aliases: [itemscoreu_summon]
     permission: itemscoreu.admin
     permission-message: "You do not have permission to use this command"
+  custom_entities:
+      description: "custom_entities"
+      usage: "/custom_entities"
+      aliases: []
+      permission: itemscoreu.admin
+      permission-message: "You do not have permission to use this command"
   resourcepacku:
     description: "resourcepacku"
     usage: "/resourcepacku <directory>"
-    aliases: [ itemscoreuresourcepack ]
+    aliases: [ itemscoreu_resourcepack ]
     permission: itemscoreu.admin
     permission-message: "You do not have permission to use this command"
+  attributeu:
+      description: "attributeu"
+      usage: "/attributeu <attribute>"
+      aliases: [ itemscoreu_attribute ]
+      permission: itemscoreu.admin
+      permission-message: "You do not have permission to use this command"
+  clear_attribute_modifiers:
+      description: "cleat_attribute_modifiers"
+      usage: "/cleat_attribute_modifiers"
+      aliases: []
+      permission: itemscoreu.admin
+      permission-message: "You do not have permission to use this command"
+  set_blocku:
+      description: "set_blocku"
+      usage: "/set_blocku <block>"
+      aliases: [itemscoreu_set_block]
+      permission: itemscoreu.admin
+      permission-message: "You do not have permission to use this command"
+  custom_block_entities:
+      description: "custom_block_entities"
+      usage: "/custom_block_entities"
+      aliases: []
+      permission: itemscoreu.admin
+      permission-message: "You do not have permission to use this command"
+  play_soundu:
+      description: "play_soundu"
+      usage: "/play_soundu <sound>"
+      aliases: [itemscoreu_play_sound]
+      permission: itemscoreu.admin
+      permission-message: "You do not have permission to use this command"
+  effectu:
+      description: "effectu"
+      usage: "/effectu <effect> [duration] [lvl]"
+      aliases: [itemscoreu_effect]
+      permission: itemscoreu.admin
+      permission-message: "You do not have permission to use this command"

@@ -3,7 +3,7 @@ package me.udnek.itemscoreu.resourcepack;
 import me.udnek.itemscoreu.ItemsCoreU;
 import me.udnek.itemscoreu.resourcepack.merger.ResourcePackMerger;
 import me.udnek.itemscoreu.serializabledata.SerializableDataManager;
-import me.udnek.itemscoreu.utils.LogUtils;
+import me.udnek.itemscoreu.util.LogUtils;
 import org.bukkit.command.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -37,7 +37,7 @@ public class ResourcePackCommand implements TabExecutor, CommandExecutor {
         }
 
         ResourcePackMerger merger = new ResourcePackMerger();
-        String error = merger.checkExtractDirectory(directory);
+        String error = merger.checkExtractDirectoryAndError(directory);
         if (error != null){
             LogUtils.pluginLog(error);
             return true;
@@ -46,6 +46,8 @@ public class ResourcePackCommand implements TabExecutor, CommandExecutor {
         SerializableDataManager.write(new ResourcepackSettings(directory), ItemsCoreU.getInstance());
 
         merger.startGlobalMerging(directory);
+
+        LogUtils.pluginWarning("If your sound does not play, remove '<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>' in plugin's pom!");
         return true;
     }
 

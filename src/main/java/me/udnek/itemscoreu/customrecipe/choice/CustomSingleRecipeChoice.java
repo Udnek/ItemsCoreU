@@ -2,16 +2,16 @@ package me.udnek.itemscoreu.customrecipe.choice;
 
 import me.udnek.itemscoreu.customitem.CustomItem;
 import org.bukkit.Material;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.Set;
 
 public class CustomSingleRecipeChoice extends CustomCompatibleRecipeChoice {
 
-    public CustomSingleRecipeChoice(CustomItem customItem) {
-        super(Collections.singletonList(customItem), List.of());
+    public CustomSingleRecipeChoice(@NotNull CustomItem customItem) {
+        super(Set.of(customItem), Set.of());
     }
-    public CustomSingleRecipeChoice(Material material) {
-        super(List.of(), Collections.singletonList(material));
+    public CustomSingleRecipeChoice(@NotNull Material material) {
+        super(Set.of(), Set.of(material));
     }
 }

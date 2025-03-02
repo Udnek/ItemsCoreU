@@ -1,19 +1,20 @@
 package me.udnek.itemscoreu.customrecipe;
 
 import com.google.common.base.Preconditions;
-import me.udnek.itemscoreu.utils.ItemUtils;
-import me.udnek.itemscoreu.utils.LogUtils;
+import me.udnek.itemscoreu.customitem.CustomItem;
+import me.udnek.itemscoreu.customitem.ItemUtils;
+import me.udnek.itemscoreu.customitem.VanillaItemManager;
 import net.kyori.adventure.key.Keyed;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
+import org.bukkit.inventory.meta.Damageable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
+import java.util.function.Consumer;
 
 public class RecipeManager {
 
@@ -26,9 +27,6 @@ public class RecipeManager {
     }
     public void register(@NotNull Recipe recipe){
         if (recipe instanceof CustomRecipe<?> customRecipe){
-            Preconditions.checkArgument(customRecipe.key() != null, "Recipe results can not be null!");
-            Preconditions.checkArgument(customRecipe.getResults() != null, "Recipe results can not be null!");
-            Preconditions.checkArgument(customRecipe.getType() != null, "Recipe type can not be null!");
             Preconditions.checkArgument(
                     !customRecipes.containsKey(customRecipe.key().asString()),
                     "Recipe id duplicate: " + customRecipe.key().asString() + "!"
@@ -39,24 +37,46 @@ public class RecipeManager {
             Bukkit.addRecipe(recipe);
         }
     }
-    public List<Recipe> getRecipesAsResult(ItemStack itemStack){
-        List<Recipe> recipes = ItemUtils.getRecipesOfItemStack(itemStack);
+    public void getRecipesAsResult(@NotNull ItemStack itemStack, @NotNull Consumer<Recipe> consumer){
+        Set<Recipe> recipes = new HashSet<>();
+        if (CustomItem.isCustom(itemStack) && !VanillaItemManager.isReplaced(itemStack)){
+            CustomItem customItem = CustomItem.get(itemStack);
+            customItem.getRecipes(recipes::add);
+        }
+        else {
+            // FIXED DURABILITY BUG
+            if (itemStack.hasItemMeta()){
+                if (itemStack.getItemMeta() instanceof Damageable damageable){
+                    damageable.setDamage(0);
+                    itemStack = itemStack.clone();
+                    itemStack.setItemMeta(damageable);
+                }
+            }
+
+            List<Recipe> rawRecipes = Bukkit.getRecipesFor(itemStack);
+            for (Recipe recipe : rawRecipes) {
+                if (!ItemUtils.isSameIds(recipe.getResult(), itemStack)) continue;
+                recipes.add(recipe);
+            }
+        }
+
+
         for (CustomRecipe<?> recipe : customRecipes.values()) {
             if (recipe.isResult(itemStack)) recipes.add(recipe);
         }
-        return recipes;
+        recipes.forEach(consumer);
     }
 
-    public List<Recipe> getRecipesAsIngredient(ItemStack itemStack){
-        List<Recipe> recipes = ItemUtils.getItemInRecipesUsages(itemStack);
+    public void getRecipesAsIngredient(@NotNull ItemStack itemStack, @NotNull Consumer<Recipe> consumer){
+        Set<Recipe> recipes = new HashSet<>();
+        ItemUtils.getItemInRecipesUsages(itemStack, recipes::add);
         for (CustomRecipe<?> recipe : customRecipes.values()) {
             if (recipe.isIngredient(itemStack)) recipes.add(recipe);
         }
-        return recipes;
+        recipes.forEach(consumer);
     }
 
-    // TODO: 8/25/2024 OPTIMIZE USING OTHER HASHMAP
-    public <T extends CustomRecipe<?>> List<T> getByType(CustomRecipeType<T> type){
+    public <T extends CustomRecipe<?>> List<T> getByType(@NotNull CustomRecipeType<T> type){
         List<T> recipes = new ArrayList<>();
         for (CustomRecipe<?> recipe : customRecipes.values()) {
             if (recipe.getType() == type) recipes.add((T) recipe);
@@ -71,23 +91,36 @@ public class RecipeManager {
         }
         return null;
     }
+    
+    public @Nullable Recipe get(@NotNull NamespacedKey id){
+        Recipe recipe = Bukkit.getRecipe(id);
+        if (recipe != null) return recipe;
+        return customRecipes.get(id.asString());
+    }
 
-    public void unregister(Recipe recipe){
+    public void getAll(@NotNull Consumer<Recipe> consumer){
+        customRecipes.values().forEach(consumer);
+        Bukkit.recipeIterator().forEachRemaining(consumer);
+    }
+
+    public void unregister(@NotNull Recipe recipe){
         if (recipe instanceof CustomRecipe<?> customRecipe){
             customRecipes.remove(customRecipe.key().asString());
-            LogUtils.pluginLog("Custom recipe was unregistered: " + customRecipe.key().asString());
         } else {
             if (!(recipe instanceof Keyed keyed)) return;
             Bukkit.removeRecipe((NamespacedKey) keyed.key());
-            LogUtils.pluginLog("Vanilla recipe was unregistered: " + keyed.key().asString());
         }
     }
-    public void unregister(NamespacedKey key){
-        Bukkit.removeRecipe(key);
-        customRecipes.remove(key.asString());
+    public void unregister(@NotNull NamespacedKey key){
+        Recipe recipe = get(key);
+        if (recipe == null) return;
+        unregister(recipe);
     }
 
-    public void unregister(Iterable<Recipe> recipes){
+    public void unregister(@NotNull Iterable<Recipe> recipes){
+        for (Recipe recipe : recipes) unregister(recipe);
+    }
+    public void unregister(@NotNull Recipe[] recipes){
         for (Recipe recipe : recipes) unregister(recipe);
     }
 }

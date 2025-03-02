@@ -1,8 +1,8 @@
 package me.udnek.itemscoreu.customloot.table;
 
 import me.udnek.itemscoreu.customitem.CustomItem;
+import me.udnek.itemscoreu.customitem.ItemUtils;
 import me.udnek.itemscoreu.customloot.entry.LootTableEntry;
-import me.udnek.itemscoreu.utils.ItemUtils;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.LivingEntity;
@@ -102,7 +102,7 @@ public abstract class BasicLootTable implements CustomLootTable{
         LootContext.Builder builder = new LootContext.Builder(entity.getLocation());
         builder.lootedEntity(entity);
         builder.killer(entity.getKiller());
-        builder.luck((float) entity.getKiller().getAttribute(Attribute.GENERIC_LUCK).getValue());
+        builder.luck((float) entity.getKiller().getAttribute(Attribute.LUCK).getValue());
         drops.addAll(populateLoot(new Random(), builder.build()));
     }
 }

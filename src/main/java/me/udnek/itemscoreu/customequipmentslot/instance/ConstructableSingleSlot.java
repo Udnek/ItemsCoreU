@@ -2,7 +2,8 @@ package me.udnek.itemscoreu.customequipmentslot.instance;
 
 import me.udnek.itemscoreu.customequipmentslot.AbstractCustomEquipmentSlot;
 import me.udnek.itemscoreu.customequipmentslot.SingleSlot;
-import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.EquipmentSlotGroup;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -13,25 +14,26 @@ public class ConstructableSingleSlot extends AbstractCustomEquipmentSlot impleme
 
     protected final int slot;
     protected final String translation;
-    protected final EquipmentSlotGroup vanilla;
+    protected final EquipmentSlotGroup vanillaGroup;
+    protected final EquipmentSlot vanillaSlot;
 
-    public ConstructableSingleSlot(@NotNull String rawId, int slot, @Nullable EquipmentSlotGroup vanilla, @NotNull String translation){
+    public ConstructableSingleSlot(@NotNull String rawId, int slot, @Nullable EquipmentSlotGroup vanillaGroup, @Nullable EquipmentSlot vanillaSlot, @NotNull String translation){
         super(rawId);
         this.slot = slot;
         this.translation = translation;
-        this.vanilla = vanilla;
-
+        this.vanillaGroup = vanillaGroup;
+        this.vanillaSlot = vanillaSlot;
     }
     @Override
-    public @NotNull Integer getSlot(@NotNull Entity entity){return slot;}
+    public @NotNull Integer getSlot(@NotNull LivingEntity entity){return slot;}
     @Override
-    public boolean isAppropriateSlot(@NotNull Entity entity, int slot) {return slot == getSlot(entity);}
-    @Override
-    public @Nullable EquipmentSlotGroup getVanillaAlternative() {
-        return vanilla;
+    public @Nullable EquipmentSlotGroup getVanillaGroup() {
+        return vanillaGroup;
     }
     @Override
-    public void getAllSlots(@NotNull Entity entity, @NotNull Consumer<@NotNull Integer> consumer) {
+    public @Nullable EquipmentSlot getVanillaSlot() {return vanillaSlot;}
+    @Override
+    public void getAllSlots(@NotNull LivingEntity entity, @NotNull Consumer<@NotNull Integer> consumer) {
         consumer.accept(getSlot(entity));
     }
     @Override

@@ -4,7 +4,7 @@ import com.google.common.base.Preconditions;
 import me.udnek.itemscoreu.customloot.table.CustomLootTable;
 import me.udnek.itemscoreu.customregistry.MappedCustomRegistry;
 import me.udnek.itemscoreu.nms.Nms;
-import me.udnek.itemscoreu.utils.LogUtils;
+import me.udnek.itemscoreu.util.LogUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 import org.bukkit.loot.LootTable;
@@ -18,12 +18,12 @@ public class LootTableRegistry extends MappedCustomRegistry<CustomLootTable> {
 
     final List<String> vanillaReplaced = new ArrayList<>();
 
-    public LootTableRegistry(){
-        super("LootTable");
+    public LootTableRegistry(@NotNull String rawId) {
+        super(rawId);
     }
 
     @Override
-    public @NotNull CustomLootTable register(@NotNull Plugin plugin, @NotNull CustomLootTable lootTable) {
+    public <V extends CustomLootTable> @NotNull V register(@NotNull Plugin plugin, @NotNull V lootTable) {
         Preconditions.checkArgument(
                 !map.containsKey(lootTable.getKey().asString()),
                 "LootTable already registered: " + lootTable.getKey().asString() + "!");
