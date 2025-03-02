@@ -29,7 +29,7 @@ public interface CustomComponentType<HolderType, Component extends CustomCompone
             AUTO_GENERATING_FILES_ITEM = register(new ConstructableComponentType<>("auto_generating_files_item", AutoGeneratingFilesItem.GENERATED));
 
     CustomComponentType<CustomItem, DispensableItem>
-            DISPENSABLE_ITEM = register(new ConstructableComponentType<>("dispensable_item", DispensableItem.EMPTY));
+            DISPENSABLE_ITEM = register(new ConstructableComponentType<>("dispensable_item", DispensableItem.DEFAULT));
 
     // BLOCK
 

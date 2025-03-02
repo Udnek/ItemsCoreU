@@ -7,7 +7,7 @@ import org.bukkit.event.block.BlockDispenseEvent;
 import org.jetbrains.annotations.NotNull;
 
 public interface DispensableItem extends CustomComponent<CustomItem> {
-    DispensableItem EMPTY = new DispensableItem() {
+    DispensableItem DEFAULT = new DispensableItem() {
         @Override
         public void onDispense(@NotNull CustomItem item, @NotNull BlockDispenseEvent event) {}
 
