@@ -28,6 +28,9 @@ public interface CustomComponentType<HolderType, Component extends CustomCompone
     CustomComponentType<CustomItem, AutoGeneratingFilesItem>
             AUTO_GENERATING_FILES_ITEM = register(new ConstructableComponentType<>("auto_generating_files_item", AutoGeneratingFilesItem.GENERATED));
 
+    CustomComponentType<CustomItem, DispensableItem>
+            DISPENSABLE_ITEM = register(new ConstructableComponentType<>("dispensable_item", DispensableItem.EMPTY));
+
     // BLOCK
 
     CustomComponentType<CustomBlockType, RightClickableBlock>
