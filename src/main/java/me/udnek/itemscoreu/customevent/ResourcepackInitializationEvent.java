@@ -1,7 +1,5 @@
 package me.udnek.itemscoreu.customevent;
 
-import me.udnek.itemscoreu.resourcepack.ResourcePackablePlugin;
-import me.udnek.itemscoreu.resourcepack.VirtualResourcePack;
 import me.udnek.itemscoreu.resourcepack.path.VirtualRpJsonFile;
 import org.jetbrains.annotations.NotNull;
 

@@ -1,6 +1,5 @@
 package me.udnek.itemscoreu.serializabledata;
 
-import org.bukkit.Location;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

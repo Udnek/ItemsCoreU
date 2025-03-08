@@ -17,13 +17,6 @@ public class CustomItemAttributesComponent implements CustomComponent<CustomItem
         }
     };
 
-    public static void safeAddAttribute(@NotNull CustomItem customItem, @NotNull CustomAttribute attribute, @NotNull CustomAttributeModifier modifier){
-        CustomItemAttributesComponent component = customItem.getComponents().get(CustomComponentType.CUSTOM_ATTRIBUTED_ITEM);
-        if (component == null) component = new CustomItemAttributesComponent();
-        component.addAttribute(attribute, modifier);
-        customItem.getComponents().set(component);
-    }
-
     protected CustomAttributesContainer container;
 
     public CustomItemAttributesComponent(){
