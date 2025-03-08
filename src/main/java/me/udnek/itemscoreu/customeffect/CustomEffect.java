@@ -1,11 +1,9 @@
 package me.udnek.itemscoreu.customeffect;
 
-import me.udnek.itemscoreu.customattribute.CustomAttribute;
 import me.udnek.itemscoreu.customattribute.CustomAttributeConsumer;
 import me.udnek.itemscoreu.customregistry.CustomRegistries;
 import me.udnek.itemscoreu.customregistry.Registrable;
 import net.kyori.adventure.translation.Translatable;
-import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;

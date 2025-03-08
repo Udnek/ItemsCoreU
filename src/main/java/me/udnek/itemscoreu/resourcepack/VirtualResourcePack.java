@@ -1,15 +1,7 @@
 package me.udnek.itemscoreu.resourcepack;
 
-import io.papermc.paper.datacomponent.DataComponentTypes;
-import me.udnek.itemscoreu.customcomponent.CustomComponentType;
-import me.udnek.itemscoreu.customevent.ResourcepackInitializationEvent;
-import me.udnek.itemscoreu.customitem.CustomItem;
-import me.udnek.itemscoreu.customregistry.CustomRegistries;
 import me.udnek.itemscoreu.resourcepack.path.RpPath;
-import me.udnek.itemscoreu.resourcepack.path.VirtualRpJsonFile;
 import me.udnek.itemscoreu.util.LogUtils;
-import net.kyori.adventure.key.Key;
-import org.bukkit.NamespacedKey;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.InputStream;

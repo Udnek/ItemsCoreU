@@ -13,6 +13,16 @@ public class CustomComponentMap<HolderType> implements Iterable<CustomComponent<
         return (Component) map.getOrDefault(type, type.getDefault());
     }
 
+    public @NotNull <Type extends CustomComponentType<HolderType, Component>, Component extends CustomComponent<HolderType>> Component getOrCreateDefault(@NotNull Type type) {
+        Component component = get(type);
+        if (component == null) {
+            Component newDefault = type.createNewDefault();
+            set(newDefault);
+            return newDefault;
+        }
+        return component;
+    }
+
     public @NotNull <Type extends CustomComponentType<HolderType, Component>, Component extends CustomComponent<HolderType>> Component getOrException(@NotNull Type type){
         return Objects.requireNonNull(map == null ? null : get(type), "Component " + type.getKey().asString() + " is not present!");
     }

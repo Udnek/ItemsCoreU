@@ -11,13 +11,13 @@ import org.jetbrains.annotations.NotNull;
 public interface CustomComponentType<HolderType, Component extends CustomComponent<HolderType>> extends Registrable {
 
     CustomComponentType<CustomItem, CustomItemAttributesComponent>
-            CUSTOM_ATTRIBUTED_ITEM = register(new ConstructableComponentType<>("custom_attributed_item", CustomItemAttributesComponent.EMPTY));
+            CUSTOM_ATTRIBUTED_ITEM = register(new ConstructableComponentType<>("custom_attributed_item", CustomItemAttributesComponent.EMPTY, CustomItemAttributesComponent::new));
 
     CustomComponentType<CustomItem, RightClickableItem>
             RIGHT_CLICKABLE_ITEM = register(new ConstructableComponentType<>("right_clickable_item", RightClickableItem.EMPTY));
 
     CustomComponentType<CustomItem, VanillaAttributesComponent>
-            VANILLA_ATTRIBUTED_ITEM = register(new ConstructableComponentType<>("vanilla_attributed_item", VanillaAttributesComponent.EMPTY));
+            VANILLA_ATTRIBUTED_ITEM = register(new ConstructableComponentType<>("vanilla_attributed_item", VanillaAttributesComponent.EMPTY, VanillaAttributesComponent::new));
 
     CustomComponentType<CustomItem, InventoryInteractableItem>
             INVENTORY_INTERACTABLE_ITEM = register(new ConstructableComponentType<>("inventory_interactable_item", InventoryInteractableItem.EMPTY));
@@ -42,6 +42,7 @@ public interface CustomComponentType<HolderType, Component extends CustomCompone
 
 
     @NotNull Component getDefault();
+    @NotNull Component createNewDefault();
 
     private static <K, V extends CustomComponent<K>> @NotNull CustomComponentType<K, V> register(CustomComponentType<K, V> type){
         return CustomRegistries.COMPONENT_TYPE.register(ItemsCoreU.getInstance(), type);
