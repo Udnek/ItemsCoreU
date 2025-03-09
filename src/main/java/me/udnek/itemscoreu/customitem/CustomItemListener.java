@@ -8,6 +8,7 @@ import me.udnek.itemscoreu.util.SelfRegisteringListener;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.block.BlockDispenseEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
@@ -47,10 +48,19 @@ public class CustomItemListener extends SelfRegisteringListener {
     }
 
     @EventHandler
+    public void onDispensing(BlockDispenseEvent event) {
+        CustomItem customItem = CustomItem.get(event.getItem());
+        if (customItem == null) return;
+        switch (event.getBlock().getType()) {
+            case DROPPER -> customItem.getComponents().getOrDefault(CustomComponentType.DISPENSABLE_ITEM).onDrop(customItem, event);
+            case DISPENSER -> customItem.getComponents().getOrDefault(CustomComponentType.DISPENSABLE_ITEM).onDispense(customItem, event);
+        }
+    }
+
+    @EventHandler
     public void onBlockPlace(BlockPlaceEvent event){
-        CustomItem.consumeIfCustom(event.getItemInHand(), customItem -> {
-            customItem.getComponents().getOrDefault(CustomComponentType.BLOCK_PLACING_ITEM).onPlace(event);
-        });
+        CustomItem.consumeIfCustom(event.getItemInHand(), customItem ->
+                customItem.getComponents().getOrDefault(CustomComponentType.BLOCK_PLACING_ITEM).onPlace(event));
     }
 
     @EventHandler(priority = EventPriority.MONITOR)

@@ -7,25 +7,17 @@ import me.udnek.itemscoreu.customcomponent.CustomComponentType;
 import me.udnek.itemscoreu.customitem.CustomItem;
 import org.bukkit.attribute.Attribute;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public class VanillaAttributesComponent implements CustomComponent<CustomItem> {
 
     public static final VanillaAttributesComponent EMPTY = new VanillaAttributesComponent(){
         @Override
         public void addAttribute(@NotNull Attribute attribute, @NotNull CustomKeyedAttributeModifier modifier) {
-            throw new RuntimeException("Can not add attribute to default empty component. Set new component to item or use #safeAddAttribute if you want to modify attributes");
+            throw new RuntimeException("Can not add attribute to default empty component");
         }
     };
 
     VanillaAttributesContainer container;
-
-    public static void safeAddAttribute(@NotNull CustomItem customItem, @NotNull Attribute attribute, @NotNull CustomKeyedAttributeModifier modifier){
-        @Nullable VanillaAttributesComponent component = customItem.getComponents().get(CustomComponentType.VANILLA_ATTRIBUTED_ITEM);
-        if (component == null) component = new VanillaAttributesComponent();
-        component.addAttribute(attribute, modifier);
-        customItem.getComponents().set(component);
-    }
 
     public VanillaAttributesComponent(){
         this(VanillaAttributesContainer.empty());
