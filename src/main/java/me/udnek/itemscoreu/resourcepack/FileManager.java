@@ -4,9 +4,7 @@ import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
@@ -67,7 +65,7 @@ public class FileManager{
             /* A file path: easy enough */
             try {
                 return new File(dirURL.toURI()).list();
-            } catch (URISyntaxException e) {
+            } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         }
@@ -87,11 +85,11 @@ public class FileManager{
             JarFile jar;
             try {
                 jar = new JarFile(URLDecoder.decode(jarPath, StandardCharsets.UTF_8));
-            } catch (IOException e) {
+            } catch (Exception e) {
                 throw new RuntimeException(e);
             }
             Enumeration<JarEntry> entries = jar.entries(); //gives ALL entries in jar
-            Set<String> result = new HashSet<String>(); //avoid duplicates in case it is a subdirectory
+            Set<String> result = new HashSet<>(); //avoid duplicates in case it is a subdirectory
             while(entries.hasMoreElements()) {
                 String name = entries.nextElement().getName();
                 if (name.startsWith(path)) { //filter according to the path

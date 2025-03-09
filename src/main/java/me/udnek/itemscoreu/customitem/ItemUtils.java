@@ -36,6 +36,12 @@ public class ItemUtils {
         return materials.contains(itemStack.getType());
     }
 
+    public static boolean isVanillaOrReplaced(@NotNull ItemStack itemStack){
+        CustomItem customItem = CustomItem.get(itemStack);
+        if (customItem == null) return true;
+        return VanillaItemManager.isReplaced(customItem);
+    }
+
     public static boolean isVanillaMaterial(@NotNull ItemStack itemStack, @NotNull Material material){
         return !CustomItem.isCustom(itemStack) && itemStack.getType() == material;
     }

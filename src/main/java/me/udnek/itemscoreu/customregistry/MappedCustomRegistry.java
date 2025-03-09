@@ -2,7 +2,6 @@ package me.udnek.itemscoreu.customregistry;
 
 import com.google.common.base.Preconditions;
 import me.udnek.itemscoreu.util.LogUtils;
-import net.minecraft.world.entity.animal.Wolf;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.event.Listener;
@@ -12,7 +11,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.function.Consumer;
-import java.util.function.Predicate;
 
 public class MappedCustomRegistry<T extends Registrable> extends AbstractRegistrable implements CustomRegistry<T>{
 

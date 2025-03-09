@@ -7,8 +7,8 @@ import me.udnek.itemscoreu.util.Utils;
 import org.bukkit.Material;
 import org.bukkit.block.Crafter;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.block.BlockCookEvent;
 import org.bukkit.event.block.CrafterCraftEvent;
-import org.bukkit.event.inventory.FurnaceSmeltEvent;
 import org.bukkit.event.inventory.PrepareAnvilEvent;
 import org.bukkit.event.inventory.PrepareGrindstoneEvent;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
@@ -79,7 +79,7 @@ public class CraftListener extends SelfRegisteringListener {
                     break;
                 }
             }
-            Preconditions.checkArgument(component0 != null && component1 != null, "Repair item are null!");
+            Preconditions.checkArgument(component0 != null && component1 != null, "Repair item is null!");
 
             if (ItemUtils.isSameIds(component0, component1)){
                 CustomItem customItem = CustomItem.get(component0);
@@ -103,36 +103,50 @@ public class CraftListener extends SelfRegisteringListener {
             return;
         } else return;
 
-        int amountOfExactChoices = 0;
+        int amountOfSemiCustomChoices = 0;
+        int amountOfCustomChoices = 0;
         for (RecipeChoice recipeChoice : recipeChoices ) {
-            if (recipeChoice instanceof RecipeChoice.ExactChoice) {
-                amountOfExactChoices++;
+            if (recipeChoice instanceof RecipeChoice.ExactChoice exactChoice) {
+                boolean hasCustom = false;
+                boolean hasVanilla = false;
+                for (ItemStack choice : exactChoice.getChoices()) {
+                    if (ItemUtils.isVanillaOrReplaced(choice)) hasVanilla = true;
+                    else hasCustom = true;
+                }
+                if (hasVanilla && hasCustom) amountOfSemiCustomChoices += 1;
+                else if (hasCustom) amountOfCustomChoices += 1;
             }
         }
 
         int amountOfCustomItems = 0;
         for (ItemStack itemStack : matrix) {
-            CustomItem customItem = CustomItem.get(itemStack);
-            if (customItem != null && !VanillaItemManager.isReplaced(customItem)) {
-                amountOfCustomItems++;
-            }
+            if (itemStack == null) continue;
+            if (!ItemUtils.isVanillaOrReplaced(itemStack)) amountOfCustomItems += 1;
         }
 
-
-        if (amountOfExactChoices != amountOfCustomItems) {
+        if (!(amountOfCustomChoices <= amountOfCustomItems && amountOfCustomItems <= (amountOfCustomChoices + amountOfSemiCustomChoices))) {
             resultConsumer.accept(new ItemStack(Material.AIR));
         }
     }
 
+    public boolean extraTestChoice(@NotNull RecipeChoice recipeChoice, @NotNull ItemStack stack){
+        if (recipeChoice instanceof RecipeChoice.MaterialChoice){
+            return !CustomItem.isCustom(stack) || VanillaItemManager.isReplaced(stack);
+        } if (recipeChoice instanceof RecipeChoice.ExactChoice exactChoice){
+            for (ItemStack choice : exactChoice.getChoices()) {
+                if (ItemUtils.isSameIds(choice, stack)) return true;
+            }
+            return false;
+        } else {
+            throw new RuntimeException("Unsupported recipeChoice: " + recipeChoice);
+        }
+    }
 
     @EventHandler
-    public void onFurnace(FurnaceSmeltEvent event){
+    public void onFurnace(BlockCookEvent event){
         CookingRecipe<?> recipe = event.getRecipe();
-        ItemStack itemStack = event.getSource();
-        if (!CustomItem.isCustom(itemStack)) return;
-        if (recipe.getInputChoice() instanceof RecipeChoice.MaterialChoice){
-            event.setCancelled(true);
-        }
+        if (recipe == null) return;
+        if (!extraTestChoice(recipe.getInputChoice(), event.getSource())) event.setCancelled(true);
     }
 
     @EventHandler

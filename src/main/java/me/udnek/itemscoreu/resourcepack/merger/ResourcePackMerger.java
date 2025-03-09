@@ -178,10 +178,10 @@ public class ResourcePackMerger {
             InputStream input = from.getInputStream();
             OutputStream out = new FileOutputStream(to.getExtractPath(extractDirectory));
 
-            byte[] buf = new byte[1024];
+            byte[] buffer = new byte[1024];
             int len;
-            while ((len = input.read(buf)) > 0) {
-                out.write(buf, 0, len);
+            while ((len = input.read(buffer)) > 0) {
+                out.write(buffer, 0, len);
             }
 
             input.close();
@@ -197,7 +197,7 @@ public class ResourcePackMerger {
         try {
             BufferedImage image = ImageIO.read(from.getInputStream());
             ImageIO.write(image, "png", new File(to.getExtractPath(extractDirectory)));
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
@@ -209,7 +209,7 @@ public class ResourcePackMerger {
         try {
             writer.write(text);
             writer.close();
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
@@ -257,7 +257,7 @@ public class ResourcePackMerger {
             });
 
             writer.close();
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }

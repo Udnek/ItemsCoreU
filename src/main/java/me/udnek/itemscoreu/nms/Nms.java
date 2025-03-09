@@ -118,6 +118,11 @@ public class Nms {
     // ITEMS
     ///////////////////////////////////////////////////////////////////////////
 
+    public boolean canAttackBlock(@NotNull org.bukkit.block.BlockState blockState, @NotNull Player player, @NotNull ItemStack itemStack){
+        return NmsUtils.toNmsItemStack(itemStack).getItem().canAttackBlock(
+                NmsUtils.toNmsBlockState(blockState), NmsUtils.toNmsWorld(blockState.getWorld()), NmsUtils.toNmsBlockPos(blockState.getBlock()), NmsUtils.toNmsPlayer(player));
+    }
+
     public int getMaxAmountCanFitInBundle(@NotNull io.papermc.paper.datacomponent.item.BundleContents contents, @NotNull ItemStack itemStack){
         List<net.minecraft.world.item.ItemStack> nmsItems = new ArrayList<>();
         contents.contents().forEach(item -> nmsItems.add(NmsUtils.toNmsItemStack(item)));
