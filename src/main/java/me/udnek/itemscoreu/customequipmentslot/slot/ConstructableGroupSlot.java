@@ -49,6 +49,16 @@ public class ConstructableGroupSlot extends AbstractCustomEquipmentSlot implemen
     public boolean intersects(@NotNull CustomEquipmentSlot other) {
         return other == this || subs.stream().anyMatch(s -> other == s);
     }
+
+    @Override
+    public boolean intersects(@NotNull UniversalInventorySlot slot) {
+        for (SingleSlot singleSlot : subs) {
+            if (singleSlot.intersects(slot)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
 
 
