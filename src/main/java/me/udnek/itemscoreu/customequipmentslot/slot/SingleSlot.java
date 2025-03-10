@@ -25,4 +25,10 @@ public interface SingleSlot extends CustomEquipmentSlot{
         if (other instanceof SingleSlot) return other == this;
         else return other.intersects(this);
     }
+
+    @Override
+    default boolean intersects(@NotNull UniversalInventorySlot slot) {
+        if (getUniversal() == null) return false;
+        return getUniversal().equals(slot);
+    }
 }

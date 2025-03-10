@@ -10,7 +10,6 @@ import net.kyori.adventure.translation.Translatable;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.EquipmentSlotGroup;
-import org.checkerframework.checker.units.qual.C;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -40,12 +39,7 @@ public interface CustomEquipmentSlot extends Translatable, Registrable{
 
     SingleSlot ACTIVE_HAND = register(new ConstructableSingleSlot("active_hand", null, null, new ActiveHandUniversalSlot(), "slot." + new NamespacedKey(ItemsCoreU.getInstance(),"text").getNamespace() + ".active_hand"));
 
-    GroupSlot DUMB_INVENTORY = register(new ConstructableGroupSlot(
-            "dumb_inventory",
-            Set.of(),
-            null,
-            null,
-            "slot." + new NamespacedKey(ItemsCoreU.getInstance(),"text").getNamespace() + ".dumb_inventory"));
+    GroupSlot DUMB_INVENTORY = register(new DumbInventorySlot("dumb_inventory"));
 
     SingleSlot BODY = register(new ConstructableSingleSlot("body", EquipmentSlotGroup.BODY, EquipmentSlot.BODY, new BaseUniversalSlot(EquipmentSlot.BODY), "item.modifiers.body"));
 
@@ -74,6 +68,7 @@ public interface CustomEquipmentSlot extends Translatable, Registrable{
     }
 
     boolean intersects(@NotNull CustomEquipmentSlot slot);
+    boolean intersects(@NotNull UniversalInventorySlot slot);
     @Nullable EquipmentSlotGroup getVanillaGroup();
     @Nullable EquipmentSlot getVanillaSlot();
     void getAllUniversal(@NotNull Consumer<@NotNull UniversalInventorySlot> consumer);
