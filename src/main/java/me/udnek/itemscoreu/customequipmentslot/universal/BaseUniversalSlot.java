@@ -27,7 +27,7 @@ public class BaseUniversalSlot implements UniversalInventorySlot {
     @Override
     public boolean equals(@NotNull UniversalInventorySlot other) {
         if (!(other instanceof BaseUniversalSlot otherBase)) return false;
-        return Objects.equals(this.slot, otherBase.slot) || this.equipmentSlot == otherBase.equipmentSlot;
+        return Objects.equals(this.slot, otherBase.slot) && this.equipmentSlot == otherBase.equipmentSlot;
     }
 
     @Override
@@ -36,6 +36,7 @@ public class BaseUniversalSlot implements UniversalInventorySlot {
             return inventoryHolder.getInventory().getItem(slot);
         } else if (equipmentSlot != null) {
             if (entity instanceof Player player){
+                if (equipmentSlot == EquipmentSlot.BODY) return null;///TODO убрать
                 return player.getInventory().getItem(equipmentSlot);
             }else  {
                 EntityEquipment equipment = entity.getEquipment();
@@ -72,6 +73,11 @@ public class BaseUniversalSlot implements UniversalInventorySlot {
         }
     }
 
-
-
+    @Override
+    public String toString() {
+        return "BaseUniversalSlot{" +
+                "slot=" + slot +
+                ", equipmentSlot=" + equipmentSlot +
+                '}';
+    }
 }
