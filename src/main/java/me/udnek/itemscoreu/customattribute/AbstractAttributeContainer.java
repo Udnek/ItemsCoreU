@@ -1,6 +1,6 @@
 package me.udnek.itemscoreu.customattribute;
 
-import me.udnek.itemscoreu.customequipmentslot.CustomEquipmentSlot;
+import me.udnek.itemscoreu.customequipmentslot.slot.CustomEquipmentSlot;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -17,7 +17,7 @@ public abstract class AbstractAttributeContainer<Attribute, Modifier, ExactType 
     public @NotNull Map<@NotNull Attribute, @NotNull List<@NotNull Modifier>> getAll(){return new HashMap<>(attributes);}
     public abstract @NotNull ExactType get(@NotNull Predicate<@NotNull CustomEquipmentSlot> predicate);
     public @NotNull ExactType get(@NotNull CustomEquipmentSlot targetSlot){
-        return get(slot -> slot.test(targetSlot));
+        return get(slot -> slot.intersects(targetSlot));
     }
     public @NotNull ExactType getExact(@NotNull CustomEquipmentSlot targetSlot){
         return get(slot -> targetSlot == slot);

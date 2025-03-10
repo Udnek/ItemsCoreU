@@ -3,15 +3,14 @@ package me.udnek.itemscoreu.customattribute;
 import me.udnek.itemscoreu.customcomponent.CustomComponentType;
 import me.udnek.itemscoreu.customeffect.CustomEffect;
 import me.udnek.itemscoreu.customenchantment.CustomEnchantment;
-import me.udnek.itemscoreu.customequipmentslot.CustomEquipmentSlot;
-import me.udnek.itemscoreu.customequipmentslot.SingleSlot;
+import me.udnek.itemscoreu.customequipmentslot.slot.CustomEquipmentSlot;
+import me.udnek.itemscoreu.customequipmentslot.slot.SingleSlot;
+import me.udnek.itemscoreu.customequipmentslot.universal.UniversalInventorySlot;
 import me.udnek.itemscoreu.customitem.CustomItem;
 import me.udnek.itemscoreu.customregistry.CustomRegistries;
-import org.bukkit.Material;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Mob;
 import org.bukkit.inventory.*;
 import org.bukkit.potion.PotionEffect;
 import org.jetbrains.annotations.NotNull;
@@ -46,57 +45,45 @@ public class CustomAttributeUtils {
 
     protected void calculate(){
 
-        Map<@NotNull Integer, @NotNull ItemStack> slots = new HashMap<>();
+        Map<@NotNull SingleSlot, @NotNull ItemStack> slots = new HashMap<>();
 
-        if (entity instanceof InventoryHolder inventoryHolder){
-            Inventory inventory = inventoryHolder.getInventory();
-            for (CustomEquipmentSlot equipmentSlot : searchTroughSlots) {
-                equipmentSlot.getAllSlots(entity, integer ->
-                {
-                    ItemStack item = inventory.getItem(integer);
-                    if (item == null) return;
-                    slots.put(integer, item);
-                });
-            }
-        } else if (entity instanceof Mob mob){
-            EntityEquipment equipment = mob.getEquipment();
-            for (CustomEquipmentSlot equipmentSlot : searchTroughSlots) {
-                if (!(equipmentSlot instanceof SingleSlot singleSlot)) continue;
-                EquipmentSlot vanillaSlot = singleSlot.getVanillaSlot();
-                if (vanillaSlot == null) continue;
-                ItemStack item = equipment.getItem(vanillaSlot);
-                Integer slot = singleSlot.getSlot(entity);
-                if (slot == null || item.getType() == Material.AIR) continue;
-                slots.put(slot, item);
-                // TODO REPLACE WHEN API IS READY
-            }
+        for (CustomEquipmentSlot slot : searchTroughSlots) {
+            slot.getAllSingle(singleSlot ->
+            {
+                if (slots.containsKey(singleSlot)) return;
+                UniversalInventorySlot universal = singleSlot.getUniversal();
+                if (universal == null) return;
+                ItemStack item = universal.getItem(entity);
+                if (item == null) return;
+                slots.put(singleSlot, item);
+            });
         }
 
-        for (Map.Entry<@NotNull Integer, @NotNull ItemStack> slotEntry : slots.entrySet()) {
-
-            for (Map.Entry<Enchantment, Integer> enchantmentEntry : slotEntry.getValue().getEnchantments().entrySet()) {
+        for (Map.Entry<@NotNull SingleSlot, @NotNull ItemStack> slotEntry : slots.entrySet()) {
+            ItemStack item = slotEntry.getValue();
+            SingleSlot slot = slotEntry.getKey();
+            for (Map.Entry<Enchantment, Integer> enchantmentEntry : item.getEnchantments().entrySet()) {
                 CustomEnchantment enchantment = CustomEnchantment.get(enchantmentEntry.getKey());
                 if (enchantment == null) continue;
                 enchantment.getCustomAttributes(enchantmentEntry.getValue(), (localAttribute, modifier) -> {
                     if (localAttribute != attribute) return;
-                    if (!modifier.getEquipmentSlot().isAppropriateSlot(entity, slotEntry.getKey())) return;
+                    if (!modifier.getEquipmentSlot().intersects(slot)) return;
                     add(modifier.getOperation(), modifier.getAmount());
                 });
             }
 
-            CustomItem customItem = CustomItem.get(slotEntry.getValue());
+            CustomItem customItem = CustomItem.get(item);
             if (customItem == null) continue;
             CustomAttributesContainer container = customItem.getComponents().getOrDefault(CustomComponentType.CUSTOM_ATTRIBUTED_ITEM).getAttributes();
-            if (container.isEmpty()) continue;
 
             for (Map.Entry<CustomAttribute, List<CustomAttributeModifier>> entry : container.getAll().entrySet()) {
                 if (entry.getKey() != attribute) continue;
-
                 for (CustomAttributeModifier modifier : entry.getValue()) {
-                    if (!modifier.getEquipmentSlot().isAppropriateSlot(entity, slotEntry.getKey())) continue;
+                    if (!modifier.getEquipmentSlot().intersects(slot)) continue;
                     add(modifier.getOperation(), modifier.getAmount());
                 }
             }
+
         }
 
         for (PotionEffect potionEffect : entity.getActivePotionEffects()) {

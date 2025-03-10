@@ -1,4 +1,4 @@
-package me.udnek.itemscoreu.customequipmentslot;
+package me.udnek.itemscoreu.customequipmentslot.slot;
 
 import me.udnek.itemscoreu.customregistry.AbstractRegistrable;
 import org.jetbrains.annotations.NotNull;

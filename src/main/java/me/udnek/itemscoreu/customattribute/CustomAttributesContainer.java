@@ -1,6 +1,6 @@
 package me.udnek.itemscoreu.customattribute;
 
-import me.udnek.itemscoreu.customequipmentslot.CustomEquipmentSlot;
+import me.udnek.itemscoreu.customequipmentslot.slot.CustomEquipmentSlot;
 import org.bukkit.attribute.AttributeModifier;
 import org.jetbrains.annotations.NotNull;
 

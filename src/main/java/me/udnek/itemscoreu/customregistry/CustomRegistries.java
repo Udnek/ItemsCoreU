@@ -7,7 +7,7 @@ import me.udnek.itemscoreu.customeffect.CustomEffect;
 import me.udnek.itemscoreu.customenchantment.CustomEnchantment;
 import me.udnek.itemscoreu.customentitylike.block.CustomBlockType;
 import me.udnek.itemscoreu.customentitylike.entity.CustomEntityType;
-import me.udnek.itemscoreu.customequipmentslot.CustomEquipmentSlot;
+import me.udnek.itemscoreu.customequipmentslot.slot.CustomEquipmentSlot;
 import me.udnek.itemscoreu.customitem.CustomItem;
 import me.udnek.itemscoreu.customloot.LootTableRegistry;
 import me.udnek.itemscoreu.customsound.CustomSound;

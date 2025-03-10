@@ -1,10 +1,6 @@
-package me.udnek.itemscoreu.customequipmentslot.instance;
+package me.udnek.itemscoreu.customequipmentslot.slot;
 
-import me.udnek.itemscoreu.customequipmentslot.AbstractCustomEquipmentSlot;
-import me.udnek.itemscoreu.customequipmentslot.CustomEquipmentSlot;
-import me.udnek.itemscoreu.customequipmentslot.GroupSlot;
-import me.udnek.itemscoreu.customequipmentslot.SingleSlot;
-import org.bukkit.entity.LivingEntity;
+import me.udnek.itemscoreu.customequipmentslot.universal.UniversalInventorySlot;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.EquipmentSlotGroup;
 import org.jetbrains.annotations.NotNull;
@@ -27,10 +23,6 @@ public class ConstructableGroupSlot extends AbstractCustomEquipmentSlot implemen
         this.subs = subs;
     }
     @Override
-    public boolean isAppropriateSlot(@NotNull LivingEntity entity, int slot) {
-        return subs.stream().anyMatch(sub -> sub.isAppropriateSlot(entity, slot));
-    }
-    @Override
     public @Nullable EquipmentSlotGroup getVanillaGroup() {
         return vanillaGroup;
     }
@@ -40,20 +32,35 @@ public class ConstructableGroupSlot extends AbstractCustomEquipmentSlot implemen
     public EquipmentSlot getVanillaSlot() {return vanillaSlot;}
 
     @Override
-    public void getAllSlots(@NotNull LivingEntity entity, @NotNull Consumer<@NotNull Integer> consumer) {
-        subs.forEach(singleSlot -> singleSlot.getAllSlots(entity, consumer));
+    public void getAllUniversal(@NotNull Consumer<@NotNull UniversalInventorySlot> consumer) {
+        subs.forEach(singleSlot -> singleSlot.getAllUniversal(consumer));
     }
+
     @Override
     public @NotNull String translationKey() {
         return translation;
     }
     @Override
-    public void getAllSubSlots(@NotNull Consumer<SingleSlot> consumer) {
+    public void getAllSingle(@NotNull Consumer<@NotNull SingleSlot> consumer) {
         subs.forEach(consumer);
     }
 
     @Override
-    public boolean test(@NotNull CustomEquipmentSlot slot) {
-        return slot == this || subs.stream().anyMatch(s -> s == slot);
+    public boolean intersects(@NotNull CustomEquipmentSlot other) {
+        return other == this || subs.stream().anyMatch(s -> other == s);
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
