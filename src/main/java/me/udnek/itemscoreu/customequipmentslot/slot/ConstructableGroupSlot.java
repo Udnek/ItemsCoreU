@@ -52,12 +52,7 @@ public class ConstructableGroupSlot extends AbstractCustomEquipmentSlot implemen
 
     @Override
     public boolean intersects(@NotNull UniversalInventorySlot slot) {
-        for (SingleSlot singleSlot : subs) {
-            if (singleSlot.intersects(slot)) {
-                return true;
-            }
-        }
-        return false;
+        return subs.stream().anyMatch(singleSlot -> singleSlot.intersects(slot));
     }
 }
 
