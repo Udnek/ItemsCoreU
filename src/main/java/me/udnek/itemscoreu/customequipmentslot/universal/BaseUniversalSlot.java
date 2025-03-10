@@ -27,7 +27,7 @@ public class BaseUniversalSlot implements UniversalInventorySlot {
     @Override
     public boolean equals(@NotNull UniversalInventorySlot other) {
         if (!(other instanceof BaseUniversalSlot otherBase)) return false;
-        return Objects.equals(this.slot, otherBase.slot) || this.equipmentSlot == otherBase.equipmentSlot;
+        return Objects.equals(this.slot, otherBase.slot) && this.equipmentSlot == otherBase.equipmentSlot;
     }
 
     @Override

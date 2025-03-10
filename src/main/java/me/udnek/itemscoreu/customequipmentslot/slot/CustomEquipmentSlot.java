@@ -39,12 +39,7 @@ public interface CustomEquipmentSlot extends Translatable, Registrable{
 
     SingleSlot ACTIVE_HAND = register(new ConstructableSingleSlot("active_hand", null, null, new ActiveHandUniversalSlot(), "slot." + new NamespacedKey(ItemsCoreU.getInstance(),"text").getNamespace() + ".active_hand"));
 
-    GroupSlot DUMB_INVENTORY = register(new ConstructableGroupSlot(
-            "dumb_inventory",
-            Set.of(),
-            null,
-            null,
-            "slot." + new NamespacedKey(ItemsCoreU.getInstance(),"text").getNamespace() + ".dumb_inventory"));
+    GroupSlot DUMB_INVENTORY = register(new DumbInventorySlot("dumb_inventory"));
 
     SingleSlot BODY = register(new ConstructableSingleSlot("body", EquipmentSlotGroup.BODY, EquipmentSlot.BODY, new BaseUniversalSlot(EquipmentSlot.BODY), "item.modifiers.body"));
 
