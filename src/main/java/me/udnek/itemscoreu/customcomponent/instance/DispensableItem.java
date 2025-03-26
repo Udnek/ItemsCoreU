@@ -24,6 +24,7 @@ public interface DispensableItem extends CustomComponent<CustomItem> {
     DispensableItem ALWAYS_DROP = new DispensableItem() {
         @Override
         public void onDispense(@NotNull CustomItem item, @NotNull BlockDispenseEvent event) {
+            event.setCancelled(true);
             Block block = event.getBlock();
             Item entity = (Item) block.getWorld().spawnEntity(block.getLocation(), EntityType.ITEM);
             entity.setVelocity(event.getVelocity());
