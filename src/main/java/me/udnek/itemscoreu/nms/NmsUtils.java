@@ -20,6 +20,7 @@ import net.minecraft.server.dedicated.DedicatedServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
@@ -45,10 +46,12 @@ import org.bukkit.craftbukkit.v1_21_R3.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_21_R3.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.v1_21_R3.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_21_R3.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_21_R3.potion.CraftPotionEffectType;
 import org.bukkit.craftbukkit.v1_21_R3.util.CraftChatMessage;
 import org.bukkit.craftbukkit.v1_21_R3.util.CraftMagicNumbers;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -211,6 +214,11 @@ public class NmsUtils {
 
     public static @NotNull Holder<MobEffect> registerEffect(@NotNull MobEffect effect, @NotNull Key key){
         return registerInRegistry(BuiltInRegistries.MOB_EFFECT, effect, key);
+    }
+
+    public static @NotNull MobEffectInstance toNmsEffect(@NotNull PotionEffect effect){
+        return new MobEffectInstance(toNms(Registries.MOB_EFFECT, effect.getType()),
+                effect.getDuration(), effect.getAmplifier(), effect.isAmbient(), effect.hasParticles(), effect.hasIcon());
     }
 
     ///////////////////////////////////////////////////////////////////////////

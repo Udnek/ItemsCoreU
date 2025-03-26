@@ -25,6 +25,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.context.ContextKeySet;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
@@ -34,6 +35,7 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemCooldowns;
 import net.minecraft.world.item.MapItem;
 import net.minecraft.world.item.SpawnEggItem;
+import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.component.BundleContents;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.trading.MerchantOffer;
@@ -60,6 +62,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import org.apache.logging.log4j.util.TriConsumer;
 import org.bukkit.*;
+import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.craftbukkit.v1_21_R3.CraftChunk;
 import org.bukkit.craftbukkit.v1_21_R3.CraftServer;
@@ -70,6 +73,7 @@ import org.bukkit.craftbukkit.v1_21_R3.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_21_R3.generator.structure.CraftStructure;
 import org.bukkit.craftbukkit.v1_21_R3.inventory.CraftItemStack;
 import org.bukkit.craftbukkit.v1_21_R3.map.CraftMapCursor;
+import org.bukkit.craftbukkit.v1_21_R3.potion.CraftPotionEffectType;
 import org.bukkit.craftbukkit.v1_21_R3.util.CraftLocation;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
@@ -78,6 +82,7 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.MerchantRecipe;
 import org.bukkit.map.MapCursor;
+import org.bukkit.potion.PotionEffect;
 import org.bukkit.util.StructureSearchResult;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -156,13 +161,13 @@ public class Nms {
     public record BlockPlaceResult(boolean isSuccess, @Nullable ItemStack resultingItem){
     }
 
-    public @NotNull Nms.BlockPlaceResult placeBlockFromItem(@NotNull Player player, @Nullable ItemStack itemStack, @NotNull EquipmentSlot hand, @NotNull Location hitPos, @NotNull BlockFace blockFace, @NotNull org.bukkit.block.Block clicked){
+    public @NotNull Nms.BlockPlaceResult placeBlockFromItem(@NotNull Player player, @Nullable ItemStack itemStack, @NotNull EquipmentSlot hand, @NotNull Location hitPos, @NotNull BlockFace blockFace, @NotNull Block clicked){
         return placeBlockFromItem(player, itemStack, hand, hitPos, blockFace, clicked, false);
     }
 
 
 
-    public @NotNull Nms.BlockPlaceResult placeBlockFromItem(@NotNull Player player, @Nullable ItemStack itemStack, @NotNull EquipmentSlot hand, @NotNull Location hitPos, @NotNull BlockFace blockFace, @NotNull org.bukkit.block.Block clicked, boolean isInside){
+    public @NotNull Nms.BlockPlaceResult placeBlockFromItem(@NotNull Player player, @Nullable ItemStack itemStack, @NotNull EquipmentSlot hand, @NotNull Location hitPos, @NotNull BlockFace blockFace, @NotNull Block clicked, boolean isInside){
         net.minecraft.world.item.ItemStack stack = NmsUtils.toNmsItemStack(itemStack);
         if (!(stack.getItem() instanceof BlockItem blockItem)) return new BlockPlaceResult(false, itemStack);
         InteractionHand interactionHand = switch (hand){
@@ -204,6 +209,14 @@ public class Nms {
     }
     public int getBreakSpeed(@NotNull Player player, @NotNull Material material){
         return (int) (1 / getBreakProgressPerTick(player, material));
+    }
+
+    public @NotNull OptionalInt getColorByEffects(@NotNull Iterable<PotionEffect> effects){
+        List<MobEffectInstance> nmsEffects = new ArrayList<>();
+        for (PotionEffect effect : effects) {
+            nmsEffects.add(NmsUtils.toNmsEffect(effect));
+        }
+        return PotionContents.getColorOptional(nmsEffects);
     }
 
     ///////////////////////////////////////////////////////////////////////////

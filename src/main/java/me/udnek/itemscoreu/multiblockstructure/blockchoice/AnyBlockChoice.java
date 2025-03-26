@@ -2,6 +2,7 @@ package me.udnek.itemscoreu.multiblockstructure.blockchoice;
 
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.jetbrains.annotations.NotNull;
 
 public class AnyBlockChoice implements BlockChoice{
 
@@ -13,7 +14,7 @@ public class AnyBlockChoice implements BlockChoice{
     }
 
     @Override
-    public Material getExample() {
+    public @NotNull Material getExample() {
         return Material.AIR;
     }
 }
