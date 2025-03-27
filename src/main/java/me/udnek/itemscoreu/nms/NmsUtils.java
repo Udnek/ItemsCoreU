@@ -38,6 +38,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.attribute.AttributeModifier;
+import org.bukkit.block.BlockFace;
 import org.bukkit.craftbukkit.v1_21_R3.CraftLootTable;
 import org.bukkit.craftbukkit.v1_21_R3.CraftServer;
 import org.bukkit.craftbukkit.v1_21_R3.CraftWorld;
@@ -46,7 +47,6 @@ import org.bukkit.craftbukkit.v1_21_R3.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_21_R3.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.v1_21_R3.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_21_R3.inventory.CraftItemStack;
-import org.bukkit.craftbukkit.v1_21_R3.potion.CraftPotionEffectType;
 import org.bukkit.craftbukkit.v1_21_R3.util.CraftChatMessage;
 import org.bukkit.craftbukkit.v1_21_R3.util.CraftMagicNumbers;
 import org.bukkit.entity.Player;
@@ -171,6 +171,18 @@ public class NmsUtils {
         toNmsPlayer(player).connection.sendPacket(packet);
     }
     // WORLD
+    public static @NotNull Direction toNmsDirection(@NotNull BlockFace face){
+        return switch (face){
+            case UP -> Direction.UP;
+            case DOWN -> Direction.DOWN;
+            case EAST -> Direction.EAST;
+            case WEST -> Direction.WEST;
+            case SOUTH -> Direction.SOUTH;
+            case NORTH -> Direction.NORTH;
+            default -> throw new RuntimeException("BlockFace does not match any of Nms: " + face);
+        };
+    }
+
     public static @NotNull ServerLevel toNmsWorld(@NotNull World world){
         return ((CraftWorld) world).getHandle();
     }

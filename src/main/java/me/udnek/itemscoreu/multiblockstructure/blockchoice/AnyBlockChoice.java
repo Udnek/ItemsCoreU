@@ -9,7 +9,7 @@ public class AnyBlockChoice implements BlockChoice{
     public AnyBlockChoice(){}
 
     @Override
-    public boolean isAppropriate(Block block) {
+    public boolean isAppropriate(@NotNull Block block) {
         return true;
     }
 
