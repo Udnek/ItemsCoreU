@@ -14,6 +14,8 @@ import net.kyori.adventure.key.Key;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.Registry;
 import net.minecraft.core.*;
+import net.minecraft.core.dispenser.BlockSource;
+import net.minecraft.core.dispenser.DefaultDispenseItemBehavior;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
 import net.minecraft.network.protocol.common.custom.GameTestAddMarkerDebugPayload;
@@ -29,6 +31,7 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.npc.VillagerTrades;
 import net.minecraft.world.item.BlockItem;
@@ -40,7 +43,10 @@ import net.minecraft.world.item.component.BundleContents;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.trading.MerchantOffer;
 import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraft.world.level.block.RespawnAnchorBlock;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.entity.DispenserBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.LevelChunk;
@@ -64,6 +70,8 @@ import org.apache.logging.log4j.util.TriConsumer;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.data.Directional;
+import org.bukkit.block.data.type.Dispenser;
 import org.bukkit.craftbukkit.v1_21_R3.CraftChunk;
 import org.bukkit.craftbukkit.v1_21_R3.CraftServer;
 import org.bukkit.craftbukkit.v1_21_R3.entity.CraftEntity;
@@ -77,6 +85,7 @@ import org.bukkit.craftbukkit.v1_21_R3.potion.CraftPotionEffectType;
 import org.bukkit.craftbukkit.v1_21_R3.util.CraftLocation;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
@@ -144,6 +153,29 @@ public class Nms {
     // BLOCKS
     ///////////////////////////////////////////////////////////////////////////
 
+    public @NotNull Item simulateDropperDrop(@NotNull ItemStack itemStack, @NotNull Block block){
+        return simulateDropperDrop(itemStack, block, ((Directional) block.getBlockData()).getFacing());
+    }
+
+    public @NotNull Item simulateDropperDrop(@NotNull ItemStack itemStack, @NotNull Block block, @NotNull BlockFace face){
+        ServerLevel nmsWorld = NmsUtils.toNmsWorld(block.getWorld());
+        BlockSource blockSource = new BlockSource(
+                nmsWorld,
+                NmsUtils.toNmsBlockPos(block),
+                NmsUtils.toNmsBlockState(block.getState()),
+                nmsWorld.getBlockEntity(NmsUtils.toNmsBlockPos(block), BlockEntityType.DISPENSER).orElse(null)
+        );
+
+        ItemEntity nmsItemEntity = Reflex.invokeMethod(null, Reflex.getMethod(DefaultDispenseItemBehavior.class, "prepareItem"),
+                nmsWorld,
+                NmsUtils.toNmsItemStack(itemStack),
+                Reflex.getFieldValue(DefaultDispenseItemBehavior.class, "DEFAULT_ACCURACY"),
+                NmsUtils.toNmsDirection(face),
+                DispenserBlock.getDispensePosition(blockSource)
+        );
+        return (Item) nmsItemEntity.getBukkitEntity();
+    }
+
     public @Nullable Location findAnchorStandUpLocation(@NotNull EntityType entityType, @NotNull Location anchorLocation){
         Optional<Vec3> standUpPosition = RespawnAnchorBlock.findStandUpPosition(
                 CraftEntityType.bukkitToMinecraft(entityType),
@@ -175,15 +207,7 @@ public class Nms {
             case OFF_HAND -> InteractionHand.OFF_HAND;
             default -> throw new RuntimeException("Equipment slot must be hand, given: " + hand);
         };
-        Direction direction = switch (blockFace){
-            case UP -> Direction.UP;
-            case DOWN -> Direction.DOWN;
-            case EAST -> Direction.EAST;
-            case WEST -> Direction.WEST;
-            case SOUTH -> Direction.SOUTH;
-            case NORTH -> Direction.NORTH;
-            default -> throw new RuntimeException("BlockFace does not match any of Nms: " + blockFace);
-        };
+        Direction direction = NmsUtils.toNmsDirection(blockFace);
         InteractionResult placed = blockItem.useOn(new BlockPlaceContext(
                         NmsUtils.toNmsPlayer(player),
                         interactionHand,
