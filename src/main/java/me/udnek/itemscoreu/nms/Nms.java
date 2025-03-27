@@ -173,6 +173,7 @@ public class Nms {
                 NmsUtils.toNmsDirection(face),
                 DispenserBlock.getDispensePosition(blockSource)
         );
+        nmsWorld.addFreshEntity(nmsItemEntity);
         return (Item) nmsItemEntity.getBukkitEntity();
     }
 
