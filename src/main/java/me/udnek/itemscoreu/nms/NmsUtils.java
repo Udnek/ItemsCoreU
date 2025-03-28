@@ -204,7 +204,7 @@ public class NmsUtils {
     }
 
     // Attribute
-    public static net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation toNmsOperation(@NotNull AttributeModifier.Operation bukkit){
+    public static @NotNull net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation toNmsOperation(@NotNull AttributeModifier.Operation bukkit){
         return switch (bukkit){
             case ADD_NUMBER -> net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_VALUE;
             case ADD_SCALAR -> net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_MULTIPLIED_BASE;

@@ -45,15 +45,6 @@ public class Reflex {
             Field field = getField(clazz, name);
             field.setAccessible(true);
 
-/*
-            if (Modifier.isFinal(field.getModifiers())) {
-                Field modifiersField = Field.class.getDeclaredField("modifiers");
-                modifiersField.setAccessible(true);
-                modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
-            }
-*/
-
-
             field.set(isStatic ? null : source, value);
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);

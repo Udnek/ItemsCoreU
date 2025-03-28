@@ -34,10 +34,7 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.npc.VillagerTrades;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.ItemCooldowns;
-import net.minecraft.world.item.MapItem;
-import net.minecraft.world.item.SpawnEggItem;
+import net.minecraft.world.item.*;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.component.BundleContents;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -93,6 +90,7 @@ import org.bukkit.inventory.MerchantRecipe;
 import org.bukkit.map.MapCursor;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.util.StructureSearchResult;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -186,10 +184,16 @@ public class Nms {
         return standUpPosition.map(vec3 -> new Location(anchorLocation.getWorld(), vec3.x, vec3.y, vec3.z)).orElse(null);
     }
     
-    
     ///////////////////////////////////////////////////////////////////////////
     // USAGES
     ///////////////////////////////////////////////////////////////////////////
+
+    @ApiStatus.Experimental
+    public void setProjectileItemsCanFire(@NotNull Predicate<ItemStack> predicate){
+        Predicate<net.minecraft.world.item.ItemStack> nmsPredicate =
+                itemStack -> predicate.test(NmsUtils.toBukkitItemStack(itemStack));
+        Reflex.setFieldValue(ProjectileWeaponItem.class, "ARROW_ONLY", nmsPredicate);
+    }
 
     public record BlockPlaceResult(boolean isSuccess, @Nullable ItemStack resultingItem){
     }
