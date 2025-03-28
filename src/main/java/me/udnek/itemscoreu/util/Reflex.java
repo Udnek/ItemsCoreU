@@ -6,10 +6,7 @@ import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnknownNullability;
 import sun.misc.Unsafe;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import java.lang.reflect.*;
 
 public class Reflex {
     public static @NotNull Field getField(@NotNull Class<?> source, @NotNull String name) {
@@ -44,6 +41,10 @@ public class Reflex {
 
             Field field = getField(clazz, name);
             field.setAccessible(true);
+
+            Field modifiers = getField(Field.class, "modifiers");
+            modifiers.setAccessible(true);
+            modifiers.setInt(field, field.getModifiers() & ~Modifier.FINAL);
 
             field.set(isStatic ? null : source, value);
         } catch (IllegalAccessException e) {
