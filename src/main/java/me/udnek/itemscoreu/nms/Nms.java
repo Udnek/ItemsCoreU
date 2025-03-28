@@ -192,7 +192,7 @@ public class Nms {
     public void setProjectileItemsCanFire(@NotNull Predicate<ItemStack> predicate){
         Predicate<net.minecraft.world.item.ItemStack> nmsPredicate =
                 itemStack -> predicate.test(NmsUtils.toBukkitItemStack(itemStack));
-        Reflex.setFieldValue(ProjectileWeaponItem.class, "ARROW_ONLY", nmsPredicate);
+        Reflex.setStaticFinalFieldValue(ProjectileWeaponItem.class, "ARROW_ONLY", nmsPredicate);
     }
 
     public record BlockPlaceResult(boolean isSuccess, @Nullable ItemStack resultingItem){

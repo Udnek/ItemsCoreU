@@ -33,6 +33,20 @@ public class Reflex {
 
     }
 
+    public static void setStaticFinalFieldValue(@NotNull Class<?> clazz, @NotNull String name, @Nullable Object value){
+        try {
+            Field field = getField(clazz, name);
+            field.setAccessible(true);
+
+            Field modifiers = getField(Field.class, "modifiers");
+            modifiers.setAccessible(true);
+            modifiers.setInt(field, field.getModifiers() & ~Modifier.FINAL);
+
+            field.set(null, value);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     public static void setFieldValue(@NotNull Object source, @NotNull String name, @Nullable Object value) {
         try {
@@ -41,10 +55,6 @@ public class Reflex {
 
             Field field = getField(clazz, name);
             field.setAccessible(true);
-
-            Field modifiers = getField(Field.class, "modifiers");
-            modifiers.setAccessible(true);
-            modifiers.setInt(field, field.getModifiers() & ~Modifier.FINAL);
 
             field.set(isStatic ? null : source, value);
         } catch (IllegalAccessException e) {
