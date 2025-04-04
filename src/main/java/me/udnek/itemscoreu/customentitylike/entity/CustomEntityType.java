@@ -1,6 +1,7 @@
 package me.udnek.itemscoreu.customentitylike.entity;
 
 import me.udnek.itemscoreu.ItemsCoreU;
+import me.udnek.itemscoreu.customcomponent.ComponentHolder;
 import me.udnek.itemscoreu.customentitylike.EntityLikeType;
 import me.udnek.itemscoreu.customregistry.CustomRegistries;
 import org.bukkit.Location;
@@ -13,7 +14,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
 
-public interface CustomEntityType extends EntityLikeType<Entity> {
+public interface CustomEntityType extends EntityLikeType<Entity>, ComponentHolder<CustomEntityType> {
 
     NamespacedKey PDC_NAMESPACE = new NamespacedKey(ItemsCoreU.getInstance(), "custom_entity_type");
 
