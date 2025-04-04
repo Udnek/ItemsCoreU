@@ -11,6 +11,8 @@ import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.function.Consumer;
+
 public interface CustomEntityType extends EntityLikeType<Entity> {
 
     NamespacedKey PDC_NAMESPACE = new NamespacedKey(ItemsCoreU.getInstance(), "custom_entity_type");
@@ -33,6 +35,11 @@ public interface CustomEntityType extends EntityLikeType<Entity> {
     static boolean isCustom(@NotNull Entity entity) {
         PersistentDataContainer dataContainer = entity.getPersistentDataContainer();
         return dataContainer.has(CustomEntityType.PDC_NAMESPACE);
+    }
+
+    static void consumeIfCustom(@NotNull Entity entity, @NotNull Consumer<@NotNull CustomEntityType> consumer){
+        CustomEntityType customEntityType = get(entity);
+        if (customEntityType != null) consumer.accept(customEntityType);
     }
 
 
