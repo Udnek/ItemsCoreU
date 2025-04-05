@@ -1,16 +1,14 @@
 package me.udnek.itemscoreu.util;
 
-import io.papermc.paper.math.Position;
+import me.udnek.itemscoreu.ItemsCoreU;
 import org.bukkit.Location;
-import org.bukkit.World;
-import org.bukkit.block.data.BlockData;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
-import java.util.Map;
 import java.util.function.Consumer;
 
 public class Utils {
@@ -21,13 +19,24 @@ public class Utils {
         return DECIMAL_FORMAT.format(value);
     }
 
-    public static void sendBlockDamageForAllPlayers(@NotNull Location location, float progress) {
-        location.getWorld().getPlayers().forEach(player -> player.sendBlockDamage(location, progress));
+    public static void sendBlockDamageForAllPlayers(@NotNull Location location, float startProgress) {
+        sendBlockDamageForAllPlayers(location, startProgress, startProgress, 5);
     }
 
-    public static void sendMultiBlockDamageForAllPlayers(@NotNull World world, @NotNull Map<? extends Position, BlockData> blockChanges) {
-        world.getPlayers().forEach(player -> player.sendMultiBlockChange(blockChanges));
+    public static void sendBlockDamageForAllPlayers(@NotNull Location location, float startProgress, float step, long tickRate) {
+        location.getWorld().getPlayers().forEach(player ->
+                        new BukkitRunnable() {
+                            float progress = startProgress;
+                            @Override
+                            public void run() {
+                                if (progress == 0) cancel();
+                                player.sendBlockDamage(location, progress);
+                                progress -= step;
+                            }
+                        }.runTaskTimer(ItemsCoreU.getInstance(), 0, tickRate));
+
     }
+
 
     public static <T> void consumeIfNotNull(@Nullable T object, @NotNull Consumer<@NotNull T> consumer){
         if (object != null) consumer.accept(object);
