@@ -29,9 +29,9 @@ public class Utils {
                             float progress = startProgress;
                             @Override
                             public void run() {
-                                player.sendBlockDamage(location, progress);
+                                player.sendBlockDamage(location, progress, location.getBlock().hashCode());
                                 progress -= step;
-                                if (progress <= 0 || progress >= 1) cancel();
+                                if (progress < 0 || progress > 1) cancel();
                             }
                         }.runTaskTimer(ItemsCoreU.getInstance(), 0, tickRate));
 
