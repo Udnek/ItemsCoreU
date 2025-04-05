@@ -29,7 +29,7 @@ public class Utils {
                             float progress = startProgress;
                             @Override
                             public void run() {
-                                if (progress == 0) cancel();
+                                if (progress <= 0) cancel();
                                 player.sendBlockDamage(location, progress);
                                 progress -= step;
                             }
