@@ -1,5 +1,6 @@
 package me.udnek.itemscoreu.customentitylike.entity;
 
+import me.udnek.itemscoreu.customcomponent.CustomComponentMap;
 import me.udnek.itemscoreu.customregistry.AbstractRegistrable;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
@@ -10,6 +11,14 @@ import org.jetbrains.annotations.MustBeInvokedByOverriders;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class ConstructableCustomEntityType<T extends Entity> extends AbstractRegistrable implements CustomEntityType {
+
+    private CustomComponentMap<CustomEntityType> components = null;
+
+    @Override
+    public @NotNull CustomComponentMap<CustomEntityType> getComponents() {
+        if (components == null) components = new CustomComponentMap<>();
+        return components;
+    }
 
     public abstract @NotNull EntityType getVanillaType();
 
