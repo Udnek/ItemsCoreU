@@ -30,7 +30,8 @@ public class MGUCommand implements CommandExecutor, TabExecutor {
             for (MGUCommandType value : MGUCommandType.values()) option.add(value.name);
             return option;
         }
-        MGUCommandType type = Objects.requireNonNull(MGUCommandType.getType(args));
+        MGUCommandType type = MGUCommandType.getType(args);
+        if (type == null) return List.of();
         return type.getOptions(commandSender, args);
     }
 
