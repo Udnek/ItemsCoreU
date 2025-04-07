@@ -1,6 +1,7 @@
 package me.udnek.itemscoreu.customentitylike.entity;
 
 import me.udnek.itemscoreu.ItemsCoreU;
+import me.udnek.itemscoreu.customcomponent.ComponentHolder;
 import me.udnek.itemscoreu.customentitylike.EntityLikeType;
 import me.udnek.itemscoreu.customregistry.CustomRegistries;
 import org.bukkit.Location;
@@ -11,7 +12,9 @@ import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public interface CustomEntityType extends EntityLikeType<Entity> {
+import java.util.function.Consumer;
+
+public interface CustomEntityType extends EntityLikeType<Entity>, ComponentHolder<CustomEntityType> {
 
     NamespacedKey PDC_NAMESPACE = new NamespacedKey(ItemsCoreU.getInstance(), "custom_entity_type");
 
@@ -33,6 +36,11 @@ public interface CustomEntityType extends EntityLikeType<Entity> {
     static boolean isCustom(@NotNull Entity entity) {
         PersistentDataContainer dataContainer = entity.getPersistentDataContainer();
         return dataContainer.has(CustomEntityType.PDC_NAMESPACE);
+    }
+
+    static void consumeIfCustom(@NotNull Entity entity, @NotNull Consumer<@NotNull CustomEntityType> consumer){
+        CustomEntityType customEntityType = get(entity);
+        if (customEntityType != null) consumer.accept(customEntityType);
     }
 
 
