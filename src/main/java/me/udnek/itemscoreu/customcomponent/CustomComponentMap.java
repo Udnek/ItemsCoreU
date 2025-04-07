@@ -5,46 +5,55 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-public class CustomComponentMap<HolderType> implements Iterable<CustomComponent<HolderType>>{
-    private @Nullable Map<CustomComponentType<HolderType, ?>, CustomComponent<HolderType>> map = null;
+public class CustomComponentMap<HolderType, Component extends CustomComponent<HolderType>> implements Iterable<Component>{
 
-    public @NotNull <Type extends CustomComponentType<HolderType, Component>, Component extends CustomComponent<HolderType>> Component getOrDefault(@NotNull Type type) {
-        if (map == null) return type.getDefault();
-        return (Component) map.getOrDefault(type, type.getDefault());
+    public static <H, C extends CustomComponent<H>> CustomComponentMap<H, C> newAlwaysEmpty(){
+        return new CustomComponentMap<>(){
+            @Override
+            public void set(@NotNull C component) {
+                throw new RuntimeException("Can not set component to AlwaysEmptyHolder!");
+            }
+        };
     }
 
-    public @NotNull <Type extends CustomComponentType<HolderType, Component>, Component extends CustomComponent<HolderType>> Component getOrCreateDefault(@NotNull Type type) {
-        Component component = get(type);
+    private @Nullable Map<CustomComponentType<HolderType, Component>,  Component> map = null;
+
+    public @NotNull <SpicificComponent extends Component> SpicificComponent getOrDefault(@NotNull CustomComponentType<? extends HolderType, SpicificComponent> type) {
+        if (map == null) return type.getDefault();
+        return (SpicificComponent) map.getOrDefault(type, type.getDefault());
+    }
+
+    public @NotNull <SpicificComponent extends Component> SpicificComponent getOrCreateDefault(@NotNull CustomComponentType<? extends HolderType, SpicificComponent> type) {
+        SpicificComponent component = get(type);
         if (component == null) {
-            Component newDefault = type.createNewDefault();
+            SpicificComponent newDefault = type.createNewDefault();
             set(newDefault);
             return newDefault;
         }
         return component;
     }
 
-    public @NotNull <Type extends CustomComponentType<HolderType, Component>, Component extends CustomComponent<HolderType>> Component getOrException(@NotNull Type type){
+    public @NotNull <SpicificComponent extends Component> Component getOrException(@NotNull CustomComponentType<? extends HolderType, SpicificComponent> type){
         return Objects.requireNonNull(map == null ? null : get(type), "Component " + type.getKey().asString() + " is not present!");
     }
 
-    public @Nullable <Type extends CustomComponentType<HolderType, Component>, Component extends CustomComponent<HolderType>> Component get(@NotNull Type type) {
+    public @Nullable  <SpicificComponent extends Component> SpicificComponent get(@NotNull CustomComponentType<? extends HolderType, SpicificComponent> type) {
         if (map == null) return null;
-        return (Component) map.get(type);
+        return (SpicificComponent) map.get(type);
     }
-    public <Type extends CustomComponentType<HolderType, ?>> boolean has(@NotNull Type type) {
+    public <Type extends CustomComponentType<HolderType, Component>> boolean has(@NotNull Type type) {
         if (map == null) return false;
         return map.containsKey(type);
     }
-    public <Component extends CustomComponent<HolderType>> void set(@NotNull Component component) {
+    public void set(@NotNull Component component) {
         if (map == null) map = new HashMap<>();
-        map.put(component.getType(), component);
+        map.put((CustomComponentType<HolderType, Component>) component.getType(), component);
     }
-    public <Type extends CustomComponentType<HolderType, ?>> void remove(@NotNull Type type) {
+    public void remove(@NotNull CustomComponentType<HolderType, Component> type) {
         if (map != null) map.remove(type);
     }
-
     @Override
-    public @NotNull Iterator<CustomComponent<HolderType>> iterator() {
+    public @NotNull Iterator<Component> iterator() {
         if (map == null) return Collections.emptyIterator();
         return map.values().iterator();
     }

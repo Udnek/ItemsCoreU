@@ -38,6 +38,16 @@ public class ConstructableCustomSound extends AbstractRegistrable implements Cus
     }
 
     @Override
+    public void play(@Nullable Location location, @Nullable Player player, float volume) {
+        play(location, player, volume, pitch);
+    }
+
+    @Override
+    public void play(@Nullable Location location, @Nullable Player player, float volume, float pitch) {
+        play(location, player, category, volume, pitch);
+    }
+
+    @Override
     public void play(@Nullable Location location, @Nullable Player player, @NotNull SoundCategory category, float volume, float pitch) {
         Preconditions.checkArgument(player != null || location != null, "Both location and player can not be null");
         if (player == null){

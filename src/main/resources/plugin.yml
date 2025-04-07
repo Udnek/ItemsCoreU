@@ -70,3 +70,9 @@ commands:
       aliases: [itemscoreu_effect]
       permission: itemscoreu.admin
       permission-message: "You do not have permission to use this command"
+  mgu:
+      description: "mgu"
+      usage: "/mgu <start/stop/join/leave/debug> [gameId]"
+      aliases: [itemscoreu_minigame]
+      permission: itemscoreu.admin
+      permission-message: "You do not have permission to use this command"

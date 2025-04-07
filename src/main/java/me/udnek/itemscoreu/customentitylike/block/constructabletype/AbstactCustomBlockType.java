@@ -2,6 +2,7 @@ package me.udnek.itemscoreu.customentitylike.block.constructabletype;
 
 import com.destroystokyo.paper.ParticleBuilder;
 import com.destroystokyo.paper.event.block.BlockDestroyEvent;
+import me.udnek.itemscoreu.customcomponent.CustomComponent;
 import me.udnek.itemscoreu.customcomponent.CustomComponentMap;
 import me.udnek.itemscoreu.customcomponent.instance.RightClickableBlock;
 import me.udnek.itemscoreu.customentitylike.block.CustomBlockManager;
@@ -34,10 +35,10 @@ import java.util.function.Consumer;
 
 public abstract class AbstactCustomBlockType extends AbstractRegistrable implements CustomBlockType {
 
-    private final CustomComponentMap<CustomBlockType> components = new CustomComponentMap<>();
+    private final CustomComponentMap<CustomBlockType, CustomComponent<CustomBlockType>> components = new CustomComponentMap<>();
 
     @Override
-    public @NotNull CustomComponentMap<CustomBlockType> getComponents() {
+    public @NotNull CustomComponentMap<CustomBlockType, CustomComponent<CustomBlockType>> getComponents() {
         return components;
     }
 

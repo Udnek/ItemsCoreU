@@ -17,7 +17,7 @@ public interface InventoryInteractableItem extends CustomComponent<CustomItem> {
     void onBeingClicked(@NotNull CustomItem item, @NotNull InventoryClickEvent event);
     void onClickWith(@NotNull CustomItem item, @NotNull InventoryClickEvent event);
 
-    default @NotNull CustomComponentType<CustomItem, ?> getType() {
+    default @NotNull CustomComponentType<? extends CustomItem, ? extends CustomComponent<CustomItem>> getType() {
         return CustomComponentType.INVENTORY_INTERACTABLE_ITEM;
     }
 }

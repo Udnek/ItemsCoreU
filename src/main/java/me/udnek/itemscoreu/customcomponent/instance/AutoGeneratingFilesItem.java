@@ -30,7 +30,7 @@ public interface AutoGeneratingFilesItem extends CustomComponent<CustomItem> {
     @NotNull List<VirtualRpJsonFile> getFiles(@NotNull CustomItem customItem);
 
     @Override
-    default @NotNull CustomComponentType<CustomItem, ?> getType() {return CustomComponentType.AUTO_GENERATING_FILES_ITEM;}
+    default @NotNull CustomComponentType<? extends CustomItem, ? extends CustomComponent<CustomItem>> getType() {return CustomComponentType.AUTO_GENERATING_FILES_ITEM;}
 
     interface Base extends AutoGeneratingFilesItem{
         @Override

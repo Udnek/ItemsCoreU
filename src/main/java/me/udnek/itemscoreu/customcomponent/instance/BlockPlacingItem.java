@@ -27,7 +27,7 @@ public class BlockPlacingItem implements CustomComponent<CustomItem> {
     }
 
     @Override
-    public @NotNull CustomComponentType<CustomItem, ?> getType() {
+    public @NotNull CustomComponentType<? extends CustomItem, ? extends CustomComponent<CustomItem>> getType() {
         return CustomComponentType.BLOCK_PLACING_ITEM;
     }
 }

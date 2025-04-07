@@ -17,6 +17,7 @@ import me.udnek.itemscoreu.customitem.CustomItemCommand;
 import me.udnek.itemscoreu.customitem.CustomItemListener;
 import me.udnek.itemscoreu.customitem.VanillaItemManager;
 import me.udnek.itemscoreu.customloot.LootTableUtils;
+import me.udnek.itemscoreu.customminigame.command.MGUCommand;
 import me.udnek.itemscoreu.customrecipe.RecipeManager;
 import me.udnek.itemscoreu.customregistry.CustomRegistries;
 import me.udnek.itemscoreu.customregistry.CustomRegistry;
@@ -70,6 +71,7 @@ public final class ItemsCoreU extends JavaPlugin implements ResourcePackablePlug
         getCommand("custom_block_entities").setExecutor(new LoadedCustomBlocksCommand());
         getCommand("play_soundu").setExecutor(new CustomSoundCommand());
         getCommand("effectu").setExecutor(new CustomEffectCommand());
+        getCommand("mgu").setExecutor(new MGUCommand());
 
         // TICKERS
         CustomEntityManager.getInstance().start(this);

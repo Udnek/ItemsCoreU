@@ -15,7 +15,7 @@ public class Reflex {
         }
         catch (NoSuchFieldException exception) {
             Class<?> superClass = source.getSuperclass();
-            Preconditions.checkArgument(superClass != null);
+            if (superClass == null) throw new RuntimeException(exception);
             return getField(superClass, name);
         }
     }
@@ -43,7 +43,7 @@ public class Reflex {
             modifiers.setInt(field, field.getModifiers() & ~Modifier.FINAL);
 
             field.set(null, value);
-        } catch (IllegalAccessException e) {
+        } catch (IllegalAccessException | IllegalArgumentException e) {
             throw new RuntimeException(e);
         }
     }
@@ -57,14 +57,14 @@ public class Reflex {
             field.setAccessible(true);
 
             field.set(isStatic ? null : source, value);
-        } catch (IllegalAccessException e) {
+        } catch (IllegalAccessException | IllegalArgumentException e) {
             throw new RuntimeException(e);
         }
     }
 
     public static void setRecordFieldValue(@NotNull Object instance, @NotNull String fieldName, @Nullable Object value) {
         try {
-            Field f = instance.getClass().getDeclaredField(fieldName);
+            Field field = instance.getClass().getDeclaredField(fieldName);
 
             Field unsafeField = Unsafe.class.getDeclaredField("theUnsafe");
             unsafeField.setAccessible(true);
@@ -77,7 +77,7 @@ public class Reflex {
             Method offset = Class.forName("jdk.internal.misc.Unsafe").getMethod("objectFieldOffset", Field.class);
             unsafe.putBoolean(offset, 12, true);
 
-            unsafe.putObject(instance, (long) offset.invoke(theInternalUnsafe, f), value);
+            unsafe.putObject(instance, (long) offset.invoke(theInternalUnsafe, field), value);
         } catch (IllegalAccessException | NoSuchFieldException | ClassNotFoundException | NoSuchMethodException | InvocationTargetException e) {
             throw new RuntimeException(e);
         }

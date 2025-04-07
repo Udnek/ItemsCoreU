@@ -13,7 +13,7 @@ public interface RightClickableItem extends CustomComponent<CustomItem> {
     void onRightClick(@NotNull CustomItem item, @NotNull PlayerInteractEvent event);
 
     @Override
-    default @NotNull CustomComponentType<CustomItem, ?> getType() {
+    default @NotNull CustomComponentType<? extends CustomItem, ? extends CustomComponent<CustomItem>> getType() {
         return CustomComponentType.RIGHT_CLICKABLE_ITEM;
     }
 }
