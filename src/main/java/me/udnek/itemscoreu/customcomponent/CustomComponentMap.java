@@ -41,7 +41,7 @@ public class CustomComponentMap<HolderType, Component extends CustomComponent<Ho
         if (map == null) return null;
         return (SpicificComponent) map.get(type);
     }
-    public <Type extends CustomComponentType<HolderType, Component>> boolean has(@NotNull Type type) {
+    public boolean has(@NotNull CustomComponentType<? extends HolderType, ? extends Component> type) {
         if (map == null) return false;
         return map.containsKey(type);
     }
@@ -49,7 +49,7 @@ public class CustomComponentMap<HolderType, Component extends CustomComponent<Ho
         if (map == null) map = new HashMap<>();
         map.put((CustomComponentType<HolderType, Component>) component.getType(), component);
     }
-    public void remove(@NotNull CustomComponentType<HolderType, Component> type) {
+    public void remove(@NotNull CustomComponentType<? extends HolderType, ? extends Component> type) {
         if (map != null) map.remove(type);
     }
     @Override
