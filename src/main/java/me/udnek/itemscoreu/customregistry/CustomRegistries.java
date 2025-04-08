@@ -39,7 +39,7 @@ public class CustomRegistries {
         BLOCK_TYPE = addRegistry(new MappedCustomRegistry<>("block_type"));
         ATTRIBUTE = addRegistry(new MappedCustomRegistry<>("attribute"));
         EQUIPMENT_SLOT = addRegistry(new MappedCustomRegistry<>("equipment_slot"));
-        ENTITY_TYPE = addRegistry(new MappedCustomRegistry<>("entity_typ"));
+        ENTITY_TYPE = addRegistry(new MappedCustomRegistry<>("entity_type"));
         LOOT_TABLE = (LootTableRegistry) addRegistry(new LootTableRegistry("loot_table"));
         EFFECT = addRegistry(new MappedCustomRegistry<>("effect"));
         SOUND = addRegistry(new MappedCustomRegistry<>("sound"));
