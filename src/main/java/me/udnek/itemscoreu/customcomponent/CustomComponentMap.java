@@ -33,7 +33,7 @@ public class CustomComponentMap<HolderType, Component extends CustomComponent<Ho
         return component;
     }
 
-    public @NotNull <SpicificComponent extends Component> Component getOrException(@NotNull CustomComponentType<? extends HolderType, SpicificComponent> type){
+    public @NotNull <SpicificComponent extends Component> SpicificComponent getOrException(@NotNull CustomComponentType<? extends HolderType, SpicificComponent> type){
         return Objects.requireNonNull(map == null ? null : get(type), "Component " + type.getKey().asString() + " is not present!");
     }
 

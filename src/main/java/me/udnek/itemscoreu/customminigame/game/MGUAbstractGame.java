@@ -42,6 +42,7 @@ public abstract class MGUAbstractGame implements MGUGameInstance{
                 getDebug().forEach(component -> context.sender().sendMessage(component));
                 yield MGUCommandType.ExecutionResult.SUCCESS;
             }
+            default -> MGUCommandType.ExecutionResult.SUCCESS;
         };
     }
 

@@ -13,7 +13,7 @@ public class VanillaAttributesComponent implements CustomComponent<CustomItem> {
     public static final VanillaAttributesComponent EMPTY = new VanillaAttributesComponent(){
         @Override
         public void addAttribute(@NotNull Attribute attribute, @NotNull CustomKeyedAttributeModifier modifier) {
-            throw new RuntimeException("Can not add attribute to default empty component");
+            throwCanNotChangeDefault();
         }
     };
 

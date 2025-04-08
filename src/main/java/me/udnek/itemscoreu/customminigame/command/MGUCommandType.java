@@ -3,6 +3,7 @@ package me.udnek.itemscoreu.customminigame.command;
 import me.udnek.itemscoreu.customminigame.player.MGUPlayer;
 import me.udnek.itemscoreu.customminigame.game.MGUGameInstance;
 import me.udnek.itemscoreu.customminigame.MGUManager;
+import net.minecraft.world.entity.boss.wither.WitherBoss;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -40,7 +41,23 @@ public enum MGUCommandType {
             return game.executeCommand(new MGUCommandContext(this, sender, args, game, game.getType()));
         }
     },
-    DEBUG("debug",1, false);
+    DEBUG("debug",1, false),
+    LIST("list", 0, false){
+        @Override
+        public boolean testArgs(@NotNull CommandSender sender, @NotNull String[] args) {return true;}
+        @Override
+        public @NotNull List<String> getOptions(@NotNull CommandSender sender, @NotNull String[] args) {return List.of();}
+        @Override
+        public @NotNull ExecutionResult execute(@NotNull CommandSender sender, @NotNull String[] args) {
+            sender.sendMessage("------------------");
+            sender.sendMessage("Current active games:");
+            for (String id : MGUManager.get().getActiveStringIds()) {
+                sender.sendMessage(id);
+            }
+            sender.sendMessage("------------------");
+            return ExecutionResult.SUCCESS;
+        }
+    };
 
 
     public final String name;
@@ -54,14 +71,15 @@ public enum MGUCommandType {
     }
 
     public boolean testArgs(@NotNull CommandSender sender, @NotNull String[] args){
-        if (args.length < 1) return false;
+        if (args.length < 2) return false;
         MGUGameInstance game = MGUManager.get().getActiveGame(args[1]);
         if (game == null) return false;
         return game.testCommandArgs(new MGUCommandContext(this, sender, args, game, game.getType()));
     }
     public @NotNull List<String> getOptions(@NotNull CommandSender sender, @NotNull String[] args){
-        if (args.length > 1){
-            MGUGameInstance game = Objects.requireNonNull(MGUManager.get().getActiveGame(args[1]));
+        if (args.length > 2){
+            MGUGameInstance game = MGUManager.get().getActiveGame(args[1]);
+            if (game == null) return List.of();
             return game.getCommandOptions(new MGUCommandContext(this, sender, args, game, game.getType()));
         }
         return MGUManager.get().getActiveStringIds();
@@ -71,15 +89,13 @@ public enum MGUCommandType {
         return game.executeCommand(new MGUCommandContext(this, sender, args, game, game.getType()));
     }
 
-    public boolean equals(@NotNull String[] args){
-        return this.name.equalsIgnoreCase(args[0]);
-    }
 
     public static @Nullable MGUCommandType getType(@NotNull String[] args){
         MGUCommandType commandType = null;
-        for (MGUCommandType value : MGUCommandType.values()) {
-            if (value.equals(args)){
-                commandType = value;
+        if (args.length == 0) return null;
+        for (MGUCommandType type : MGUCommandType.values()) {
+            if (type.name.equals(args[0])){
+                commandType = type;
                 break;
             }
         }
@@ -91,4 +107,5 @@ public enum MGUCommandType {
         SUCCESS,
         FAILED
     }
+
 }

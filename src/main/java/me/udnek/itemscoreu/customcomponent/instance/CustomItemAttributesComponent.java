@@ -13,7 +13,7 @@ public class CustomItemAttributesComponent implements CustomComponent<CustomItem
     public static final CustomItemAttributesComponent EMPTY = new CustomItemAttributesComponent(){
         @Override
         public void addAttribute(@NotNull CustomAttribute attribute, @NotNull CustomAttributeModifier modifier) {
-            throw new RuntimeException("Can not add attribute to default empty component. Set new component to item or use #safeAddAttribute if you want to modify attributes");
+            throwCanNotChangeDefault();
         }
     };
 
