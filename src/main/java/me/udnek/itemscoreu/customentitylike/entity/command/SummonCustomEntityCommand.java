@@ -2,10 +2,8 @@ package me.udnek.itemscoreu.customentitylike.entity.command;
 
 import me.udnek.itemscoreu.customentitylike.entity.CustomEntityType;
 import me.udnek.itemscoreu.customregistry.CustomRegistries;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabExecutor;
+import org.bukkit.Location;
+import org.bukkit.command.*;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -15,20 +13,25 @@ import java.util.List;
 
 public class SummonCustomEntityCommand implements CommandExecutor, TabExecutor {
     @Override
-    public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        if (!(commandSender instanceof Player player)) return false;
+    public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String label, @NotNull String @NotNull [] args) {
         if (args.length != 1) return false;
-
         CustomEntityType entityType = CustomEntityType.get(args[0]);
         if (entityType == null) return false;
 
-        entityType.spawn(player.getLocation());
+        Location location;
+        if (commandSender instanceof Player player)
+            location = player.getLocation();
+        else if (commandSender instanceof BlockCommandSender blockCommandSender)
+            location = blockCommandSender.getBlock().getLocation().toCenterLocation().add(0, 0.5, 0);
+        else return false;
+
+        entityType.spawn(location);
         return true;
     }
 
     @Override
-    public @Nullable List<String> onTabComplete(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        if (args.length > 1) return new ArrayList<>();
+    public @Nullable List<String> onTabComplete(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String label, @NotNull String @NotNull [] args) {
+        if (args.length > 1) return List.of();
         return new ArrayList<>(CustomRegistries.ENTITY_TYPE.getIds());
     }
 }
