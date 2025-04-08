@@ -6,6 +6,7 @@ import io.papermc.paper.datacomponent.DataComponentType;
 import io.papermc.paper.datacomponent.item.*;
 import me.udnek.itemscoreu.customattribute.AttributeUtils;
 import me.udnek.itemscoreu.customcomponent.AbstractComponentHolder;
+import me.udnek.itemscoreu.customcomponent.CustomComponent;
 import me.udnek.itemscoreu.customevent.CustomItemGeneratedEvent;
 import me.udnek.itemscoreu.customrecipe.RecipeManager;
 import me.udnek.itemscoreu.util.LoreBuilder;
@@ -31,7 +32,7 @@ import java.util.function.Consumer;
 import static io.papermc.paper.datacomponent.DataComponentTypes.*;
 
 
-public abstract class ConstructableCustomItem extends AbstractComponentHolder<CustomItem> implements CustomItemProperties, UpdatingCustomItem {
+public abstract class ConstructableCustomItem extends AbstractComponentHolder<CustomItem, CustomComponent<CustomItem>> implements CustomItemProperties, UpdatingCustomItem {
     private String id;
     protected ItemStack itemStack = null;
     protected List<Recipe> recipes = null;

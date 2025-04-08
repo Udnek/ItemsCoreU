@@ -1,6 +1,8 @@
 package me.udnek.itemscoreu.customitem;
 
 import me.udnek.itemscoreu.ItemsCoreU;
+import me.udnek.itemscoreu.customcomponent.CustomComponent;
+import me.udnek.itemscoreu.customcomponent.CustomComponentMap;
 import me.udnek.itemscoreu.customcomponent.CustomComponentType;
 import me.udnek.itemscoreu.custominventory.CustomInventory;
 import me.udnek.itemscoreu.nms.Nms;
@@ -44,7 +46,8 @@ public class CustomItemListener extends SelfRegisteringListener {
         if (!event.getAction().isRightClick()) return;
         CustomItem customItem = CustomItem.get(event.getItem());
         if (customItem == null) return;
-        customItem.getComponents().getOrDefault(CustomComponentType.RIGHT_CLICKABLE_ITEM).onRightClick(customItem, event);
+        CustomComponentMap<CustomItem, CustomComponent<CustomItem>> components = customItem.getComponents();
+        components.getOrDefault(CustomComponentType.RIGHT_CLICKABLE_ITEM).onRightClick(customItem, event);
     }
 
     @EventHandler

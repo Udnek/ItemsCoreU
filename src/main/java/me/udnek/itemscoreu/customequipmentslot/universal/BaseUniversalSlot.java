@@ -36,7 +36,7 @@ public class BaseUniversalSlot implements UniversalInventorySlot {
             return inventoryHolder.getInventory().getItem(slot);
         } else if (equipmentSlot != null) {
             if (entity instanceof Player player){
-                if (equipmentSlot == EquipmentSlot.BODY) return null;///TODO убрать
+                if (equipmentSlot == EquipmentSlot.BODY) return null;///TODO убрать 1.21.5
                 return player.getInventory().getItem(equipmentSlot);
             }else  {
                 EntityEquipment equipment = entity.getEquipment();
@@ -68,9 +68,7 @@ public class BaseUniversalSlot implements UniversalInventorySlot {
                 Preconditions.checkNotNull(equipment, "Equipment for ", entity, " - null");
                 equipment.setItem(equipmentSlot, itemStack);
             }
-        }else {
-            throw new RuntimeException("No slot added");
-        }
+        }else throw new RuntimeException("No slot added");
     }
 
     @Override

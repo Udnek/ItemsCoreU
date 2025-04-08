@@ -4,6 +4,8 @@ import me.udnek.itemscoreu.ItemsCoreU;
 import me.udnek.itemscoreu.customcomponent.instance.*;
 import me.udnek.itemscoreu.customentitylike.block.CustomBlockType;
 import me.udnek.itemscoreu.customitem.CustomItem;
+import me.udnek.itemscoreu.customminigame.ability.MGUAbilityHolderComponent;
+import me.udnek.itemscoreu.customminigame.player.MGUPlayer;
 import me.udnek.itemscoreu.customregistry.CustomRegistries;
 import me.udnek.itemscoreu.customregistry.Registrable;
 import org.jetbrains.annotations.NotNull;
@@ -39,12 +41,16 @@ public interface CustomComponentType<HolderType, Component extends CustomCompone
     CustomComponentType<CustomBlockType, HopperInteractingBlock>
             HOPPER_INTERACTING_BLOCK = register(new ConstructableComponentType<>("hopper_interacting_block", HopperInteractingBlock.DENY));
 
+    // MGU
+
+    CustomComponentType<MGUPlayer, MGUAbilityHolderComponent> MGU_ABILITY_HOLDER = register(new ConstructableComponentType<>(
+            "mgu_ability_holder", MGUAbilityHolderComponent.DEFAULT, MGUAbilityHolderComponent::new));
 
 
     @NotNull Component getDefault();
     @NotNull Component createNewDefault();
 
-    private static <K, V extends CustomComponent<K>> @NotNull CustomComponentType<K, V> register(CustomComponentType<K, V> type){
+    private static <T extends CustomComponentType<?, ?>> @NotNull T register(T type){
         return CustomRegistries.COMPONENT_TYPE.register(ItemsCoreU.getInstance(), type);
     }
 }

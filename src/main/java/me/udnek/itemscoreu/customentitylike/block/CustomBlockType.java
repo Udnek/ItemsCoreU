@@ -3,6 +3,7 @@ package me.udnek.itemscoreu.customentitylike.block;
 import com.destroystokyo.paper.event.block.BlockDestroyEvent;
 import me.udnek.itemscoreu.ItemsCoreU;
 import me.udnek.itemscoreu.customcomponent.ComponentHolder;
+import me.udnek.itemscoreu.customcomponent.CustomComponent;
 import me.udnek.itemscoreu.customentitylike.EntityLikeType;
 import me.udnek.itemscoreu.customregistry.CustomRegistries;
 import org.bukkit.Location;
@@ -19,7 +20,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
 
-public interface CustomBlockType extends ComponentHolder<CustomBlockType>, EntityLikeType<TileState> {
+public interface CustomBlockType extends ComponentHolder<CustomBlockType, CustomComponent<CustomBlockType>>, EntityLikeType<TileState> {
 
     NamespacedKey PDC_KEY = new NamespacedKey(ItemsCoreU.getInstance(), "custom_block_type");
 

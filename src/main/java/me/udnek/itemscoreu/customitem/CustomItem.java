@@ -2,6 +2,7 @@ package me.udnek.itemscoreu.customitem;
 
 import me.udnek.itemscoreu.ItemsCoreU;
 import me.udnek.itemscoreu.customcomponent.ComponentHolder;
+import me.udnek.itemscoreu.customcomponent.CustomComponent;
 import me.udnek.itemscoreu.customregistry.CustomRegistries;
 import me.udnek.itemscoreu.customregistry.Registrable;
 import net.kyori.adventure.translation.Translatable;
@@ -20,7 +21,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
 
-public interface CustomItem extends Registrable, ComponentHolder<CustomItem>, Translatable {
+public interface CustomItem extends Registrable, ComponentHolder<CustomItem, CustomComponent<CustomItem>>, Translatable {
 
     NamespacedKey PERSISTENT_DATA_CONTAINER_NAMESPACE = new NamespacedKey(ItemsCoreU.getInstance(), "item");
 

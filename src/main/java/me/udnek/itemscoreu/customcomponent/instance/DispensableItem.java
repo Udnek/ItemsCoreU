@@ -48,7 +48,7 @@ public interface DispensableItem extends CustomComponent<CustomItem> {
     void onDrop(@NotNull CustomItem item, @NotNull BlockDispenseEvent event);
 
     @Override
-    default @NotNull CustomComponentType<CustomItem, ?> getType() {
+    default @NotNull CustomComponentType<? extends CustomItem, ? extends CustomComponent<CustomItem>> getType() {
         return CustomComponentType.DISPENSABLE_ITEM;
     }
 }

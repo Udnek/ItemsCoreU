@@ -34,7 +34,7 @@ public class CustomItemAttributesComponent implements CustomComponent<CustomItem
     public @NotNull CustomAttributesContainer getAttributes() {return container;}
 
     @Override
-    public @NotNull CustomComponentType<CustomItem, ?> getType() {
+    public @NotNull CustomComponentType<? extends CustomItem, ? extends CustomComponent<CustomItem>> getType() {
         return CustomComponentType.CUSTOM_ATTRIBUTED_ITEM;
     }
 }

@@ -8,12 +8,14 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public interface CustomSound extends Registrable {
+    void play(@Nullable Location location, @Nullable Player player, @NotNull SoundCategory category, float volume, float pitch);
+    void play(@Nullable Location location, @Nullable Player player, float volume, float pitch);
+    void play(@Nullable Location location, @Nullable Player player, float volume);
+    void play(@Nullable Location location, @Nullable Player player);
     default void play(@NotNull Player player){
         play(null, player);
     }
     default void play(@NotNull Location location){
         play(location, null);
     }
-    void play(@Nullable Location location, @Nullable Player player);
-    void play(@Nullable Location location, @Nullable Player player, @NotNull SoundCategory category, float volume, float pitch);
 }
