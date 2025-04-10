@@ -15,12 +15,8 @@ import java.util.Objects;
 
 public abstract class MGUAbstractGame implements MGUGameInstance{
 
-    private final MGUId id;
-    protected @NotNull State state = State.WAITING;
-
-    public MGUAbstractGame(){
-        this.id = MGUId.generateNew(this);
-    }
+    private final MGUId id = MGUId.generateNew(this);
+    protected boolean isRunning = false;
 
     @Override
     public final @NotNull MGUId getId() {return id;}
@@ -29,15 +25,19 @@ public abstract class MGUAbstractGame implements MGUGameInstance{
     public @NotNull MGUCommandType.ExecutionResult executeCommand(@NotNull MGUCommandContext context) {
         return switch (context.commandType()) {
             case START -> {
-                if (getState() != State.WAITING) yield new MGUCommandType.ExecutionResult(MGUCommandType.ExecutionResult.Type.FAIL, "state is not waiting");
+                if (isRunning()) yield new MGUCommandType.ExecutionResult(MGUCommandType.ExecutionResult.Type.FAIL, "game is running");
                 yield start(context);
             }
             case STOP -> {
-                if (getState() != State.RUNNING) yield new MGUCommandType.ExecutionResult(MGUCommandType.ExecutionResult.Type.FAIL, "state is not running");
+                if (isRunning()) yield new MGUCommandType.ExecutionResult(MGUCommandType.ExecutionResult.Type.FAIL, "game is not running");
                 yield stop(context);
             }
-            case JOIN -> join(Objects.requireNonNull(context.player()), context);
+            case JOIN -> {
+                if (isRunning()) yield new MGUCommandType.ExecutionResult(MGUCommandType.ExecutionResult.Type.FAIL, "game is running");
+                yield join(Objects.requireNonNull(context.player()), context);
+            }
             case LEAVE -> leave(Objects.requireNonNull(context.mguPlayer()), context);
+
             case DEBUG -> {
                 getDebug().forEach(component -> context.sender().sendMessage(component));
                 yield MGUCommandType.ExecutionResult.SUCCESS;
@@ -60,25 +60,20 @@ public abstract class MGUAbstractGame implements MGUGameInstance{
     public @NotNull List<Component> getDebug(){
         List<Component> list = new ArrayList<>();
         list.add(Component.text("Game debug data: " + getId()));
-        list.add(Component.text("state: " + getState()));
+        list.add(Component.text("isRunning: " + isRunning));
         list.add(Component.text("players: " + getPlayers()));
         return list;
     }
 
-    public @NotNull State getState(){
-        return state;
-    }
+    @Override
+    public boolean isRunning() {return isRunning;}
+
 
     public abstract @NotNull List<MGUPlayer> getPlayers();
     public abstract @NotNull MGUCommandType.ExecutionResult start(@NotNull MGUCommandContext context);
     public abstract @NotNull MGUCommandType.ExecutionResult stop(@NotNull MGUCommandContext context);
     public abstract @NotNull MGUCommandType.ExecutionResult join(@NotNull Player player, @NotNull MGUCommandContext context);
     public abstract @NotNull MGUCommandType.ExecutionResult leave(@NotNull MGUPlayer player, @NotNull MGUCommandContext context);
-
-    public enum State{
-        WAITING,
-        RUNNING
-    }
 }
 
 
