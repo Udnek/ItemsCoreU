@@ -1,5 +1,8 @@
 package me.udnek.itemscoreu.customminigame.command;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -19,7 +22,10 @@ public class MGUCommand implements CommandExecutor, TabExecutor {
         if (commandType.playerOnly && !(commandSender instanceof Player)) return false;
         if (!commandType.testArgs(commandSender, args)) return false;
 
-        return commandType.execute(commandSender, args) == MGUCommandType.ExecutionResult.SUCCESS;
+        MGUCommandType.ExecutionResult execute = commandType.execute(commandSender, args);
+        TextColor color = execute.type() == MGUCommandType.ExecutionResult.Type.SUCCESS ? NamedTextColor.GREEN : NamedTextColor.RED;
+        commandSender.sendMessage(Component.text(execute.message()).color(color));
+        return execute.type() == MGUCommandType.ExecutionResult.Type.SUCCESS;
     }
 
     @Override

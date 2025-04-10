@@ -16,11 +16,11 @@ public class CustomComponentMap<HolderType, Component extends CustomComponent<Ho
         };
     }
 
-    private @Nullable Map<CustomComponentType<HolderType, Component>,  Component> map = null;
+    private @Nullable Map<CustomComponentType<? extends HolderType, ? extends Component>,  Component> map = null;
 
     public @NotNull <SpicificComponent extends Component> SpicificComponent getOrDefault(@NotNull CustomComponentType<? extends HolderType, SpicificComponent> type) {
-        if (map == null) return type.getDefault();
-        return (SpicificComponent) map.getOrDefault(type, type.getDefault());
+        SpicificComponent component = get(type);
+        return component == null ? type.getDefault() : component;
     }
 
     public @NotNull <SpicificComponent extends Component> SpicificComponent getOrCreateDefault(@NotNull CustomComponentType<? extends HolderType, SpicificComponent> type) {
@@ -37,7 +37,7 @@ public class CustomComponentMap<HolderType, Component extends CustomComponent<Ho
         return Objects.requireNonNull(map == null ? null : get(type), "Component " + type.getKey().asString() + " is not present!");
     }
 
-    public @Nullable  <SpicificComponent extends Component> SpicificComponent get(@NotNull CustomComponentType<? extends HolderType, SpicificComponent> type) {
+    public @Nullable <SpicificComponent extends Component> SpicificComponent get(@NotNull CustomComponentType<? extends HolderType, SpicificComponent> type) {
         if (map == null) return null;
         return (SpicificComponent) map.get(type);
     }
@@ -47,7 +47,7 @@ public class CustomComponentMap<HolderType, Component extends CustomComponent<Ho
     }
     public void set(@NotNull Component component) {
         if (map == null) map = new HashMap<>();
-        map.put((CustomComponentType<HolderType, Component>) component.getType(), component);
+        map.put((CustomComponentType<? extends HolderType, ? extends Component>) component.getType(), component);
     }
     public void remove(@NotNull CustomComponentType<? extends HolderType, ? extends Component> type) {
         if (map != null) map.remove(type);

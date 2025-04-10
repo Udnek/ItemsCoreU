@@ -22,9 +22,6 @@ public interface CustomInventory extends InventoryHolder {
             return customInventory;
         } return null;
     }
-    static boolean isSame(CustomInventory customInventory, @NotNull Inventory inventory){
-        return get(inventory) == customInventory;
-    }
     default void open(@NotNull Player player) {player.openInventory(getInventory());}
     default void onPlayerClicksItem(@NotNull InventoryClickEvent event){}
     default void afterPlayerClicksItem(@NotNull InventoryClickEvent event){}

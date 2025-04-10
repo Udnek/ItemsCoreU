@@ -29,11 +29,11 @@ public abstract class MGUAbstractGame implements MGUGameInstance{
     public @NotNull MGUCommandType.ExecutionResult executeCommand(@NotNull MGUCommandContext context) {
         return switch (context.commandType()) {
             case START -> {
-                if (getState() != State.WAITING) yield MGUCommandType.ExecutionResult.FAILED;
+                if (getState() != State.WAITING) yield new MGUCommandType.ExecutionResult(MGUCommandType.ExecutionResult.Type.FAIL, "state is not waiting");
                 yield start(context);
             }
             case STOP -> {
-                if (getState() != State.RUNNING) yield MGUCommandType.ExecutionResult.FAILED;
+                if (getState() != State.RUNNING) yield new MGUCommandType.ExecutionResult(MGUCommandType.ExecutionResult.Type.FAIL, "state is not running");
                 yield stop(context);
             }
             case JOIN -> join(Objects.requireNonNull(context.player()), context);
@@ -66,7 +66,7 @@ public abstract class MGUAbstractGame implements MGUGameInstance{
     }
 
     public @NotNull State getState(){
-        return State.WAITING;
+        return state;
     }
 
     public abstract @NotNull List<MGUPlayer> getPlayers();
