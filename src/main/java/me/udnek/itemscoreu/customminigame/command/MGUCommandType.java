@@ -3,7 +3,6 @@ package me.udnek.itemscoreu.customminigame.command;
 import me.udnek.itemscoreu.customminigame.player.MGUPlayer;
 import me.udnek.itemscoreu.customminigame.game.MGUGameInstance;
 import me.udnek.itemscoreu.customminigame.MGUManager;
-import net.minecraft.world.entity.boss.wither.WitherBoss;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -19,7 +18,7 @@ public enum MGUCommandType {
         @Override
         public @NotNull ExecutionResult execute(@NotNull CommandSender sender, @NotNull String[] args) {
             MGUGameInstance game = Objects.requireNonNull(MGUManager.get().getActiveGame(args[1]));
-            if (MGUManager.get().getPlayer(((Player) sender)) != null) return ExecutionResult.FAILED;
+            if (MGUManager.get().getPlayer(((Player) sender)) != null) return new ExecutionResult(ExecutionResult.Type.FAIL, "executor is not mguPlayer");
             return game.executeCommand(new MGUCommandContext(this, sender, args, game, game.getType()));
         }
     },
@@ -36,7 +35,7 @@ public enum MGUCommandType {
         @Override
         public @NotNull ExecutionResult execute(@NotNull CommandSender sender, @NotNull String[] args) {
             MGUPlayer mguPlayer = MGUManager.get().getPlayer(((Player) sender));
-            if (mguPlayer == null) return ExecutionResult.FAILED;
+            if (mguPlayer == null) return new ExecutionResult(ExecutionResult.Type.FAIL, "executor is not mguPlayer");
             MGUGameInstance game = mguPlayer.getGame();
             return game.executeCommand(new MGUCommandContext(this, sender, args, game, game.getType()));
         }
@@ -102,10 +101,14 @@ public enum MGUCommandType {
         if (commandType == null) return null;
         return (args.length - 1) >= commandType.minLength ? commandType : null;
     }
-    
-    public enum ExecutionResult {
-        SUCCESS,
-        FAILED
-    }
 
+    public record ExecutionResult(MGUCommandType.ExecutionResult.@NotNull Type type, @NotNull String message) {
+
+        public static final ExecutionResult SUCCESS = new ExecutionResult(Type.SUCCESS, "success");
+
+        public enum Type {
+            SUCCESS,
+            FAIL
+        }
+    }
 }
