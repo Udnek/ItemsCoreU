@@ -6,7 +6,9 @@ import me.udnek.itemscoreu.customminigame.command.MGUCommandContext;
 import me.udnek.itemscoreu.customminigame.command.MGUCommandType;
 import net.kyori.adventure.text.Component;
 import net.minecraft.stats.Stat;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -37,9 +39,12 @@ public abstract class MGUAbstractGame implements MGUGameInstance{
                 yield join(Objects.requireNonNull(context.player()), context);
             }
             case LEAVE -> leave(Objects.requireNonNull(context.mguPlayer()), context);
-
             case DEBUG -> {
                 getDebug().forEach(component -> context.sender().sendMessage(component));
+                yield MGUCommandType.ExecutionResult.SUCCESS;
+            }
+            case COORDINATE_WAND -> {
+                Objects.requireNonNull(context.player()).getInventory().addItem(createCoordinateWand());
                 yield MGUCommandType.ExecutionResult.SUCCESS;
             }
             default -> MGUCommandType.ExecutionResult.SUCCESS;
@@ -56,6 +61,12 @@ public abstract class MGUAbstractGame implements MGUGameInstance{
     public boolean testCommandArgs(@NotNull MGUCommandContext context) {
         return true;
     }
+
+    public @NotNull ItemStack createCoordinateWand(){
+        // TODO COORDINATE WAND
+        return new ItemStack(Material.STICK);
+    }
+
 
     public @NotNull List<Component> getDebug(){
         List<Component> list = new ArrayList<>();
