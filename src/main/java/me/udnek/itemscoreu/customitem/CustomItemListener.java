@@ -1,8 +1,6 @@
 package me.udnek.itemscoreu.customitem;
 
 import me.udnek.itemscoreu.ItemsCoreU;
-import me.udnek.itemscoreu.customcomponent.CustomComponent;
-import me.udnek.itemscoreu.customcomponent.CustomComponentMap;
 import me.udnek.itemscoreu.customcomponent.CustomComponentType;
 import me.udnek.itemscoreu.custominventory.CustomInventory;
 import me.udnek.itemscoreu.nms.Nms;
@@ -10,6 +8,7 @@ import me.udnek.itemscoreu.util.SelfRegisteringListener;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockDispenseEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -43,10 +42,11 @@ public class CustomItemListener extends SelfRegisteringListener {
 
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
-        if (!event.getAction().isRightClick()) return;
         CustomItem customItem = CustomItem.get(event.getItem());
         if (customItem == null) return;
-        customItem.getComponents().getOrDefault(CustomComponentType.RIGHT_CLICKABLE_ITEM).onRightClick(customItem, event);
+        Action action = event.getAction();
+        if (action.isRightClick()) customItem.getComponents().getOrDefault(CustomComponentType.RIGHT_CLICKABLE_ITEM).onRightClick(customItem, event);
+        if (action.isLeftClick()) customItem.getComponents().getOrDefault(CustomComponentType.LEFT_CLICKABLE_ITEM).onLeftClick(customItem, event);
     }
 
     @EventHandler

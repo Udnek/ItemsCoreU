@@ -12,10 +12,7 @@ import me.udnek.itemscoreu.customentitylike.entity.command.SummonCustomEntityCom
 import me.udnek.itemscoreu.customhelp.CustomHelpCommand;
 import me.udnek.itemscoreu.customhud.CustomHudManager;
 import me.udnek.itemscoreu.custominventory.CustomInventoryListener;
-import me.udnek.itemscoreu.customitem.CraftListener;
-import me.udnek.itemscoreu.customitem.CustomItemCommand;
-import me.udnek.itemscoreu.customitem.CustomItemListener;
-import me.udnek.itemscoreu.customitem.VanillaItemManager;
+import me.udnek.itemscoreu.customitem.*;
 import me.udnek.itemscoreu.customloot.LootTableUtils;
 import me.udnek.itemscoreu.customminigame.command.MGUCommand;
 import me.udnek.itemscoreu.customrecipe.RecipeManager;
@@ -86,6 +83,8 @@ public final class ItemsCoreU extends JavaPlugin implements ResourcePackablePlug
                 InitializationProcess.start();
             }
         });
+
+        Items.COORDINATE_WAND.getKey();
     }
 
 
