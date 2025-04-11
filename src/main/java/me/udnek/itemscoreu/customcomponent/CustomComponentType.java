@@ -18,6 +18,9 @@ public interface CustomComponentType<HolderType, Component extends CustomCompone
     CustomComponentType<CustomItem, RightClickableItem>
             RIGHT_CLICKABLE_ITEM = register(new ConstructableComponentType<>("right_clickable_item", RightClickableItem.EMPTY));
 
+    CustomComponentType<CustomItem, LeftClickableItem>
+            LEFT_CLICKABLE_ITEM = register(new ConstructableComponentType<>("left_clickable_item", LeftClickableItem.EMPTY));
+
     CustomComponentType<CustomItem, VanillaAttributesComponent>
             VANILLA_ATTRIBUTED_ITEM = register(new ConstructableComponentType<>("vanilla_attributed_item", VanillaAttributesComponent.EMPTY, VanillaAttributesComponent::new));
 
