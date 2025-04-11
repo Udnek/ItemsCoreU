@@ -56,8 +56,8 @@ public enum MGUCommandType {
             sender.sendMessage("------------------");
             return ExecutionResult.SUCCESS;
         }
-    };
-
+    },
+    COORDINATE_WAND("coordinate_wand", 1, true);
 
     public final String name;
     public final int minLength;
