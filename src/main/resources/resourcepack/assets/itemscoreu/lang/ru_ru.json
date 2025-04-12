@@ -1,4 +1,5 @@
 {
   "slot.itemscoreu.active_hand": "Когда активно:",
-  "slot.itemscoreu.dumb_inventory": "Когда в инвентаре:"
+  "slot.itemscoreu.dumb_inventory": "Когда в инвентаре:",
+  "item.itemscoreu.coordinate_wand": "Координатная палочка"
 }

@@ -1,12 +1,11 @@
 package me.udnek.itemscoreu.customminigame.game;
 
+import me.udnek.itemscoreu.customitem.instance.CoordinateWand;
 import me.udnek.itemscoreu.customminigame.MGUId;
-import me.udnek.itemscoreu.customminigame.player.MGUPlayer;
 import me.udnek.itemscoreu.customminigame.command.MGUCommandContext;
 import me.udnek.itemscoreu.customminigame.command.MGUCommandType;
+import me.udnek.itemscoreu.customminigame.player.MGUPlayer;
 import net.kyori.adventure.text.Component;
-import net.minecraft.stats.Stat;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -63,8 +62,7 @@ public abstract class MGUAbstractGame implements MGUGameInstance{
     }
 
     public @NotNull ItemStack createCoordinateWand(){
-        // TODO COORDINATE WAND
-        return new ItemStack(Material.STICK);
+        return CoordinateWand.createWithOrigin(getMap().getOrigin());
     }
 
 
