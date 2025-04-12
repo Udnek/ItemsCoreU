@@ -31,7 +31,7 @@ public abstract class MGUAbstractGame implements MGUGameInstance{
                 yield start(context);
             }
             case STOP -> {
-                if (isRunning()) yield new MGUCommandType.ExecutionResult(MGUCommandType.ExecutionResult.Type.FAIL, "game is not running");
+                if (!isRunning()) yield new MGUCommandType.ExecutionResult(MGUCommandType.ExecutionResult.Type.FAIL, "game is not running");
                 yield stop(context);
             }
             case JOIN -> {
