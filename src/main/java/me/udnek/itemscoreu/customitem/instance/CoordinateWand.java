@@ -47,15 +47,15 @@ public class CoordinateWand extends ConstructableCustomItem {
                     .getPersistentDataContainer().get(ORIGIN_KEY, PersistentDataType.LIST.doubles());
             if (origin == null || origin.isEmpty()) {origin = List.of(0d, 0d, 0d);}
 
-            String x = rounding(location.getX() - origin.getFirst());
-            String y = rounding(location.getY() - origin.get(1));
-            String z = rounding(location.getZ() - origin.get(2));
+            String x = round(location.getX() - origin.getFirst());
+            String y = round(location.getY() - origin.get(1));
+            String z = round(location.getZ() - origin.get(2));
 
             Component component = Component.text("Location: ").color(NamedTextColor.GOLD);
-            TextComponent copy = Component.text("[X: " + x + ", Y: " + y + ", Z: " + z + ", Yaw: " + rounding(location.getYaw()) + ", Pitch: "
-                            + rounding(location.getPitch()) + "]")
-                    .clickEvent(ClickEvent.clickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, x + " " + y + " " + z + " " + rounding(location.getYaw()) + " "
-                            + rounding(location.getPitch())));
+            TextComponent copy = Component.text("[X: " + x + ", Y: " + y + ", Z: " + z + ", Yaw: " + round(location.getYaw()) + ", Pitch: "
+                            + round(location.getPitch()) + "]")
+                    .clickEvent(ClickEvent.clickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, x + " " + y + " " + z + " " + round(location.getYaw()) + " "
+                            + round(location.getPitch())));
 
             event.getPlayer().sendMessage(component.append(copy
                     .hoverEvent(HoverEvent.hoverEvent(HoverEvent.Action.SHOW_TEXT, Component.text("Click to copy")))
@@ -71,9 +71,9 @@ public class CoordinateWand extends ConstructableCustomItem {
                     .getPersistentDataContainer().get(ORIGIN_KEY, PersistentDataType.LIST.doubles());
             if (origin == null || origin.isEmpty()) {origin = List.of(0d, 0d, 0d);}
 
-            String x = rounding(location.getX() - origin.getFirst());
-            String y = rounding(location.getY() - origin.get(1));
-            String z = rounding(location.getZ() - origin.get(2));
+            String x = round(location.getX() - origin.getFirst());
+            String y = round(location.getY() - origin.get(1));
+            String z = round(location.getZ() - origin.get(2));
 
             Component component = Component.text("Block Location: ").color(NamedTextColor.GOLD);
             TextComponent copy = Component.text("[X: " + x + ", Y: " + y + ", Z: " + z + "]")
@@ -85,7 +85,7 @@ public class CoordinateWand extends ConstructableCustomItem {
         });
     }
 
-    public String rounding(double number) {
+    public @NotNull String round(double number) {
         return String.format("%.2f", number);
     }
 }
