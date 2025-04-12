@@ -44,7 +44,10 @@ public interface CustomEntityType extends EntityLikeType<Entity>, ComponentHolde
         if (customEntityType != null) consumer.accept(customEntityType);
     }
 
-
+    default CustomEntityType getIfThis(@NotNull Entity entity) {
+        CustomEntityType customEntity = get(entity);
+        return customEntity != this ? null : this;
+    }
     @NotNull Entity spawn(@NotNull Location location);
 
 }
