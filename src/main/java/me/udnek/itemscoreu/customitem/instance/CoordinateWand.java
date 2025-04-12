@@ -4,6 +4,7 @@ import me.udnek.itemscoreu.ItemsCoreU;
 import me.udnek.itemscoreu.customcomponent.instance.LeftClickableItem;
 import me.udnek.itemscoreu.customcomponent.instance.RightClickableItem;
 import me.udnek.itemscoreu.customitem.ConstructableCustomItem;
+import me.udnek.itemscoreu.customitem.Items;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.ClickEvent;
@@ -23,6 +24,14 @@ import java.util.Objects;
 public class CoordinateWand extends ConstructableCustomItem {
 
     public static final NamespacedKey ORIGIN_KEY = new NamespacedKey(ItemsCoreU.getInstance(), "origin");
+
+    public static @NotNull ItemStack createWithOrigin(@NotNull Location location) {
+        ItemStack item = Items.COORDINATE_WAND.getItem();
+        List<Double> localZero = List.of(location.getX(), location.getY(), location.getZ());
+        item.editPersistentDataContainer(persistentDataContainer ->
+                persistentDataContainer.set(CoordinateWand.ORIGIN_KEY, PersistentDataType.LIST.doubles(), localZero));
+        return item;
+    }
 
     @Override
     public @NotNull String getRawId() {

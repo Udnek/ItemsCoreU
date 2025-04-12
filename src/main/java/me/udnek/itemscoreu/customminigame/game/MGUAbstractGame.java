@@ -1,16 +1,13 @@
 package me.udnek.itemscoreu.customminigame.game;
 
-import me.udnek.itemscoreu.customitem.Items;
 import me.udnek.itemscoreu.customitem.instance.CoordinateWand;
 import me.udnek.itemscoreu.customminigame.MGUId;
 import me.udnek.itemscoreu.customminigame.command.MGUCommandContext;
 import me.udnek.itemscoreu.customminigame.command.MGUCommandType;
 import me.udnek.itemscoreu.customminigame.player.MGUPlayer;
 import net.kyori.adventure.text.Component;
-import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -46,7 +43,7 @@ public abstract class MGUAbstractGame implements MGUGameInstance{
                 yield MGUCommandType.ExecutionResult.SUCCESS;
             }
             case COORDINATE_WAND -> {
-                Objects.requireNonNull(context.player()).getInventory().addItem(createCoordinateWand(getMap().getOrigin()));
+                Objects.requireNonNull(context.player()).getInventory().addItem(createCoordinateWand());
                 yield MGUCommandType.ExecutionResult.SUCCESS;
             }
             default -> MGUCommandType.ExecutionResult.SUCCESS;
@@ -64,12 +61,8 @@ public abstract class MGUAbstractGame implements MGUGameInstance{
         return true;
     }
 
-    public @NotNull ItemStack createCoordinateWand(@NotNull Location location){
-        ItemStack item = Items.COORDINATE_WAND.getItem();
-        List<Double> localZero = List.of(location.getX(), location.getY(), location.getZ());
-        item.editPersistentDataContainer(persistentDataContainer ->
-                persistentDataContainer.set(CoordinateWand.ORIGIN_KEY, PersistentDataType.LIST.doubles(), localZero));
-        return item;
+    public @NotNull ItemStack createCoordinateWand(){
+        return CoordinateWand.createWithOrigin(getMap().getOrigin());
     }
 
 
