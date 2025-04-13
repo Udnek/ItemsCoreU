@@ -1,7 +1,5 @@
 package me.udnek.itemscoreu.customcomponent;
 
-import net.kyori.adventure.bossbar.BossBar;
-import net.minecraft.world.entity.boss.wither.WitherBoss;
 import org.jetbrains.annotations.NotNull;
 
 public interface CustomComponent<HolderType> {

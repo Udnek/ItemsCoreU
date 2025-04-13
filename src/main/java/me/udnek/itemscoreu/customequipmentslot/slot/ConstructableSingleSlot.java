@@ -1,7 +1,6 @@
 package me.udnek.itemscoreu.customequipmentslot.slot;
 
 import me.udnek.itemscoreu.customequipmentslot.universal.UniversalInventorySlot;
-import net.minecraft.world.item.BowItem;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.EquipmentSlotGroup;
 import org.jetbrains.annotations.NotNull;

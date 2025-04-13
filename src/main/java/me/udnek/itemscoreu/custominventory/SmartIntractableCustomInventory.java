@@ -1,6 +1,5 @@
 package me.udnek.itemscoreu.custominventory;
 
-import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.Inventory;

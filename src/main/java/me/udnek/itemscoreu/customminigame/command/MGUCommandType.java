@@ -1,8 +1,8 @@
 package me.udnek.itemscoreu.customminigame.command;
 
-import me.udnek.itemscoreu.customminigame.player.MGUPlayer;
-import me.udnek.itemscoreu.customminigame.game.MGUGameInstance;
 import me.udnek.itemscoreu.customminigame.MGUManager;
+import me.udnek.itemscoreu.customminigame.game.MGUGameInstance;
+import me.udnek.itemscoreu.customminigame.player.MGUPlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
