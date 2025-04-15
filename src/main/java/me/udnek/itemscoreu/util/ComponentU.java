@@ -13,7 +13,7 @@ public class ComponentU {
 
     @Deprecated
     public static final TextColor NO_SHADOW_COLOR = TextColor.fromHexString("#4e5c24");
-    public static final Key DEFAULT_FONT = NamespacedKey.minecraft("default");
+    public static final Key SPACE_FONT = new NamespacedKey("space", "default");
 
     public static Component translatableWithInsertion(@NotNull  String key, @NotNull  Component ...insertion){
         return Component.translatable(key, List.of(insertion));
@@ -31,8 +31,8 @@ public class ComponentU {
         return Component.translatable("space."+n);
     }
 
-    public static @NotNull Component spaceDefaultFont(int n){
-        return Component.translatable("space."+n).font(DEFAULT_FONT);
+    public static @NotNull Component spaceSpaceFont(int n){
+        return Component.translatable("space."+n).font(SPACE_FONT);
     }
 
     public static @NotNull Component textWithNoSpace(int offset, @NotNull  Component text, int size){
@@ -45,13 +45,13 @@ public class ComponentU {
         return text.append(ComponentU.space(-size));
     }
 
-    public static @NotNull Component textWithNoSpaceDefaultFont(int offset, @NotNull Component text, int size){
+    public static @NotNull Component textWithNoSpaceSpaceFont(int offset, @NotNull Component text, int size){
         if (size != 0) size+=1; // SHADOW COUNTS
-        return ComponentU.spaceDefaultFont(offset).append(text).append(ComponentU.spaceDefaultFont(-size-offset));
+        return ComponentU.spaceSpaceFont(offset).append(text).append(ComponentU.spaceSpaceFont(-size-offset));
     }
-    public static @NotNull Component textWithNoSpaceDefaultFont(@NotNull Component text, int size){
+    public static @NotNull Component textWithNoSpaceSpaceFont(@NotNull Component text, int size){
         if (size == 0) return text;
         size += 1; // SHADOW COUNTS
-        return text.append(ComponentU.spaceDefaultFont(-size));
+        return text.append(ComponentU.spaceSpaceFont(-size));
     }
 }
