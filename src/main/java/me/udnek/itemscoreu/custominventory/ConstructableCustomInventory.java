@@ -9,7 +9,7 @@ import org.jetbrains.annotations.Nullable;
 
 public abstract class ConstructableCustomInventory implements CustomInventory{
 
-    protected @Nullable Inventory inventory;
+    private @Nullable Inventory inventory;
 
     public abstract @Nullable Component getTitle();
     public abstract int getInventorySize();
