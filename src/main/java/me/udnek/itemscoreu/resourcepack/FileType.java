@@ -11,6 +11,7 @@ public enum FileType {
     VSH("vsh"),
     FSH("fsh"),
     OGG("ogg"),
+    TTF("ttf"),
     UNKNOWN(null);
 
     public final @Nullable String extension;
