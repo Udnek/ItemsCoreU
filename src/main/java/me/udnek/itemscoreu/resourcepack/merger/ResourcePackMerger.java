@@ -216,7 +216,7 @@ public class ResourcePackMerger {
     }
     public void copyText(@NotNull RpPath from, @NotNull RpPath to){
         try {
-            Files.copy(from.getInputStream(), Paths.get(to.getExtractPath(extractDirectory)));
+            Files.copy(from.getInputStream(), Paths.get(to.getExtractPath(extractDirectory)), StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
