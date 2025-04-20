@@ -25,6 +25,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -190,8 +191,8 @@ public class ResourcePackMerger {
         } catch (Exception exception){
             throw new RuntimeException(exception);
         }
-
     }
+
     public void copyImage(@NotNull RpPath from, @NotNull RpPath to){
         Preconditions.checkArgument(from.getFileType() == FileType.PNG, "File " + to + " is not an image!");
         try {
@@ -215,49 +216,8 @@ public class ResourcePackMerger {
     }
     public void copyText(@NotNull RpPath from, @NotNull RpPath to){
         try {
-            BufferedWriter writer = newBufferedWriter(to);
-
-            BufferedReader reader = newBufferedReader(from);
-            List<String> lines = reader.lines().toList();
-            reader.close();
-
-            final long count = lines.size();
-
-            final int[] i = {0};
-            final boolean suppress = count > 80;
-            lines.forEach(new Consumer<String>() {
-
-                @Override
-                public void accept(@NotNull String line) {
-
-                    try {
-                        writer.write(line + "\n");
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-
-                    i[0]++;
-                }
-
-                public void debug(@NotNull String line){
-                    if (suppress){
-                        if(i[0] > 5 && i[0] < count-5) return;
-                        LogUtils.pluginLog(line);
-                        if (i[0] == 5){
-                            LogUtils.pluginLog("................");
-                            LogUtils.pluginLog("..*suppressed*..");
-                            LogUtils.pluginLog("................");
-                        }
-                    }
-                    else {
-                        LogUtils.pluginLog(line);
-                    }
-
-                }
-            });
-
-            writer.close();
-        } catch (Exception e) {
+            Files.copy(from.getInputStream(), Paths.get(to.getExtractPath(extractDirectory)));
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
