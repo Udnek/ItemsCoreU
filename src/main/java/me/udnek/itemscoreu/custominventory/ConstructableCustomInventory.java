@@ -9,18 +9,16 @@ import org.jetbrains.annotations.Nullable;
 
 public abstract class ConstructableCustomInventory implements CustomInventory{
 
-    protected Inventory inventory;
-    public ConstructableCustomInventory(){
-        initialize();
-    }
-    protected void initialize(){
-        generateInventory(getInventorySize(), getTitle());
-    }
+    protected @Nullable Inventory inventory;
+
     public abstract @Nullable Component getTitle();
     public abstract int getInventorySize();
-    public void generateInventory(int size, @Nullable Component title){
+
+    public @NotNull Inventory generateInventory(int size, @Nullable Component title){
+        Inventory inventory;
         if (title == null) inventory = Bukkit.createInventory(this, size);
         else inventory = Bukkit.createInventory(this, size, title);
+        return inventory;
     }
 
     public void addItem(int slot, int amount){
@@ -28,12 +26,15 @@ public abstract class ConstructableCustomInventory implements CustomInventory{
         if (item == null) return;
         getInventory().setItem(slot, item.add(amount));
     }
+
     public void takeItem(int slot, int amount){
         addItem(slot, -amount);
     }
 
-
     @NotNull
     @Override
-    public Inventory getInventory() {return inventory;}
+    public Inventory getInventory() {
+        if (inventory == null) inventory = generateInventory(getInventorySize(), getTitle());
+        return inventory;
+    }
 }
