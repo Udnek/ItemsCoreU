@@ -23,6 +23,10 @@ public class ConstructableCustomSound extends AbstractRegistrable implements Cus
         this.pitch = pitch;
     }
 
+    public ConstructableCustomSound(@NotNull NamespacedKey path, @NotNull SoundCategory category){
+        this(path, category, 1F, 1F);
+    }
+
     @Override
     public @NotNull String getRawId() {
         return path.getKey();

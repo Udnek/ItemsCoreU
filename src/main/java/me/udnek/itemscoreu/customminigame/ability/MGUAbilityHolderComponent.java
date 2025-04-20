@@ -5,7 +5,6 @@ import me.udnek.itemscoreu.customcomponent.CustomComponent;
 import me.udnek.itemscoreu.customcomponent.CustomComponentMap;
 import me.udnek.itemscoreu.customcomponent.CustomComponentType;
 import me.udnek.itemscoreu.customminigame.player.MGUPlayer;
-import org.bukkit.scoreboard.Team;
 import org.jetbrains.annotations.NotNull;
 
 public class MGUAbilityHolderComponent extends AbstractComponentHolder<MGUAbilityHolderComponent, MGUAbilityInstance> implements CustomComponent<MGUPlayer>{
