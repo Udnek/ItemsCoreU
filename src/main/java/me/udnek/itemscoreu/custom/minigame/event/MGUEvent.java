@@ -1,7 +1,7 @@
-package me.udnek.itemscoreu.customminigame.event;
+package me.udnek.itemscoreu.custom.minigame.event;
 
+import me.udnek.itemscoreu.custom.minigame.game.MGUGameInstance;
 import me.udnek.itemscoreu.customevent.CustomEvent;
-import me.udnek.itemscoreu.customminigame.game.MGUGameInstance;
 import org.jetbrains.annotations.NotNull;
 
 public class MGUEvent extends CustomEvent {

@@ -318,7 +318,7 @@ public class Nms {
 
             }
             if (changed){
-                LogUtils.pluginLog("Changed loot entry container from: " + lootTable.craftLootTable.getKey().toString());
+                LogUtils.pluginLog("Changed loot entry container from: " + lootTable.craftLootTable.getKey());
                 Reflex.setFieldValue(pool, NmsFields.ENTRIES, newContainers);
             }
         }

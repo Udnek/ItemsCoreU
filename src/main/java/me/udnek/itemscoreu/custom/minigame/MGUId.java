@@ -1,9 +1,7 @@
-package me.udnek.itemscoreu.customminigame;
+package me.udnek.itemscoreu.custom.minigame;
 
-import me.udnek.itemscoreu.customminigame.game.MGUGameInstance;
+import me.udnek.itemscoreu.custom.minigame.game.MGUGameInstance;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.UUID;
 
 public class MGUId {
 
@@ -28,6 +26,7 @@ public class MGUId {
     }
 
     public static @NotNull MGUId generateNew(@NotNull MGUGameInstance mguGameInstance){
-        return new MGUId(mguGameInstance.getType().getId() + "_" + UUID.randomUUID().toString().substring(0, 5));
+        return new MGUId(mguGameInstance.getType().getId());
+        //return new MGUId(mguGameInstance.getType().getId() + "_" + UUID.randomUUID().toString().substring(0, 5));
     }
 }

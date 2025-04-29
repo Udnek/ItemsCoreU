@@ -76,3 +76,9 @@ commands:
       aliases: [itemscoreu_minigame]
       permission: itemscoreu.admin
       permission-message: "You do not have permission to use this command"
+  inventory_inspection:
+      description: "inventory_inspection"
+      usage: "/inventory_inspection"
+      aliases: [ ]
+      permission: itemscoreu.admin
+      permission-message: "You do not have permission to use this command"

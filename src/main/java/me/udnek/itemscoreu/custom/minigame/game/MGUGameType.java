@@ -1,7 +1,7 @@
-package me.udnek.itemscoreu.customminigame.game;
+package me.udnek.itemscoreu.custom.minigame.game;
 
-import me.udnek.itemscoreu.customminigame.MGUManager;
-import me.udnek.itemscoreu.customminigame.player.MGUPlayer;
+import me.udnek.itemscoreu.custom.minigame.MGUManager;
+import me.udnek.itemscoreu.custom.minigame.player.MGUPlayer;
 import me.udnek.itemscoreu.customregistry.Registrable;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;

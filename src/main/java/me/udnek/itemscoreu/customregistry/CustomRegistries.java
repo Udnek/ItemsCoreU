@@ -1,6 +1,7 @@
 package me.udnek.itemscoreu.customregistry;
 
 import me.udnek.itemscoreu.ItemsCoreU;
+import me.udnek.itemscoreu.custom.minigame.game.MGUGameType;
 import me.udnek.itemscoreu.customattribute.CustomAttribute;
 import me.udnek.itemscoreu.customcomponent.CustomComponentType;
 import me.udnek.itemscoreu.customeffect.CustomEffect;
@@ -10,7 +11,6 @@ import me.udnek.itemscoreu.customentitylike.entity.CustomEntityType;
 import me.udnek.itemscoreu.customequipmentslot.slot.CustomEquipmentSlot;
 import me.udnek.itemscoreu.customitem.CustomItem;
 import me.udnek.itemscoreu.customloot.LootTableRegistry;
-import me.udnek.itemscoreu.customminigame.game.MGUGameType;
 import me.udnek.itemscoreu.customsound.CustomSound;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
@@ -36,8 +36,8 @@ public class CustomRegistries {
         addRegistry(REGISTRY);
 
         COMPONENT_TYPE = addRegistry(new MappedCustomRegistry<>("component_type"));
-        ENCHANTMENT = addRegistry(new MappedCustomRegistry<>("enchantment"));
         ITEM = addRegistry(new MappedCustomRegistry<>("item"));
+        ENCHANTMENT = addRegistry(new MappedCustomRegistry<>("enchantment"));
         BLOCK_TYPE = addRegistry(new MappedCustomRegistry<>("block_type"));
         ATTRIBUTE = addRegistry(new MappedCustomRegistry<>("attribute"));
         EQUIPMENT_SLOT = addRegistry(new MappedCustomRegistry<>("equipment_slot"));
