@@ -1,13 +1,13 @@
-package me.udnek.itemscoreu.customminigame.player;
+package me.udnek.itemscoreu.custom.minigame.player;
 
+import me.udnek.itemscoreu.custom.minigame.MGUManager;
+import me.udnek.itemscoreu.custom.minigame.ability.MGUAbilityHolderComponent;
+import me.udnek.itemscoreu.custom.minigame.ability.MGUAbilityInstance;
+import me.udnek.itemscoreu.custom.minigame.game.MGUGameInstance;
 import me.udnek.itemscoreu.customcomponent.AbstractComponentHolder;
 import me.udnek.itemscoreu.customcomponent.CustomComponent;
 import me.udnek.itemscoreu.customcomponent.CustomComponentMap;
 import me.udnek.itemscoreu.customcomponent.CustomComponentType;
-import me.udnek.itemscoreu.customminigame.MGUManager;
-import me.udnek.itemscoreu.customminigame.ability.MGUAbilityHolderComponent;
-import me.udnek.itemscoreu.customminigame.ability.MGUAbilityInstance;
-import me.udnek.itemscoreu.customminigame.game.MGUGameInstance;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 

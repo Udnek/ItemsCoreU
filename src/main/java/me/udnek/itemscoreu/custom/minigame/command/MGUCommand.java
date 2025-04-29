@@ -1,4 +1,4 @@
-package me.udnek.itemscoreu.customminigame.command;
+package me.udnek.itemscoreu.custom.minigame.command;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;

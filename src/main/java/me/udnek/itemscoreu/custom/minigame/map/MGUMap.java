@@ -1,4 +1,4 @@
-package me.udnek.itemscoreu.customminigame.map;
+package me.udnek.itemscoreu.custom.minigame.map;
 
 import org.bukkit.Location;
 import org.jetbrains.annotations.NotNull;

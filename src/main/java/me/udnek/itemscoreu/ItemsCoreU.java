@@ -1,5 +1,6 @@
 package me.udnek.itemscoreu;
 
+import me.udnek.itemscoreu.custom.minigame.command.MGUCommand;
 import me.udnek.itemscoreu.customattribute.ClearAttributeCommand;
 import me.udnek.itemscoreu.customattribute.CustomAttributeCommand;
 import me.udnek.itemscoreu.customeffect.CustomEffectCommand;
@@ -12,9 +13,9 @@ import me.udnek.itemscoreu.customentitylike.entity.command.SummonCustomEntityCom
 import me.udnek.itemscoreu.customhelp.CustomHelpCommand;
 import me.udnek.itemscoreu.customhud.CustomHudManager;
 import me.udnek.itemscoreu.custominventory.CustomInventoryListener;
+import me.udnek.itemscoreu.custominventory.InventoryInspectionComand;
 import me.udnek.itemscoreu.customitem.*;
 import me.udnek.itemscoreu.customloot.LootTableUtils;
-import me.udnek.itemscoreu.customminigame.command.MGUCommand;
 import me.udnek.itemscoreu.customrecipe.RecipeManager;
 import me.udnek.itemscoreu.customregistry.CustomRegistries;
 import me.udnek.itemscoreu.customregistry.CustomRegistry;
@@ -69,6 +70,7 @@ public final class ItemsCoreU extends JavaPlugin implements ResourcePackablePlug
         getCommand("play_soundu").setExecutor(new CustomSoundCommand());
         getCommand("effectu").setExecutor(new CustomEffectCommand());
         getCommand("mgu").setExecutor(new MGUCommand());
+        getCommand("inventory_inspection").setExecutor(new InventoryInspectionComand(this));
 
         // TICKERS
         CustomEntityManager.getInstance().start(this);

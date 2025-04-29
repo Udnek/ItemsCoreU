@@ -1,10 +1,10 @@
-package me.udnek.itemscoreu.customminigame.game;
+package me.udnek.itemscoreu.custom.minigame.game;
 
+import me.udnek.itemscoreu.custom.minigame.MGUId;
+import me.udnek.itemscoreu.custom.minigame.command.MGUCommandContext;
+import me.udnek.itemscoreu.custom.minigame.command.MGUCommandType;
+import me.udnek.itemscoreu.custom.minigame.player.MGUPlayer;
 import me.udnek.itemscoreu.customitem.instance.CoordinateWand;
-import me.udnek.itemscoreu.customminigame.MGUId;
-import me.udnek.itemscoreu.customminigame.command.MGUCommandContext;
-import me.udnek.itemscoreu.customminigame.command.MGUCommandType;
-import me.udnek.itemscoreu.customminigame.player.MGUPlayer;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;

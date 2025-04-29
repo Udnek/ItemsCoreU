@@ -1,9 +1,9 @@
-package me.udnek.itemscoreu.customminigame.game;
+package me.udnek.itemscoreu.custom.minigame.game;
 
-import me.udnek.itemscoreu.customminigame.MGUId;
-import me.udnek.itemscoreu.customminigame.command.MGUCommandContext;
-import me.udnek.itemscoreu.customminigame.command.MGUCommandType;
-import me.udnek.itemscoreu.customminigame.map.MGUMap;
+import me.udnek.itemscoreu.custom.minigame.MGUId;
+import me.udnek.itemscoreu.custom.minigame.command.MGUCommandContext;
+import me.udnek.itemscoreu.custom.minigame.command.MGUCommandType;
+import me.udnek.itemscoreu.custom.minigame.map.MGUMap;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
