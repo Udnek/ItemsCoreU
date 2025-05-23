@@ -30,7 +30,7 @@ public class CustomSidebar {
     }
 
     public void hide(@NotNull Player player){
-        players.remove(player);
+        if (!players.remove(player)) return;
         NmsUtils.sendPacket(player, new ClientboundSetObjectivePacket(obj, 1));
         NmsUtils.sendPacket(player, new ClientboundSetDisplayObjectivePacket(DisplaySlot.SIDEBAR, null));
     }
@@ -81,7 +81,7 @@ public class CustomSidebar {
     }
 
     public void setLines(@NotNull List<Component> lines) {
-        for (Component component: lines)addLine(component);
+        for (Component component: lines) addLine(component);
     }
 
     public void setLine(int position, @Nullable Component component) {
