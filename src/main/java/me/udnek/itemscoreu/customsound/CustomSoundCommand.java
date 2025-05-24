@@ -18,9 +18,7 @@ public class CustomSoundCommand implements CommandExecutor, TabExecutor {
         if (!(commandSender instanceof Player player)) return false;
 
         if (args.length != 1) return false;
-
-        String id = args[0];
-        CustomSound customSound = CustomRegistries.SOUND.get(id);
+        CustomSound customSound = CustomRegistries.SOUND.get(args[0]);
         if (customSound == null) return false;
 
         customSound.play(player);

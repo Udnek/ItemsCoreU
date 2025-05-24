@@ -62,4 +62,14 @@ public class ConstructableCustomSound extends AbstractRegistrable implements Cus
             player.playSound(player, getSoundName(), category, volume, pitch);
         }
     }
+
+    @Override
+    public void stop(@NotNull Player player) {
+        player.stopSound(getSoundName(), category);
+    }
+
+    @Override
+    public void stop(@NotNull Player player, @NotNull SoundCategory soundCategory) {
+        player.stopSound(getSoundName(), soundCategory);
+    }
 }

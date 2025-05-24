@@ -5,6 +5,7 @@ import me.udnek.itemscoreu.customcomponent.instance.LeftClickableItem;
 import me.udnek.itemscoreu.customcomponent.instance.RightClickableItem;
 import me.udnek.itemscoreu.customitem.ConstructableCustomItem;
 import me.udnek.itemscoreu.customitem.Items;
+import me.udnek.itemscoreu.util.Utils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.ClickEvent;
@@ -63,7 +64,7 @@ public class CoordinateWand extends ConstructableCustomItem {
             Component component = Component.text("Location: ").color(NamedTextColor.GOLD);
             TextComponent copy = Component.text("[X: " + x + ", Y: " + y + ", Z: " + z + ", Yaw: " + round(location.getYaw()) + ", Pitch: "
                             + round(location.getPitch()) + "]")
-                    .clickEvent(ClickEvent.clickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, x + " " + y + " " + z + " " + round(location.getYaw()) + " "
+                    .clickEvent(ClickEvent.clickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, x + ", " + y + ", " + z + ", " + round(location.getYaw()) + ", "
                             + round(location.getPitch())));
 
             event.getPlayer().sendMessage(component.append(copy
@@ -86,7 +87,7 @@ public class CoordinateWand extends ConstructableCustomItem {
 
             Component component = Component.text("Block Location: ").color(NamedTextColor.GOLD);
             TextComponent copy = Component.text("[X: " + x + ", Y: " + y + ", Z: " + z + "]")
-                    .clickEvent(ClickEvent.clickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, x + " " + y + " " + z));
+                    .clickEvent(ClickEvent.clickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, x + ", " + y + ", " + z));
 
             event.getPlayer().sendMessage(component.append(copy
                     .hoverEvent(HoverEvent.hoverEvent(HoverEvent.Action.SHOW_TEXT, Component.text("Click to copy")))
@@ -95,6 +96,6 @@ public class CoordinateWand extends ConstructableCustomItem {
     }
 
     public @NotNull String round(double number) {
-        return String.format("%.2f", number);
+        return  Utils.roundToTwoDigits(number).replace(",", ".");
     }
 }
