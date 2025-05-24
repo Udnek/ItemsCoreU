@@ -48,13 +48,20 @@ public interface AutoGeneratingFilesItem extends CustomComponent<CustomItem> {
             return files;
         }
 
-        default @NotNull String getModelPath(@NotNull Key itemModel){
-            return "assets/" + itemModel.namespace() + "/models/item/" + itemModel.value() + ".json";
-        }
-        default @NotNull String getDefinitionPath(@NotNull Key itemModel){
-            return "assets/" + itemModel.namespace() + "/items/" + itemModel.value() + ".json";
+        /**
+         * example: "", "custom_path", "custom_path/kek/lol"
+         * @return path
+         */
+        default @NotNull String getGeneralPath(){
+            return "";
         }
 
+        default @NotNull String getModelPath(@NotNull Key itemModel){
+            return "assets/" + itemModel.namespace() + "/models/item/" + getGeneralPath() +"/" + itemModel.value() + ".json";
+        }
+        default @NotNull String getDefinitionPath(@NotNull Key itemModel){
+            return "assets/" + itemModel.namespace() + "/items/" + getGeneralPath()  +"/" + itemModel.value() + ".json";
+        }
         default @NotNull VirtualRpJsonFile getModelFile(@NotNull Key itemModel){
             return new VirtualRpJsonFile(getModel(itemModel), getModelPath(itemModel));
         }
@@ -63,7 +70,9 @@ public interface AutoGeneratingFilesItem extends CustomComponent<CustomItem> {
         }
         @NotNull
         default String replacePlaceHolders(@NotNull String data, @NotNull Key itemModel){
-            return data.replace("%namespace%", itemModel.namespace()).replace("%key%", itemModel.value());
+            return data
+                    .replace("%texture_path%", itemModel.namespace()+":item/"+getGeneralPath()+"/"+itemModel.value())
+                    .replace("%model_path%", itemModel.namespace()+":item/"+getGeneralPath()+"/"+itemModel.value());
         }
 
         @NotNull JsonObject getModel(@NotNull Key modelKey);
@@ -76,7 +85,7 @@ public interface AutoGeneratingFilesItem extends CustomComponent<CustomItem> {
                         {
                             "parent": "minecraft:item/generated",
                             "textures": {
-                                "layer0": "%namespace%:item/%key%"
+                                "layer0": "%texture_path%"
                             }
                         }
                         """, itemModel));
@@ -87,7 +96,7 @@ public interface AutoGeneratingFilesItem extends CustomComponent<CustomItem> {
                         {
                             "model": {
                                 "type": "minecraft:model",
-                                "model": "%namespace%:item/%key%"
+                                "model": "%model_path%"
                             }
                         }
                         """, itemModel));
@@ -140,7 +149,7 @@ public interface AutoGeneratingFilesItem extends CustomComponent<CustomItem> {
                         "type": "minecraft:condition",
                         "on_false": {
                           "type": "minecraft:model",
-                          "model": "%namespace%:item/%key%"
+                          "model": "%model_path%"
                         },
                         "on_true": {
                           "type": "minecraft:range_dispatch",
@@ -148,21 +157,21 @@ public interface AutoGeneratingFilesItem extends CustomComponent<CustomItem> {
                             {
                               "model": {
                                 "type": "minecraft:model",
-                                "model": "%namespace%:item/%key%_pulling_1"
+                                "model": "%model_path%_pulling_1"
                               },
                               "threshold": 0.65
                             },
                             {
                               "model": {
                                 "type": "minecraft:model",
-                                "model": "%namespace%:item/%key%_pulling_2"
+                                "model": "%model_path%_pulling_2"
                               },
                               "threshold": 0.9
                             }
                           ],
                           "fallback": {
                             "type": "minecraft:model",
-                            "model": "%namespace%:item/%key%_pulling_0"
+                            "model": %model_path%_pulling_0"
                           },
                           "property": "minecraft:use_duration",
                           "scale": 0.05
