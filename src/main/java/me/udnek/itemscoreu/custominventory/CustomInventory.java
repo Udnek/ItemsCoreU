@@ -30,6 +30,6 @@ public interface CustomInventory extends InventoryHolder {
     default void onPlayerOpensInventory(@NotNull InventoryOpenEvent event){}
     default boolean shouldAutoUpdateItems(){return true;}
     default boolean isOpened(@NotNull Player player){ return get(player.getOpenInventory().getTopInventory()) == this; }
-    default boolean isOpenedSomeone() { return !getInventory().getViewers().isEmpty(); }
+    default boolean isOpenedByAnyone() { return !getInventory().getViewers().isEmpty(); }
 }
 
