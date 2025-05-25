@@ -12,7 +12,6 @@ import me.udnek.itemscoreu.resourcepack.path.VirtualRpJsonFile;
 import net.kyori.adventure.key.Key;
 import org.bukkit.NamespacedKey;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,8 +42,8 @@ public interface AutoGeneratingFilesItem extends CustomComponent<CustomItem> {
 
         default @NotNull ArrayList<VirtualRpJsonFile> getFiles(@NotNull Key itemModel){
             ArrayList<VirtualRpJsonFile> files = new ArrayList<>();
-            files.add(getModelFile(itemModel));
             files.add(getDefinitionFile(itemModel));
+            files.addAll(getModelsFiles(itemModel));
             return files;
         }
 
@@ -62,8 +61,11 @@ public interface AutoGeneratingFilesItem extends CustomComponent<CustomItem> {
         default @NotNull String getDefinitionPath(@NotNull Key itemModel){
             return "assets/" + itemModel.namespace() + "/items" + getGeneralPath()  + itemModel.value() + ".json";
         }
-        default @NotNull VirtualRpJsonFile getModelFile(@NotNull Key itemModel){
-            return new VirtualRpJsonFile(getModel(itemModel), getModelPath(itemModel));
+        default @NotNull List<VirtualRpJsonFile> getModelsFiles(@NotNull Key itemModel){
+            List<VirtualRpJsonFile> files = new ArrayList<>();
+            String definitionPath = getDefinitionPath(itemModel);
+            getModels(itemModel).forEach(model -> files.add(new VirtualRpJsonFile(model, definitionPath)));
+            return files;
         }
         default @NotNull VirtualRpJsonFile getDefinitionFile(@NotNull Key itemModel){
             return new VirtualRpJsonFile(getDefinition(itemModel), getDefinitionPath(itemModel));
@@ -75,20 +77,20 @@ public interface AutoGeneratingFilesItem extends CustomComponent<CustomItem> {
                     .replace("%model_path%", itemModel.namespace()+":item"+getGeneralPath()+itemModel.value());
         }
 
-        @NotNull JsonObject getModel(@NotNull Key modelKey);
+        @NotNull List<JsonObject> getModels(@NotNull Key modelKey);
         @NotNull JsonObject getDefinition(@NotNull Key modelKey);
     }
     class Generated implements Base{
         @Override
-        public @NotNull JsonObject getModel(@NotNull Key itemModel) {
-            return (JsonObject) JsonParser.parseString(replacePlaceHolders("""
+        public @NotNull List<JsonObject> getModels(@NotNull Key itemModel) {
+            return List.of((JsonObject) JsonParser.parseString(replacePlaceHolders("""
                         {
                             "parent": "minecraft:item/generated",
                             "textures": {
                                 "layer0": "%texture_path%"
                             }
                         }
-                        """, itemModel));
+                        """, itemModel)));
         }
         @Override
         public @NotNull JsonObject getDefinition(@NotNull Key itemModel) {
@@ -105,10 +107,10 @@ public interface AutoGeneratingFilesItem extends CustomComponent<CustomItem> {
     class HandHeld extends Generated{
 
         @Override
-        public @NotNull JsonObject getModel(@NotNull Key itemModel) {
-            @Nullable JsonObject model = super.getModel(itemModel);
-            model.addProperty("parent", "minecraft:item/handheld");
-            return model;
+        public @NotNull List<JsonObject> getModels(@NotNull Key itemModel) {
+            @NotNull List<JsonObject> models = super.getModels(itemModel);
+            models.getFirst().addProperty("parent", "minecraft:item/handheld");
+            return models;
         }
     }
     class CustomModelDataColorable extends Generated{
@@ -131,15 +133,6 @@ public interface AutoGeneratingFilesItem extends CustomComponent<CustomItem> {
         }
     }
     class Bow extends Generated{
-
-        @Override
-        public @NotNull ArrayList<VirtualRpJsonFile> getFiles(@NotNull Key itemModel) {
-            ArrayList<VirtualRpJsonFile> files = super.getFiles(itemModel);
-            files.add(getModelFile(itemModel, 0));
-            files.add(getModelFile(itemModel, 1));
-            files.add(getModelFile(itemModel, 2));
-            return files;
-        }
 
         @Override
         public @NotNull JsonObject getDefinition(@NotNull Key itemModel) {
@@ -182,38 +175,39 @@ public interface AutoGeneratingFilesItem extends CustomComponent<CustomItem> {
         }
 
         @Override
-        public @NotNull JsonObject getModel(@NotNull Key itemModel) {
-            @Nullable JsonObject model = super.getModel(itemModel);
-            model.addProperty("parent", "minecraft:item/bow");
-            return model;
+        public @NotNull List<JsonObject> getModels(@NotNull Key itemModel) {
+            @NotNull List<JsonObject> models = super.getModels(itemModel);
+            for (int i = 0; i < 3; i++) {
+                models.addAll(super.getModels(new NamespacedKey(itemModel.namespace(), itemModel.value() + "_pulling_" + i)));
+            }
+            for (JsonObject model : models) {
+                model.addProperty("parent", "minecraft:item/bow");
+            }
+            return models;
         }
 
-        public @NotNull VirtualRpJsonFile getModelFile(@NotNull Key modelKey, int pulling){
-            NamespacedKey pullKey = new NamespacedKey(modelKey.namespace(), modelKey.value() + "_pulling_" + pulling);
-            return getModelFile(pullKey);
-        }
     }
     class Generated20x20 extends Generated{
         @Override
-        public @NotNull JsonObject getModel(@NotNull Key itemModel) {
-            @Nullable JsonObject model = super.getModel(itemModel);
-            model.addProperty("parent", ItemsCoreU.getKey("item/generated_20x20").toString());
-            return model;
+        public @NotNull List<JsonObject> getModels(@NotNull Key itemModel) {
+            @NotNull List<JsonObject> models = super.getModels(itemModel);
+            models.getFirst().addProperty("parent", ItemsCoreU.getKey("item/generated_20x20").toString());
+            return models;
         }
     }
     class Bow20x20 extends Bow{
         @Override
-        public @NotNull JsonObject getModel(@NotNull Key itemModel) {
-            @Nullable JsonObject model = super.getModel(itemModel);
-            model.addProperty("parent", ItemsCoreU.getKey("item/bow_20x20").toString());
-            return model;
+        public @NotNull List<JsonObject> getModels(@NotNull Key itemModel) {
+            @NotNull List<JsonObject> models = super.getModels(itemModel);
+            models.getFirst().addProperty("parent", ItemsCoreU.getKey("item/bow_20x20").toString());
+            return models;
         }
     }
     class Handheld20x20 extends Generated20x20{
         @Override
-        public @NotNull JsonObject getModel(@NotNull Key itemModel) {
-            @Nullable JsonObject model = super.getModel(itemModel);
-            model.addProperty("parent", ItemsCoreU.getKey("item/handheld_20x20").toString());
+        public @NotNull List<JsonObject> getModels(@NotNull Key itemModel) {
+            @NotNull List<JsonObject> model = super.getModels(itemModel);
+            model.getFirst().addProperty("parent", ItemsCoreU.getKey("item/handheld_20x20").toString());
             return model;
         }
     }
