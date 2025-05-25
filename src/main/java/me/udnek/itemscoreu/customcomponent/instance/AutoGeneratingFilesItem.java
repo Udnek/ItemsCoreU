@@ -49,18 +49,18 @@ public interface AutoGeneratingFilesItem extends CustomComponent<CustomItem> {
         }
 
         /**
-         * example: "", "custom_path", "custom_path/kek/lol"
+         * example: "/", "/custom_path", "/custom_path/kek/lol"
          * @return path
          */
         default @NotNull String getGeneralPath(){
-            return "";
+            return "/";
         }
 
         default @NotNull String getModelPath(@NotNull Key itemModel){
-            return "assets/" + itemModel.namespace() + "/models/item/" + getGeneralPath() +"/" + itemModel.value() + ".json";
+            return "assets/" + itemModel.namespace() + "/models/item" + getGeneralPath() +"/" + itemModel.value() + ".json";
         }
         default @NotNull String getDefinitionPath(@NotNull Key itemModel){
-            return "assets/" + itemModel.namespace() + "/items/" + getGeneralPath()  +"/" + itemModel.value() + ".json";
+            return "assets/" + itemModel.namespace() + "/items" + getGeneralPath()  +"/" + itemModel.value() + ".json";
         }
         default @NotNull VirtualRpJsonFile getModelFile(@NotNull Key itemModel){
             return new VirtualRpJsonFile(getModel(itemModel), getModelPath(itemModel));
@@ -71,8 +71,8 @@ public interface AutoGeneratingFilesItem extends CustomComponent<CustomItem> {
         @NotNull
         default String replacePlaceHolders(@NotNull String data, @NotNull Key itemModel){
             return data
-                    .replace("%texture_path%", itemModel.namespace()+":item/"+getGeneralPath()+"/"+itemModel.value())
-                    .replace("%model_path%", itemModel.namespace()+":item/"+getGeneralPath()+"/"+itemModel.value());
+                    .replace("%texture_path%", itemModel.namespace()+":item"+getGeneralPath()+"/"+itemModel.value())
+                    .replace("%model_path%", itemModel.namespace()+":item"+getGeneralPath()+"/"+itemModel.value());
         }
 
         @NotNull JsonObject getModel(@NotNull Key modelKey);
