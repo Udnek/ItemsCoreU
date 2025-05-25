@@ -55,8 +55,8 @@ public interface AutoGeneratingFilesItem extends CustomComponent<CustomItem> {
         }
         default @NotNull List<VirtualRpJsonFile> getModelsFiles(@NotNull Key itemModel){
             List<VirtualRpJsonFile> files = new ArrayList<>();
-            String definitionPath = getDefinitionPath(itemModel);
-            getModels(itemModel).forEach(model -> files.add(new VirtualRpJsonFile(model, definitionPath)));
+            String modelPath = getModelPath(itemModel);
+            getModels(itemModel).forEach(model -> files.add(new VirtualRpJsonFile(model, modelPath)));
             return files;
         }
         default @NotNull VirtualRpJsonFile getDefinitionFile(@NotNull Key itemModel){
