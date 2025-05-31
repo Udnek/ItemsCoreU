@@ -31,6 +31,7 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.npc.VillagerTrades;
@@ -50,6 +51,7 @@ import net.minecraft.world.level.chunk.status.ChunkStatus;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructurePiece;
 import net.minecraft.world.level.levelgen.structure.StructureStart;
+import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.level.saveddata.maps.MapDecorationType;
 import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
 import net.minecraft.world.level.storage.loot.LootContext;
@@ -537,6 +539,19 @@ public class Nms {
 
     public boolean mayBuild(@NotNull Player player){
         return NmsUtils.toNmsPlayer(player).mayBuild();
+    }
+
+
+    public void follow(@NotNull org.bukkit.entity.Mob follower, @NotNull org.bukkit.entity.Entity target){
+        PathNavigation followerNavigation = ((Mob) ((CraftEntity) follower).getHandle()).getNavigation();
+        Location targetLocation = target.getLocation();
+        Path path = followerNavigation.createPath(targetLocation.getX(), targetLocation.getY(), targetLocation.getZ(), 0);
+        if (path != null) followerNavigation.moveTo(path, 1D);
+    }
+
+    public void stop(@NotNull org.bukkit.entity.Mob follower) {
+        PathNavigation followerNavigation = ((Mob) ((CraftEntity) follower).getHandle()).getNavigation();
+        followerNavigation.moveTo((Path) null, 1D);
     }
 
     ///////////////////////////////////////////////////////////////////////////

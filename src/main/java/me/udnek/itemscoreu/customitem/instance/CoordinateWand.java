@@ -1,6 +1,7 @@
 package me.udnek.itemscoreu.customitem.instance;
 
 import me.udnek.itemscoreu.ItemsCoreU;
+import me.udnek.itemscoreu.customcomponent.instance.AutoGeneratingFilesItem;
 import me.udnek.itemscoreu.customcomponent.instance.LeftClickableItem;
 import me.udnek.itemscoreu.customcomponent.instance.RightClickableItem;
 import me.udnek.itemscoreu.customitem.ConstructableCustomItem;
@@ -48,6 +49,7 @@ public class CoordinateWand extends ConstructableCustomItem {
     public void initializeComponents() {
         super.initializeComponents();
 
+        getComponents().set(AutoGeneratingFilesItem.HANDHELD);
         getComponents().set((RightClickableItem) (item, event) -> {
             event.setCancelled(true);
             Player player = event.getPlayer();
