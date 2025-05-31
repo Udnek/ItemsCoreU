@@ -77,4 +77,4 @@ fabric.properties
 .idea/caches/build_file_checksums.ser
 
 target/*
-!target/ItemsCoreU-1.0-SNAPSHOT-remapped.jar
+!target/CoreU-1.0-SNAPSHOT-remapped.jar
