@@ -5,6 +5,7 @@ import me.udnek.coreu.custom.component.instance.LeftClickableItem;
 import me.udnek.coreu.custom.component.instance.RightClickableItem;
 import me.udnek.coreu.custom.item.ConstructableCustomItem;
 import me.udnek.coreu.util.Utils;
+import me.udnek.coreu.custom.component.instance.AutoGeneratingFilesItem;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.ClickEvent;
@@ -47,6 +48,7 @@ public class CoordinateWand extends ConstructableCustomItem {
     public void initializeComponents() {
         super.initializeComponents();
 
+        getComponents().set(AutoGeneratingFilesItem.HANDHELD);
         getComponents().set((RightClickableItem) (item, event) -> {
             event.setCancelled(true);
             Player player = event.getPlayer();
