@@ -224,9 +224,11 @@ public class Nms {
         return new BlockPlaceResult(placed instanceof InteractionResult.Success, NmsUtils.toBukkitItemStack(stack));
     }
 
-    public @NotNull ItemStack getSpawnEggByType(@NotNull EntityType type){
+    public @Nullable ItemStack getSpawnEggByType(@NotNull EntityType type){
         net.minecraft.world.entity.EntityType<?> aClass = CraftEntityType.bukkitToMinecraft(type);
-        return CraftItemStack.asNewCraftStack(SpawnEggItem.byId(aClass));
+        SpawnEggItem item = SpawnEggItem.byId(aClass);
+        if (item == null) return null;
+        return CraftItemStack.asNewCraftStack(item);
     }
 
     public float getBreakProgressPerTick(@NotNull Player player, @NotNull Material material){
