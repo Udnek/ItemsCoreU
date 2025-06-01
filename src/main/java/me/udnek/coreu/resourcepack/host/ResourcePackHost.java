@@ -4,7 +4,12 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import me.udnek.coreu.CoreU;
+import me.udnek.coreu.resourcepack.RPInfo;
+import me.udnek.coreu.serializabledata.SerializableData;
+import me.udnek.coreu.serializabledata.SerializableDataManager;
 import me.udnek.coreu.util.LogUtils;
+import net.kyori.adventure.resource.ResourcePackInfo;
+import org.bukkit.packs.ResourcePack;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -30,7 +35,7 @@ public class ResourcePackHost implements HttpHandler {
         if (!Files.exists(getPath())) LogUtils.pluginWarning("Resourcepack was not generated! Use /resourcepack");
 
         try {
-            HttpServer server = HttpServer.create(new InetSocketAddress(PORT), 0);
+            HttpServer server = HttpServer.create(new InetSocketAddress(SerializableDataManager.read(new RPInfo(), CoreU.getInstance()).port), 0);
             server.createContext("/", this);
             server.start();
         } catch (IOException e) {

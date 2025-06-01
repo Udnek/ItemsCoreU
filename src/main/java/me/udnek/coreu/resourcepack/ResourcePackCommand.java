@@ -26,7 +26,7 @@ public class ResourcePackCommand implements TabExecutor, CommandExecutor {
         if (args.length > 1) return false;
 
 
-        ResourcepackInfo info = SerializableDataManager.read(new ResourcepackInfo(), CoreU.getInstance());
+        RPInfo info = SerializableDataManager.read(new RPInfo(), CoreU.getInstance());
 
         if (args.length == 1) {
             info.extractDirectory = args[0];
