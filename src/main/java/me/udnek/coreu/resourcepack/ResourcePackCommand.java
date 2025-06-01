@@ -57,9 +57,12 @@ public class ResourcePackCommand implements TabExecutor, CommandExecutor {
             if (!checksum.equals(info.checksum)){
                 ResourcePackUtils.zipFolder(path, path.getParent().toString());
             }
+            info.checksum = checksum;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
+        info.serialize();
 
         LogUtils.pluginWarning("If your sound does not play, remove '<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>' in plugin's pom!");
         return true;
