@@ -4,6 +4,7 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import me.udnek.coreu.CoreU;
+import me.udnek.coreu.util.LogUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -25,7 +26,7 @@ public class ResourcePackHost implements HttpHandler {
     }
 
     public void start(){
-        if (!Files.exists(getPath())) throw new RuntimeException("FIle not found!: " + NAME);
+        if (!Files.exists(getPath())) LogUtils.pluginWarning("Resourcepack was not generated! Use /resourcepack");
 
         try {
             HttpServer server = HttpServer.create(new InetSocketAddress(PORT), 0);
