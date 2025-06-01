@@ -4,6 +4,7 @@ import me.udnek.coreu.CoreU;
 import me.udnek.coreu.resourcepack.host.ResourcePackHost;
 import me.udnek.coreu.resourcepack.host.ResourcePackUtils;
 import me.udnek.coreu.resourcepack.merger.ResourcePackMerger;
+import me.udnek.coreu.serializabledata.SerializableData;
 import me.udnek.coreu.serializabledata.SerializableDataManager;
 import me.udnek.coreu.util.LogUtils;
 import org.apache.commons.io.FileUtils;
@@ -62,7 +63,7 @@ public class ResourcePackCommand implements TabExecutor, CommandExecutor {
             throw new RuntimeException(e);
         }
 
-        info.serialize();
+        SerializableDataManager.write(info, CoreU.getInstance());
 
         LogUtils.pluginWarning("If your sound does not play, remove '<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>' in plugin's pom!");
         return true;
