@@ -35,20 +35,16 @@ public class ResourcePackUtils {
     }
 
     public static @NotNull String calculateSHA(@NotNull File file) {
-        MessageDigest digest;
         try (FileInputStream fis = new FileInputStream(file)){
-            digest = MessageDigest.getInstance("SHA-1");
+            MessageDigest digest = MessageDigest.getInstance("SHA-1");
             byte[] buffer = new byte[8192];
             int bytesRead;
             while ((bytesRead = fis.read(buffer)) != -1) {
                 digest.update(buffer, 0, bytesRead);
             }
-        } catch (NoSuchAlgorithmException | IOException e) {
-            throw new RuntimeException(e);
-        }
 
-
-        return bytesToHex(digest.digest());
+            return bytesToHex(digest.digest());
+        } catch (NoSuchAlgorithmException | IOException e) { throw new RuntimeException(e); }
     }
 
     private static @NotNull String bytesToHex(byte @NotNull [] bytes) {
