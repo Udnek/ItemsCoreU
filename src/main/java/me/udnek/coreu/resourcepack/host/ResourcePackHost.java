@@ -5,11 +5,8 @@ import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import me.udnek.coreu.CoreU;
 import me.udnek.coreu.resourcepack.RPInfo;
-import me.udnek.coreu.serializabledata.SerializableData;
 import me.udnek.coreu.serializabledata.SerializableDataManager;
 import me.udnek.coreu.util.LogUtils;
-import net.kyori.adventure.resource.ResourcePackInfo;
-import org.bukkit.packs.ResourcePack;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -22,8 +19,7 @@ import java.nio.file.Path;
 
 public class ResourcePackHost implements HttpHandler {
 
-    public static final int PORT = 25564;
-    public static final String NAME = "resourcepack";
+    private static final String NAME = "generated_resourcepack";
 
     public static @NotNull Path getFolderPath(){
         Path path = CoreU.getInstance().getDataPath().toAbsolutePath().resolve(NAME);
@@ -31,12 +27,12 @@ public class ResourcePackHost implements HttpHandler {
         return path;
     }
 
-    public static @NotNull Path getFilePath(){
+    public static @NotNull Path getZipFilePath(){
         return CoreU.getInstance().getDataPath().resolve(NAME + ".zip");
     }
 
     public void start(){
-        if (!Files.exists(getFilePath())) LogUtils.pluginWarning("Resourcepack was not generated! Use /resourcepack");
+        if (!Files.exists(getZipFilePath())) LogUtils.pluginWarning("Resourcepack was not generated! Use /resourcepack");
 
         try {
             HttpServer server = HttpServer.create(new InetSocketAddress(SerializableDataManager.read(new RPInfo(), CoreU.getInstance()).port), 0);
@@ -49,10 +45,10 @@ public class ResourcePackHost implements HttpHandler {
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
-        byte[] fileBytes = Files.readAllBytes(getFilePath());
+        byte[] fileBytes = Files.readAllBytes(getZipFilePath());
         exchange.getResponseHeaders().set("Content-Type", "application/zip");
         exchange.getResponseHeaders().set(
-                "Content-Disposition", "attachment; filename*=UTF-8''" + URLEncoder.encode(getFilePath().getFileName().toString(), StandardCharsets.UTF_8));
+                "Content-Disposition", "attachment; filename*=UTF-8''" + URLEncoder.encode(getZipFilePath().getFileName().toString(), StandardCharsets.UTF_8));
         exchange.sendResponseHeaders(200, fileBytes.length);
         OutputStream stream = exchange.getResponseBody();
         stream.write(fileBytes);
