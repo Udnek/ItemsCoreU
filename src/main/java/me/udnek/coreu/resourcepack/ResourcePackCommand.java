@@ -50,7 +50,7 @@ public class ResourcePackCommand implements TabExecutor, CommandExecutor {
 
         try {
             ResourcePackMerger mergerHost = new ResourcePackMerger();
-            Path path = ResourcePackHost.getPath();
+            Path path = ResourcePackHost.getFolderPath();
             FileUtils.cleanDirectory(path.toFile());
             mergerHost.startMergeInto(path.toString());
             String checksum = ResourcePackUtils.calculateSHA(path);
