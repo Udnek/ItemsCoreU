@@ -17,8 +17,7 @@ import java.util.zip.ZipOutputStream;
 public class ResourcePackUtils {
 
     public static void zipFolder(@NotNull Path sourcePath, @NotNull String zipFilePath) {
-        try {
-            ZipOutputStream stream = new ZipOutputStream(new FileOutputStream(zipFilePath));
+        try (ZipOutputStream stream = new ZipOutputStream(new FileOutputStream(zipFilePath))) {
             Files.walk(sourcePath).filter(path -> !Files.isDirectory(path))
                     .forEach(path -> {
                         try {

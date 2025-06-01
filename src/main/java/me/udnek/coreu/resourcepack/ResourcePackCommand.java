@@ -4,7 +4,6 @@ import me.udnek.coreu.CoreU;
 import me.udnek.coreu.resourcepack.host.ResourcePackHost;
 import me.udnek.coreu.resourcepack.host.ResourcePackUtils;
 import me.udnek.coreu.resourcepack.merger.ResourcePackMerger;
-import me.udnek.coreu.serializabledata.SerializableData;
 import me.udnek.coreu.serializabledata.SerializableDataManager;
 import me.udnek.coreu.util.LogUtils;
 import org.apache.commons.io.FileUtils;
@@ -56,7 +55,7 @@ public class ResourcePackCommand implements TabExecutor, CommandExecutor {
             mergerHost.startMergeInto(path.toString());
             String checksum = ResourcePackUtils.calculateSHA(path);
             if (!checksum.equals(info.checksum)){
-                ResourcePackUtils.zipFolder(path, path.getParent().toString());
+                ResourcePackUtils.zipFolder(path, path + ".zip");
             }
             info.checksum = checksum;
         } catch (IOException e) {
