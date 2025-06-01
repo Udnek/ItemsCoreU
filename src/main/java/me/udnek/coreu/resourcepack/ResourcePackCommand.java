@@ -17,7 +17,7 @@ import java.util.List;
 
 public class ResourcePackCommand implements TabExecutor, CommandExecutor {
     @Override
-    public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
+    public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String @NotNull [] args) {
         if (!(commandSender instanceof ConsoleCommandSender)){
             commandSender.sendMessage("Command can be executed in console only!");
             return true;
@@ -49,9 +49,10 @@ public class ResourcePackCommand implements TabExecutor, CommandExecutor {
         merger.startMergeInto(info.extractDirectory);
 
         try {
+            ResourcePackMerger mergerHost = new ResourcePackMerger();
             Path path = ResourcePackHost.getPath();
             FileUtils.cleanDirectory(path.toFile());
-            merger.startMergeInto(path.toString());
+            mergerHost.startMergeInto(path.toString());
             String checksum = ResourcePackUtils.calculateSHA(path.toFile());
             if (!checksum.equals(info.checksum)){
                 ResourcePackUtils.zipFolder(path, path.getParent().toString());
@@ -65,7 +66,7 @@ public class ResourcePackCommand implements TabExecutor, CommandExecutor {
     }
 
     @Override
-    public @Nullable List<String> onTabComplete(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
+    public @Nullable List<String> onTabComplete(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String @NotNull [] args) {
         return null;
     }
 }

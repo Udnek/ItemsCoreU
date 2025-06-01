@@ -21,8 +21,9 @@ public class ResourcePackHost implements HttpHandler {
     public static final String NAME = "resourcepack";
 
     public static @NotNull Path getPath(){
-        Path path = CoreU.getInstance().getDataPath();
-        return path.resolve(NAME);
+        Path path = CoreU.getInstance().getDataPath().toAbsolutePath().resolve(NAME);
+        path.toFile().mkdir();
+        return path;
     }
 
     public void start(){
