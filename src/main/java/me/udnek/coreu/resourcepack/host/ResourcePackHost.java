@@ -7,15 +7,16 @@ import me.udnek.coreu.CoreU;
 import me.udnek.coreu.resourcepack.RPInfo;
 import me.udnek.coreu.serializabledata.SerializableDataManager;
 import me.udnek.coreu.util.LogUtils;
+import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.InetSocketAddress;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Properties;
 
 public class ResourcePackHost implements HttpHandler {
 
@@ -35,12 +36,32 @@ public class ResourcePackHost implements HttpHandler {
         if (!Files.exists(getZipFilePath())) LogUtils.pluginWarning("Resourcepack was not generated! Use /resourcepack");
 
         try {
-            HttpServer server = HttpServer.create(new InetSocketAddress(SerializableDataManager.read(new RPInfo(), CoreU.getInstance()).port), 0);
+            RPInfo rpInfo = SerializableDataManager.read(new RPInfo(), CoreU.getInstance());
+            InetSocketAddress port = new InetSocketAddress(rpInfo.port);
+            HttpServer server = HttpServer.create(port, 0);
             server.createContext("/", this);
             server.start();
+
+            editServerProperties(rpInfo);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private static void editServerProperties(@NotNull RPInfo rpInfo) throws IOException {
+        Properties properties = new Properties();
+        FileInputStream inStream = new FileInputStream("server.properties");
+        properties.load(inStream);
+        inStream.close();
+
+        String ip = Bukkit.getServer().getIp();
+        if (ip.isBlank()) ip = "127.0.0.1";
+        properties.setProperty("resource-pack", ip + ":" + rpInfo.port);
+        properties.setProperty("resource-pack-sha1", rpInfo.checksum);
+
+        FileOutputStream fos = new FileOutputStream("server.properties");
+        properties.store(fos, "pohui");
+        fos.close();
     }
 
     @Override
