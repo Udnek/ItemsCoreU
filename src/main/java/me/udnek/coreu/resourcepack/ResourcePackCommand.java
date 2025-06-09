@@ -54,7 +54,7 @@ public class ResourcePackCommand implements TabExecutor, CommandExecutor {
             FileUtils.cleanDirectory(path.toFile());
             mergerHost.startMergeInto(path.toString());
             String checksum = ResourcePackUtils.calculateSHA(path);
-            if (!checksum.equals(info.checksum)){
+            if (!checksum.equals(info.checksum) || !ResourcePackHost.getZipFilePath().toFile().exists()){
                 ResourcePackUtils.zipFolder(ResourcePackHost.getFolderPath(), ResourcePackHost.getZipFilePath());
             }
             info.checksum = checksum;
