@@ -25,7 +25,7 @@ import me.udnek.coreu.custom.sound.CustomSoundCommand;
 import me.udnek.coreu.nms.PacketHandler;
 import me.udnek.coreu.resourcepack.ResourcePackCommand;
 import me.udnek.coreu.resourcepack.ResourcePackablePlugin;
-import me.udnek.coreu.resourcepack.host.ResourcePackHost;
+import me.udnek.coreu.resourcepack.host.RpHost;
 import me.udnek.coreu.serializabledata.SerializableDataManager;
 import net.kyori.adventure.key.Key;
 import org.bukkit.Bukkit;
@@ -90,13 +90,16 @@ public final class CoreU extends JavaPlugin implements ResourcePackablePlugin {
 
         MGUItems.COORDINATE_WAND.getKey();
 
-        new ResourcePackHost().start();
+        new RpHost().start();
     }
-
-
 
     @Override
     public void onDisable() {
         SerializableDataManager.saveConfig();
+    }
+
+    @Override
+    public @NotNull Priority getPriority() {
+        return Priority.TECHNICAL;
     }
 }

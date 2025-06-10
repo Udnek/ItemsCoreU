@@ -1,9 +1,9 @@
 package me.udnek.coreu.resourcepack;
 
 import me.udnek.coreu.CoreU;
-import me.udnek.coreu.resourcepack.host.ResourcePackHost;
-import me.udnek.coreu.resourcepack.host.ResourcePackUtils;
-import me.udnek.coreu.resourcepack.merger.ResourcePackMerger;
+import me.udnek.coreu.resourcepack.host.RpHost;
+import me.udnek.coreu.resourcepack.host.RpUtils;
+import me.udnek.coreu.resourcepack.merger.RpMerger;
 import me.udnek.coreu.serializabledata.SerializableDataManager;
 import me.udnek.coreu.util.LogUtils;
 import org.apache.commons.io.FileUtils;
@@ -39,7 +39,7 @@ public class ResourcePackCommand implements TabExecutor, CommandExecutor {
             LogUtils.pluginLog("Loaded saved directory: " + info.extractDirectory);
         }
 
-        ResourcePackMerger merger = new ResourcePackMerger();
+        RpMerger merger = new RpMerger();
         String error = merger.checkExtractDirectoryAndError(info.extractDirectory);
         if (error != null){
             LogUtils.pluginLog(error);
@@ -49,13 +49,13 @@ public class ResourcePackCommand implements TabExecutor, CommandExecutor {
         merger.startMergeInto(info.extractDirectory);
 
         try {
-            ResourcePackMerger mergerHost = new ResourcePackMerger();
-            Path path = ResourcePackHost.getFolderPath();
+            RpMerger mergerHost = new RpMerger();
+            Path path = RpHost.getFolderPath();
             FileUtils.cleanDirectory(path.toFile());
             mergerHost.startMergeInto(path.toString());
-            String checksum = ResourcePackUtils.calculateSHA(path);
-            if (!checksum.equals(info.checksum) || !ResourcePackHost.getZipFilePath().toFile().exists()){
-                ResourcePackUtils.zipFolder(ResourcePackHost.getFolderPath(), ResourcePackHost.getZipFilePath());
+            String checksum = RpUtils.calculateSHA(path);
+            if (!checksum.equals(info.checksum) || !RpHost.getZipFilePath().toFile().exists()){
+                RpUtils.zipFolder(RpHost.getFolderPath(), RpHost.getZipFilePath());
             }
             info.checksum = checksum;
         } catch (IOException e) {

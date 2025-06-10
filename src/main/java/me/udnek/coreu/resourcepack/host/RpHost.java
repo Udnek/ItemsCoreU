@@ -18,7 +18,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Properties;
 
-public class ResourcePackHost implements HttpHandler {
+public class RpHost implements HttpHandler {
 
     private static final String NAME = "generated_resourcepack";
 

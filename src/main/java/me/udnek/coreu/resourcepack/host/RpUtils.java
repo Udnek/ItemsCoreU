@@ -14,7 +14,7 @@ import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-public class ResourcePackUtils {
+public class RpUtils {
 
     public static void zipFolder(@NotNull Path sourcePath, @NotNull Path zipFilePath) {
         try (ZipOutputStream stream = new ZipOutputStream(new FileOutputStream(zipFilePath.toFile()))) {

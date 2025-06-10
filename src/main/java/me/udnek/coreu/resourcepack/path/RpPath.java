@@ -3,6 +3,7 @@ package me.udnek.coreu.resourcepack.path;
 import com.google.common.base.Preconditions;
 import me.udnek.coreu.resourcepack.FileManager;
 import me.udnek.coreu.resourcepack.FileType;
+import me.udnek.coreu.resourcepack.ResourcePackablePlugin;
 import me.udnek.coreu.resourcepack.VirtualResourcePack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -23,6 +24,14 @@ public class RpPath {
     public RpPath(@NotNull String path){
         this(null, path);
     }
+
+    public @Nullable ResourcePackablePlugin.Priority getPriority(){
+        return resourcePack == null ? null : resourcePack.getPlugin().getPriority();
+    }
+    public int getPriorityValue(){
+        return getPriority() == null ? -1 : getPriority().value;
+    }
+
 
     public @NotNull RpPath withAdded(@NotNull String added){
         String newPath = FileManager.joinPaths(path, added);

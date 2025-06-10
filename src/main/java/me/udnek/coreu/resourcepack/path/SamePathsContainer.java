@@ -1,9 +1,11 @@
 package me.udnek.coreu.resourcepack.path;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Predicate;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class SamePathsContainer {
@@ -21,6 +23,14 @@ public class SamePathsContainer {
     public void add(@NotNull RpPath rpPath){
         Preconditions.checkArgument(canAdd(rpPath), "Can not add " + rpPath + " to container with sames: " + this);
         paths.add(rpPath);
+    }
+
+    public @NotNull List<RpPath> getMostPrioritized(){
+        Preconditions.checkArgument(!paths.isEmpty(), "paths is empty!");
+        ArrayList<RpPath> list = new ArrayList<>(paths);
+        list.sort(Comparator.comparingInt(RpPath::getPriorityValue));
+        int priority = list.getLast().getPriorityValue();
+        return list.stream().filter((Predicate<RpPath>) input -> input.getPriorityValue() == priority).toList();
     }
 
     public @NotNull List<RpPath> getAll(){

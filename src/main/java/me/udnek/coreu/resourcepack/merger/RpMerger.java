@@ -29,7 +29,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ResourcePackMerger {
+public class RpMerger {
 
     public static final RpPath LANG_DIRECTORY = new RpPath(null, "assets/*/lang");
 
@@ -39,7 +39,7 @@ public class ResourcePackMerger {
 
     private String extractDirectory;
 
-    public ResourcePackMerger(){}
+    public RpMerger(){}
 
     public @Nullable String checkExtractDirectoryAndError(@Nullable String extractDirectory){
         if (extractDirectory == null) return "Directory can not be null!";
@@ -97,7 +97,9 @@ public class ResourcePackMerger {
             if (isInAutoMerge(containerSame.getExample())){
                 autoMergeCopy(containerSame);
             } else {
-                manualMergeCopy(containerSame);
+                RpPath path = containerSame.getMostPrioritized().getFirst();
+                copyFile(path, path);
+                //manualMergeCopy(containerSame);
             }
         }
         for (RpPath rpPath : container.getAllExcludingSame()) {
@@ -123,6 +125,8 @@ public class ResourcePackMerger {
         RpPath rpPath = container.getExample();
         saveText(rpPath, merger.getMergedAsString());
     }
+
+    // TODO COMPLETELY REMOVE ???
     public void manualMergeCopy(@NotNull SamePathsContainer container){
         if (extractFileExists(container.getExample())){
             LogUtils.pluginLog("Manual file already exists: " + container.getExample());
