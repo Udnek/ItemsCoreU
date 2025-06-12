@@ -125,7 +125,7 @@ public class RpUtils {
         inStream.close();
 
         properties.setProperty("resource-pack", "http://" + rpInfo.ip + ":" + rpInfo.port + "/1");
-        properties.setProperty("resource-pack-sha1", rpInfo.checksumZipFile);
+        properties.setProperty("resource-pack-sha1", rpInfo.checksum_zip);
 
         FileOutputStream fos = new FileOutputStream("server.properties");
         properties.store(fos, "pohui");

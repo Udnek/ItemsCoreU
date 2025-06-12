@@ -38,7 +38,7 @@ public class RpHost implements HttpHandler {
             HttpServer server = HttpServer.create(new InetSocketAddress("0.0.0.0",rpInfo.port), 0);
             server.createContext("/", this);
             server.start();
-            System.out.println(rpInfo.checksumZipFile);
+            System.out.println(rpInfo.checksum_zip);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

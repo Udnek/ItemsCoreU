@@ -9,14 +9,14 @@ import java.util.Map;
 public class RPInfo implements SerializableData {
 
     public @Nullable String extractDirectory;
-    public @Nullable String checksumZipFile;
-    public @Nullable String checksumFolder;
+    public @Nullable String checksum_zip;
+    public @Nullable String checksum_folder;
     public @NotNull String ip = "127.0.0.1";
     public int port = 25566;
 
     public RPInfo(@NotNull String extractDirectory, @NotNull String checksum){
         this.extractDirectory = extractDirectory;
-        this.checksumZipFile = checksum;
+        this.checksum_zip = checksum;
     }
 
     public RPInfo(){}
@@ -25,8 +25,8 @@ public class RPInfo implements SerializableData {
     public @NotNull String serialize() {
         return SerializableData.serializeMap(Map.of(
                 "extract_directory", extractDirectory == null ? "null": extractDirectory ,
-                "checksumZipFile", checksumZipFile == null ? "null": checksumZipFile,
-                "checksumFolder", checksumFolder == null ? "null": checksumFolder,
+                "checksum_zip", checksum_zip == null ? "null": checksum_zip,
+                "checksum_folder", checksum_folder == null ? "null": checksum_folder,
                 "ip", ip,
                 "port", port));
     }
@@ -35,8 +35,8 @@ public class RPInfo implements SerializableData {
         if (data == null) return;
         Map<String, Object> map = SerializableData.deserializeMap(data);
         extractDirectory = map.get("extract_directory").toString();
-        checksumZipFile = map.get("checksum").toString();
-        checksumFolder = map.get("checksumFolder").toString();
+        checksum_zip = map.get("checksum_zip").toString();
+        checksum_folder = map.get("checksum_folder").toString();
         ip = map.get("ip").toString();
         port = Integer.parseInt(map.get("port").toString());
     }
