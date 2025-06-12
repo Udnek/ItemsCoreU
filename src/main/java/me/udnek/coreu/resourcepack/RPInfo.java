@@ -10,6 +10,7 @@ public class RPInfo implements SerializableData {
 
     public @Nullable String extractDirectory;
     public @Nullable String checksum;
+    public @NotNull String ip = "127.0.0.1";
     public int port = 25566;
 
     public RPInfo(@NotNull String extractDirectory, @NotNull String checksum){
@@ -24,6 +25,7 @@ public class RPInfo implements SerializableData {
         return SerializableData.serializeMap(Map.of(
                 "extract_directory", extractDirectory == null ? "null": extractDirectory ,
                 "checksum", checksum == null ? "null": checksum,
+                "ip", ip,
                 "port", port));
     }
     @Override
@@ -32,6 +34,7 @@ public class RPInfo implements SerializableData {
         Map<String, Object> map = SerializableData.deserializeMap(data);
         extractDirectory = map.get("extract_directory").toString();
         checksum = map.get("checksum").toString();
+        ip = map.get("ip").toString();
         port = Integer.parseInt(map.get("port").toString());
     }
     @Override

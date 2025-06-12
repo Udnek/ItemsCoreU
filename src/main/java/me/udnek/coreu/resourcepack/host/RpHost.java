@@ -7,7 +7,6 @@ import me.udnek.coreu.CoreU;
 import me.udnek.coreu.resourcepack.RPInfo;
 import me.udnek.coreu.serializabledata.SerializableDataManager;
 import me.udnek.coreu.util.LogUtils;
-import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
@@ -16,7 +15,6 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Properties;
 
 public class RpHost implements HttpHandler {
 
@@ -37,32 +35,16 @@ public class RpHost implements HttpHandler {
 
         try {
             RPInfo rpInfo = SerializableDataManager.read(new RPInfo(), CoreU.getInstance());
-            InetSocketAddress port = new InetSocketAddress(rpInfo.port);
-            HttpServer server = HttpServer.create(port, 0);
+            HttpServer server = HttpServer.create(new InetSocketAddress("0.0.0.0",rpInfo.port), 0);
             server.createContext("/", this);
             server.start();
-
-            editServerProperties(rpInfo);
+            System.out.println(rpInfo.checksum);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private static void editServerProperties(@NotNull RPInfo rpInfo) throws IOException {
-        Properties properties = new Properties();
-        FileInputStream inStream = new FileInputStream("server.properties");
-        properties.load(inStream);
-        inStream.close();
 
-        String ip = Bukkit.getServer().getIp();
-        if (ip.isBlank()) ip = "127.0.0.1";
-        properties.setProperty("resource-pack", ip + ":" + rpInfo.port);
-        properties.setProperty("resource-pack-sha1", rpInfo.checksum);
-
-        FileOutputStream fos = new FileOutputStream("server.properties");
-        properties.store(fos, "pohui");
-        fos.close();
-    }
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {

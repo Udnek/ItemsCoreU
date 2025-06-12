@@ -1,16 +1,16 @@
 package me.udnek.coreu.resourcepack.host;
 
+import me.udnek.coreu.CoreU;
+import me.udnek.coreu.resourcepack.RPInfo;
+import me.udnek.coreu.serializabledata.SerializableDataManager;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Stream;
+import java.util.Properties;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -34,47 +34,39 @@ public class RpUtils {
 
     }
 
-    public static @NotNull String calculateSHA(@NotNull Path folderPath) {
-        try {
+    public static String calculateSHA(File file) {
+        try (FileInputStream fis = new FileInputStream(file)){
             MessageDigest digest = MessageDigest.getInstance("SHA-1");
-            List<Path> filePaths = new ArrayList<>();
-            try (Stream<Path> walk = Files.walk(Paths.get(folderPath.toUri()))) {
-                walk.filter(Files::isRegularFile).sorted().forEach(filePaths::add);
+            byte[] buffer = new byte[8192];
+            int bytesRead;
+            while ((bytesRead = fis.read(buffer)) != -1) {
+                digest.update(buffer, 0, bytesRead);
             }
-
-            for (Path filePath : filePaths) updateDigest(digest, filePath, folderPath);
             return bytesToHex(digest.digest());
-
         } catch (NoSuchAlgorithmException | IOException e) {
             throw new RuntimeException(e);
         }
-
-
-
     }
 
-    private static void updateDigest(@NotNull MessageDigest digest, @NotNull Path filePath, @NotNull Path basePath) {
-        String relativePath = Paths.get(basePath.toUri()).relativize(filePath).toString();
-        digest.update(relativePath.getBytes());
-
-        try (InputStream is = Files.newInputStream(filePath);
-             BufferedInputStream bis = new BufferedInputStream(is)) {
-            byte[] buffer = new byte[8192];
-            int bytesRead;
-            while ((bytesRead = bis.read(buffer)) != -1) {
-                digest.update(buffer, 0, bytesRead);
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private static @NotNull String bytesToHex(byte[] bytes) {
+    private static String bytesToHex(byte[] bytes) {
         StringBuilder hexString = new StringBuilder();
-        for (byte b : bytes) {
-            String hex = String.format("%02x", b);
-            hexString.append(hex);
-        }
+        for (byte b : bytes) hexString.append(String.format("%02x", b));
         return hexString.toString();
+    }
+
+    public static void updateServerProperties(@NotNull String checksum) throws IOException {
+        RPInfo rpInfo = SerializableDataManager.read(new RPInfo(), CoreU.getInstance());
+
+        Properties properties = new Properties();
+        FileInputStream inStream = new FileInputStream("server.properties");
+        properties.load(inStream);
+        inStream.close();
+
+        properties.setProperty("resource-pack", "http://" + rpInfo.ip + ":" + rpInfo.port + "/1");
+        properties.setProperty("resource-pack-sha1", checksum);
+
+        FileOutputStream fos = new FileOutputStream("server.properties");
+        properties.store(fos, "pohui");
+        fos.close();
     }
 }
