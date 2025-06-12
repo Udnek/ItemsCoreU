@@ -9,13 +9,14 @@ import java.util.Map;
 public class RPInfo implements SerializableData {
 
     public @Nullable String extractDirectory;
-    public @Nullable String checksum;
+    public @Nullable String checksumZipFile;
+    public @Nullable String checksumFolder;
     public @NotNull String ip = "127.0.0.1";
     public int port = 25566;
 
     public RPInfo(@NotNull String extractDirectory, @NotNull String checksum){
         this.extractDirectory = extractDirectory;
-        this.checksum = checksum;
+        this.checksumZipFile = checksum;
     }
 
     public RPInfo(){}
@@ -24,7 +25,8 @@ public class RPInfo implements SerializableData {
     public @NotNull String serialize() {
         return SerializableData.serializeMap(Map.of(
                 "extract_directory", extractDirectory == null ? "null": extractDirectory ,
-                "checksum", checksum == null ? "null": checksum,
+                "checksumZipFile", checksumZipFile == null ? "null": checksumZipFile,
+                "checksumFolder", checksumFolder == null ? "null": checksumFolder,
                 "ip", ip,
                 "port", port));
     }
@@ -33,7 +35,8 @@ public class RPInfo implements SerializableData {
         if (data == null) return;
         Map<String, Object> map = SerializableData.deserializeMap(data);
         extractDirectory = map.get("extract_directory").toString();
-        checksum = map.get("checksum").toString();
+        checksumZipFile = map.get("checksum").toString();
+        checksumFolder = map.get("checksumFolder").toString();
         ip = map.get("ip").toString();
         port = Integer.parseInt(map.get("port").toString());
     }
