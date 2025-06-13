@@ -54,10 +54,14 @@ public class ResourcePackCommand implements TabExecutor, CommandExecutor {
             FileUtils.cleanDirectory(path.toFile());
             mergerHost.startMergeInto(path.toString());
 
+            String checksum = RpUtils.calculateFolderSHA(path);
             Path zipFilePath = RpHost.getZipFilePath();
-            RpUtils.zipFolder(RpHost.getFolderPath(), zipFilePath);
-            info.checksum = RpUtils.calculateSHA(zipFilePath.toFile());
-            RpUtils.updateServerProperties(info.checksum);
+            if (!checksum.equals(info.checksum_folder) || !RpHost.getZipFilePath().toFile().exists()){
+                RpUtils.zipFolder(RpHost.getFolderPath(), zipFilePath);
+                info.checksum_zip = RpUtils.calculateZipFolderSHA(zipFilePath.toFile());
+            }
+            info.checksum_folder = checksum;
+            RpUtils.updateServerProperties();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
